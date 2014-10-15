@@ -7,10 +7,10 @@
     <string name="content_description">content_description</string>
 
     <!-- popup_menu -->
-    <string name="popup_menu_group">发起群聊</string>
-    <string name="popup_menu_add">添加朋友</string>
-    <string name="popup_menu_scan">扫一扫</string>
-    <string name="popup_menu_feedback">意见反馈</string>
+    <string name="popup_window_group">发起群聊</string>
+    <string name="popup_window_add">添加朋友</string>
+    <string name="popup_window_scan">扫一扫</string>
+    <string name="popup_window_feedback">意见反馈</string>
 
     <!-- tab -->
     <string name="tab_wechat">微信</string>

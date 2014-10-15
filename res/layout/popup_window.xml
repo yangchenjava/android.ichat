@@ -2,50 +2,118 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/popup_window"
     android:orientation="vertical" >
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/selector_popup_window"
         android:clickable="true"
         android:orientation="horizontal" >
 
         <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:contentDescription="@string/content_description"
-            android:padding="2dp"
+            android:padding="10dp"
             android:scaleType="fitCenter"
             android:src="@drawable/popup_window_group" />
 
         <TextView
-            android:layout_width="100dp"
-            android:layout_height="60dp"
-            android:gravity="center"
-            android:text="@string/popup_menu_group"
+            android:layout_width="130dp"
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
+            android:text="@string/popup_window_group"
             android:textColor="@android:color/white"
             android:textSize="15sp" />
     </LinearLayout>
-    <LinearLayout
+
+    <ImageView
+        android:layout_width="180dp"
+        android:layout_height="1dp"
+        android:background="@color/title_bar_plus_dividing_line"
+        android:contentDescription="@string/content_description" />
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/selector_popup_window"
         android:clickable="true"
         android:orientation="horizontal" >
 
         <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:contentDescription="@string/content_description"
-            android:padding="2dp"
+            android:padding="10dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/popup_window_group" />
+            android:src="@drawable/popup_window_add" />
 
         <TextView
-            android:layout_width="100dp"
-            android:layout_height="60dp"
-            android:gravity="center"
-            android:text="@string/popup_menu_group"
+            android:layout_width="130dp"
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
+            android:text="@string/popup_window_add"
+            android:textColor="@android:color/white"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="180dp"
+        android:layout_height="1dp"
+        android:background="@color/title_bar_plus_dividing_line"
+        android:contentDescription="@string/content_description" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/selector_popup_window"
+        android:clickable="true"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:contentDescription="@string/content_description"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/popup_window_scan" />
+
+        <TextView
+            android:layout_width="130dp"
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
+            android:text="@string/popup_window_scan"
+            android:textColor="@android:color/white"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="180dp"
+        android:layout_height="1dp"
+        android:background="@color/title_bar_plus_dividing_line"
+        android:contentDescription="@string/content_description" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/selector_popup_window"
+        android:clickable="true"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:contentDescription="@string/content_description"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/popup_window_feedback" />
+
+        <TextView
+            android:layout_width="130dp"
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
+            android:text="@string/popup_window_feedback"
             android:textColor="@android:color/white"
             android:textSize="15sp" />
     </LinearLayout>

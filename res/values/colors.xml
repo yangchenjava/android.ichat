@@ -2,7 +2,10 @@
 <resources>
 
     <!-- title_bar -->
-    <color name="title_bar">#484D50</color>
+    <color name="title_bar_normal">#181E1F</color>
+    <color name="title_bar_select">#484D50</color>
+    <!-- dividing_line -->
+    <color name="title_bar_plus_dividing_line">#524D57</color>
     <!-- tab -->
     <color name="tab_normal">#999999</color>
     <color name="tab_select">#38C03F</color>

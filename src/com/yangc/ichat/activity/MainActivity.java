@@ -8,14 +8,17 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.yangc.ichat.R;
+import com.yangc.ichat.utils.AndroidUtils;
 
 public class MainActivity extends FragmentActivity {
 
@@ -25,6 +28,9 @@ public class MainActivity extends FragmentActivity {
 	private View rootView;
 	private PopupWindow pw;
 	private long popupWindowShowTime;
+
+	private int notificationBarHeight;
+	private int titleBarHeight;
 
 	private LinearLayout llTabWechat;
 	private LinearLayout llTabAddressbook;
@@ -38,6 +44,21 @@ public class MainActivity extends FragmentActivity {
 
 		this.colorTabNormal = this.getResources().getColor(R.color.tab_normal);
 		this.colorTabSelect = this.getResources().getColor(R.color.tab_select);
+
+		this.notificationBarHeight = AndroidUtils.getStatusBarHeight(this);
+		final RelativeLayout rlTitleBar = (RelativeLayout) this.findViewById(R.id.rl_title_bar);
+		// 获取控件的高度
+		ViewTreeObserver vto = rlTitleBar.getViewTreeObserver();
+		vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+			@Override
+			@SuppressWarnings("deprecation")
+			public void onGlobalLayout() {
+				if (titleBarHeight == 0) {
+					rlTitleBar.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+					titleBarHeight = rlTitleBar.getHeight();
+				}
+			}
+		});
 
 		this.initPopupWindow();
 
@@ -82,7 +103,7 @@ public class MainActivity extends FragmentActivity {
 
 	private void showPopupWindow() {
 		// PopupWindow的父view
-		this.pw.showAtLocation(this.rootView, Gravity.TOP | Gravity.RIGHT, 0, 120);
+		this.pw.showAtLocation(this.rootView, Gravity.TOP | Gravity.RIGHT, 20, this.notificationBarHeight + this.titleBarHeight + 1);
 		this.pw.update();
 	}
 
