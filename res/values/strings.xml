@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">android.ichat</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="app_name">微信+</string>
+
+    <!-- content_description -->
+    <string name="content_description">content_description</string>
+
+    <!-- popup_menu -->
+    <string name="popup_menu_group">发起群聊</string>
+    <string name="popup_menu_add">添加朋友</string>
+    <string name="popup_menu_scan">扫一扫</string>
+    <string name="popup_menu_feedback">意见反馈</string>
+
+    <!-- tab -->
+    <string name="tab_wechat">微信</string>
+    <string name="tab_addressbook">通讯录</string>
+    <string name="tab_find">发现</string>
+    <string name="tab_me">我</string>
 
 </resources>

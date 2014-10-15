@@ -3,32 +3,61 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white" >
+    android:background="@android:color/white" >
 
     <RelativeLayout
+        android:id="@+id/rl_title_bar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentTop="true"
         android:background="@drawable/title_bar" >
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:text="微信"
-            android:textColor="@color/white" />
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/iv_title_bar_plus"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/selector_title_bar"
+            android:clickable="true"
+            android:contentDescription="@string/content_description"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/title_bar_plus" />
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_toLeftOf="@id/iv_title_bar_plus"
+            android:layout_toStartOf="@id/iv_title_bar_plus"
+            android:background="@drawable/selector_title_bar"
+            android:clickable="true"
+            android:contentDescription="@string/content_description"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/title_bar_search" />
     </RelativeLayout>
 
     <LinearLayout
-        android:id="@+id/rg_tabs"
+        android:id="@+id/ll_tabs"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
+        android:baselineAligned="false"
         android:orientation="horizontal" >
 
         <LinearLayout
+            android:id="@+id/ll_tab_wechat"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -36,21 +65,25 @@
             android:orientation="vertical" >
 
             <ImageView
+                android:id="@+id/iv_tab_wechat"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:scaleType="centerInside"
+                android:contentDescription="@string/tab_wechat"
+                android:scaleType="fitCenter"
                 android:src="@drawable/tab_wechat_select" />
 
             <TextView
+                android:id="@+id/tv_tab_wechat"
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
                 android:gravity="top|center_horizontal"
-                android:text="微信"
+                android:text="@string/tab_wechat"
                 android:textColor="@color/tab_select"
                 android:textSize="12sp" />
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/ll_tab_addressbook"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -58,21 +91,25 @@
             android:orientation="vertical" >
 
             <ImageView
+                android:id="@+id/iv_tab_addressbook"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:scaleType="centerInside"
+                android:contentDescription="@string/tab_addressbook"
+                android:scaleType="fitCenter"
                 android:src="@drawable/tab_addressbook_normal" />
 
             <TextView
+                android:id="@+id/tv_tab_addressbook"
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
                 android:gravity="top|center_horizontal"
-                android:text="通讯录"
+                android:text="@string/tab_addressbook"
                 android:textColor="@color/tab_normal"
                 android:textSize="12sp" />
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/ll_tab_find"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -80,21 +117,25 @@
             android:orientation="vertical" >
 
             <ImageView
+                android:id="@+id/iv_tab_find"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:scaleType="centerInside"
+                android:contentDescription="@string/tab_find"
+                android:scaleType="fitCenter"
                 android:src="@drawable/tab_find_normal" />
 
             <TextView
+                android:id="@+id/tv_tab_find"
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
                 android:gravity="top|center_horizontal"
-                android:text="发现"
+                android:text="@string/tab_find"
                 android:textColor="@color/tab_normal"
                 android:textSize="12sp" />
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/ll_tab_me"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -102,25 +143,30 @@
             android:orientation="vertical" >
 
             <ImageView
+                android:id="@+id/iv_tab_me"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:scaleType="centerInside"
+                android:contentDescription="@string/tab_me"
+                android:scaleType="fitCenter"
                 android:src="@drawable/tab_me_normal" />
 
             <TextView
+                android:id="@+id/tv_tab_me"
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
                 android:gravity="top|center_horizontal"
-                android:text="我"
+                android:text="@string/tab_me"
                 android:textColor="@color/tab_normal"
                 android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
 
     <ImageView
+        android:id="@+id/iv_dividing_line"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/rg_tabs"
-        android:background="@drawable/dividing_line" />
+        android:layout_above="@id/ll_tabs"
+        android:background="@drawable/dividing_line"
+        android:contentDescription="@string/content_description" />
 
 </RelativeLayout>
