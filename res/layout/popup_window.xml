@@ -28,11 +28,10 @@
             android:textSize="15sp" />
     </LinearLayout>
 
-    <ImageView
+    <TextView
         android:layout_width="180dp"
         android:layout_height="1dp"
-        android:background="@color/title_bar_plus_dividing_line"
-        android:contentDescription="@string/content_description" />
+        android:background="@color/title_bar_plus_dividing_line" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -58,11 +57,10 @@
             android:textSize="15sp" />
     </LinearLayout>
 
-    <ImageView
+    <TextView
         android:layout_width="180dp"
         android:layout_height="1dp"
-        android:background="@color/title_bar_plus_dividing_line"
-        android:contentDescription="@string/content_description" />
+        android:background="@color/title_bar_plus_dividing_line" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -88,11 +86,10 @@
             android:textSize="15sp" />
     </LinearLayout>
 
-    <ImageView
+    <TextView
         android:layout_width="180dp"
         android:layout_height="1dp"
-        android:background="@color/title_bar_plus_dividing_line"
-        android:contentDescription="@string/content_description" />
+        android:background="@color/title_bar_plus_dividing_line" />
 
     <LinearLayout
         android:layout_width="wrap_content"

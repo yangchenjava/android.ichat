@@ -5,7 +5,7 @@
     <color name="title_bar_normal">#181E1F</color>
     <color name="title_bar_select">#484D50</color>
     <!-- dividing_line -->
-    <color name="title_bar_plus_dividing_line">#524D57</color>
+    <color name="title_bar_plus_dividing_line">#BCBFC4</color>
     <!-- tab -->
     <color name="tab_normal">#999999</color>
     <color name="tab_select">#38C03F</color>
@@ -13,5 +13,8 @@
     <!-- main -->
     <color name="main_bkg">#E5E5E5</color>
     <color name="main_dividing_line">#F0F0F0</color>
+    <color name="main_button_select">#BDC0C5</color>
+    <!-- me -->
+    <color name="me_info_username">#88888D</color>
 
 </resources>

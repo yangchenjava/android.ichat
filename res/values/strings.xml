@@ -25,4 +25,10 @@
     <string name="find_vicinity">附近的人</string>
     <string name="find_game">游戏</string>
 
+    <!-- me -->
+    <string name="me_info">微信号 : </string>
+    <string name="me_album">我的相册</string>
+    <string name="me_collection">我的收藏</string>
+    <string name="me_setting">设置</string>
+
 </resources>
