@@ -10,4 +10,8 @@
     <color name="tab_normal">#999999</color>
     <color name="tab_select">#38C03F</color>
 
+    <!-- main -->
+    <color name="main_bkg">#E5E5E5</color>
+    <color name="main_dividing_line">#F0F0F0</color>
+
 </resources>

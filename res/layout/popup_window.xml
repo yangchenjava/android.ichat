@@ -13,15 +13,15 @@
 
         <ImageView
             android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:contentDescription="@string/content_description"
-            android:padding="10dp"
+            android:padding="8dp"
             android:scaleType="fitCenter"
             android:src="@drawable/popup_window_group" />
 
         <TextView
             android:layout_width="130dp"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:gravity="center_vertical"
             android:text="@string/popup_window_group"
             android:textColor="@android:color/white"
@@ -43,15 +43,15 @@
 
         <ImageView
             android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:contentDescription="@string/content_description"
-            android:padding="10dp"
+            android:padding="8dp"
             android:scaleType="fitCenter"
             android:src="@drawable/popup_window_add" />
 
         <TextView
             android:layout_width="130dp"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:gravity="center_vertical"
             android:text="@string/popup_window_add"
             android:textColor="@android:color/white"
@@ -73,15 +73,15 @@
 
         <ImageView
             android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:contentDescription="@string/content_description"
-            android:padding="10dp"
+            android:padding="8dp"
             android:scaleType="fitCenter"
             android:src="@drawable/popup_window_scan" />
 
         <TextView
             android:layout_width="130dp"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:gravity="center_vertical"
             android:text="@string/popup_window_scan"
             android:textColor="@android:color/white"
@@ -103,15 +103,15 @@
 
         <ImageView
             android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:contentDescription="@string/content_description"
-            android:padding="10dp"
+            android:padding="8dp"
             android:scaleType="fitCenter"
             android:src="@drawable/popup_window_feedback" />
 
         <TextView
             android:layout_width="130dp"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:gravity="center_vertical"
             android:text="@string/popup_window_feedback"
             android:textColor="@android:color/white"

@@ -18,4 +18,11 @@
     <string name="tab_find">发现</string>
     <string name="tab_me">我</string>
 
+    <!-- find -->
+    <string name="find_friend">朋友圈</string>
+    <string name="find_scan">扫一扫</string>
+    <string name="find_shake">摇一摇</string>
+    <string name="find_vicinity">附近的人</string>
+    <string name="find_game">游戏</string>
+
 </resources>

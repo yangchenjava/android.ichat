@@ -3,39 +3,40 @@ package com.yangc.ichat.activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.view.Gravity;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.util.SparseArrayCompat;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.yangc.ichat.R;
-import com.yangc.ichat.utils.AndroidUtils;
+import com.yangc.ichat.fragment.AddressbookFragment;
+import com.yangc.ichat.fragment.FindFragment;
+import com.yangc.ichat.fragment.MeFragment;
+import com.yangc.ichat.fragment.WechatFragment;
 
 public class MainActivity extends FragmentActivity {
+
+	private static int CURRENT_TAB_ID;
 
 	private int colorTabNormal;
 	private int colorTabSelect;
 
-	private View rootView;
-	private PopupWindow pw;
-	private long popupWindowShowTime;
-
-	private int notificationBarHeight;
-	private int titleBarHeight;
+	private PopupWindow mPopupWindow;
+	private ImageView ivTitleBarPlus;
 
 	private LinearLayout llTabWechat;
 	private LinearLayout llTabAddressbook;
 	private LinearLayout llTabFind;
 	private LinearLayout llTabMe;
+
+	private SparseArrayCompat<Fragment> fragments;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,24 +46,10 @@ public class MainActivity extends FragmentActivity {
 		this.colorTabNormal = this.getResources().getColor(R.color.tab_normal);
 		this.colorTabSelect = this.getResources().getColor(R.color.tab_select);
 
-		this.notificationBarHeight = AndroidUtils.getStatusBarHeight(this);
-		final RelativeLayout rlTitleBar = (RelativeLayout) this.findViewById(R.id.rl_title_bar);
-		// 获取控件的高度
-		ViewTreeObserver vto = rlTitleBar.getViewTreeObserver();
-		vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-			@Override
-			@SuppressWarnings("deprecation")
-			public void onGlobalLayout() {
-				if (titleBarHeight == 0) {
-					rlTitleBar.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-					titleBarHeight = rlTitleBar.getHeight();
-				}
-			}
-		});
-
 		this.initPopupWindow();
 
-		((ImageView) this.findViewById(R.id.iv_title_bar_plus)).setOnClickListener(new View.OnClickListener() {
+		this.ivTitleBarPlus = (ImageView) this.findViewById(R.id.iv_title_bar_plus);
+		this.ivTitleBarPlus.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				showPopupWindow();
@@ -78,33 +65,60 @@ public class MainActivity extends FragmentActivity {
 		this.llTabAddressbook.setOnClickListener(new ClickListener());
 		this.llTabFind.setOnClickListener(new ClickListener());
 		this.llTabMe.setOnClickListener(new ClickListener());
+
+		this.fragments = new SparseArrayCompat<Fragment>(4);
+		this.fragments.put(R.id.ll_tab_wechat, new WechatFragment());
+		this.fragments.put(R.id.ll_tab_addressbook, new AddressbookFragment());
+		this.fragments.put(R.id.ll_tab_find, new FindFragment());
+		this.fragments.put(R.id.ll_tab_me, new MeFragment());
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		this.resetView();
+		this.initView(CURRENT_TAB_ID == 0 ? R.id.ll_tab_wechat : CURRENT_TAB_ID);
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_MENU && event.getRepeatCount() == 0) {
+			return this.showPopupWindow();
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 	private void initPopupWindow() {
 		// PopupWindow
-		this.rootView = this.getWindow().findViewById(Window.ID_ANDROID_CONTENT);
-		// PopupWindow的子view
 		View popupWindowView = this.getLayoutInflater().inflate(R.layout.popup_window, null);
-		popupWindowView.setFocusableInTouchMode(true);
-		popupWindowView.setOnKeyListener(new View.OnKeyListener() {
+		this.mPopupWindow = new PopupWindow(popupWindowView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
+		// 设置点击返回键和PopupWindow以外的地方,退出
+		this.mPopupWindow.setTouchable(true);
+		this.mPopupWindow.setOutsideTouchable(true);
+		this.mPopupWindow.setBackgroundDrawable(new BitmapDrawable(this.getResources(), (Bitmap) null));
+
+		this.mPopupWindow.getContentView().setFocusable(true);
+		this.mPopupWindow.getContentView().setFocusableInTouchMode(true);
+		this.mPopupWindow.getContentView().setOnKeyListener(new View.OnKeyListener() {
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (keyCode == KeyEvent.KEYCODE_MENU && pw.isShowing() && System.currentTimeMillis() - popupWindowShowTime > 500) {
-					pw.dismiss();
-					return true;
+				if (keyCode == KeyEvent.KEYCODE_MENU && event.getRepeatCount() == 0 && event.getAction() == KeyEvent.ACTION_DOWN) {
+					if (mPopupWindow != null && mPopupWindow.isShowing()) {
+						mPopupWindow.dismiss();
+						return true;
+					}
 				}
 				return false;
 			}
 		});
-		this.pw = new PopupWindow(popupWindowView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
-		// 设置点击返回键和PopupWindow以外的地方,退出
-		this.pw.setBackgroundDrawable(new BitmapDrawable(this.getResources(), (Bitmap) null));
 	}
 
-	private void showPopupWindow() {
-		// PopupWindow的父view
-		this.pw.showAtLocation(this.rootView, Gravity.TOP | Gravity.RIGHT, 20, this.notificationBarHeight + this.titleBarHeight + 1);
-		this.pw.update();
+	private boolean showPopupWindow() {
+		if (this.mPopupWindow != null && !this.mPopupWindow.isShowing()) {
+			this.mPopupWindow.showAsDropDown(this.ivTitleBarPlus);
+			return true;
+		}
+		return false;
 	}
 
 	private void resetView() {
@@ -118,38 +132,37 @@ public class MainActivity extends FragmentActivity {
 		((TextView) this.llTabMe.findViewById(R.id.tv_tab_me)).setTextColor(this.colorTabNormal);
 	}
 
+	private void initView(int tabId) {
+		CURRENT_TAB_ID = tabId;
+		switch (tabId) {
+		case R.id.ll_tab_wechat:
+			((ImageView) this.llTabWechat.findViewById(R.id.iv_tab_wechat)).setImageResource(R.drawable.tab_wechat_select);
+			((TextView) this.llTabWechat.findViewById(R.id.tv_tab_wechat)).setTextColor(this.colorTabSelect);
+			break;
+		case R.id.ll_tab_addressbook:
+			((ImageView) this.llTabAddressbook.findViewById(R.id.iv_tab_addressbook)).setImageResource(R.drawable.tab_addressbook_select);
+			((TextView) this.llTabAddressbook.findViewById(R.id.tv_tab_addressbook)).setTextColor(this.colorTabSelect);
+			break;
+		case R.id.ll_tab_find:
+			((ImageView) this.llTabFind.findViewById(R.id.iv_tab_find)).setImageResource(R.drawable.tab_find_select);
+			((TextView) this.llTabFind.findViewById(R.id.tv_tab_find)).setTextColor(this.colorTabSelect);
+			break;
+		case R.id.ll_tab_me:
+			((ImageView) this.llTabMe.findViewById(R.id.iv_tab_me)).setImageResource(R.drawable.tab_me_select);
+			((TextView) this.llTabMe.findViewById(R.id.tv_tab_me)).setTextColor(this.colorTabSelect);
+			break;
+		}
+		FragmentTransaction fragmentTransaction = this.getSupportFragmentManager().beginTransaction();
+		fragmentTransaction.replace(R.id.rl_main, this.fragments.get(tabId));
+		fragmentTransaction.commit();
+	}
+
 	private class ClickListener implements View.OnClickListener {
 		@Override
 		public void onClick(View v) {
 			resetView();
-			switch (v.getId()) {
-			case R.id.ll_tab_wechat:
-				((ImageView) llTabWechat.findViewById(R.id.iv_tab_wechat)).setImageResource(R.drawable.tab_wechat_select);
-				((TextView) llTabWechat.findViewById(R.id.tv_tab_wechat)).setTextColor(colorTabSelect);
-				break;
-			case R.id.ll_tab_addressbook:
-				((ImageView) llTabAddressbook.findViewById(R.id.iv_tab_addressbook)).setImageResource(R.drawable.tab_addressbook_select);
-				((TextView) llTabAddressbook.findViewById(R.id.tv_tab_addressbook)).setTextColor(colorTabSelect);
-				break;
-			case R.id.ll_tab_find:
-				((ImageView) llTabFind.findViewById(R.id.iv_tab_find)).setImageResource(R.drawable.tab_find_select);
-				((TextView) llTabFind.findViewById(R.id.tv_tab_find)).setTextColor(colorTabSelect);
-				break;
-			case R.id.ll_tab_me:
-				((ImageView) llTabMe.findViewById(R.id.iv_tab_me)).setImageResource(R.drawable.tab_me_select);
-				((TextView) llTabMe.findViewById(R.id.tv_tab_me)).setTextColor(colorTabSelect);
-				break;
-			}
+			initView(v.getId());
 		}
-	}
-
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		if (!this.pw.isShowing()) {
-			this.showPopupWindow();
-			this.popupWindowShowTime = System.currentTimeMillis();
-		}
-		return true;
 	}
 
 }
