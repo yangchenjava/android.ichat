@@ -9,10 +9,11 @@
     android:paddingTop="15dp" >
 
     <RelativeLayout
+        android:id="@+id/rl_me_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        android:background="@drawable/selector_find"
+        android:background="@drawable/selector_main"
         android:clickable="true" >
 
         <ImageView
@@ -22,8 +23,9 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:contentDescription="@string/content_description"
+            android:padding="8dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/find_friend" />
+            android:src="@drawable/me_info" />
 
         <TextView
             android:id="@+id/tv_me_info_nickname"
@@ -58,7 +60,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/selector_find"
+        android:background="@drawable/selector_main"
         android:clickable="true"
         android:orientation="horizontal" >
 
@@ -68,7 +70,7 @@
             android:contentDescription="@string/content_description"
             android:padding="10dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/find_scan" />
+            android:src="@drawable/me_album" />
 
         <TextView
             android:layout_width="0dp"
@@ -89,7 +91,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        android:background="@drawable/selector_find"
+        android:background="@drawable/selector_main"
         android:clickable="true"
         android:orientation="horizontal" >
 
@@ -99,7 +101,7 @@
             android:contentDescription="@string/content_description"
             android:padding="10dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/find_shake" />
+            android:src="@drawable/me_collection" />
 
         <TextView
             android:layout_width="0dp"
@@ -114,7 +116,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/selector_find"
+        android:background="@drawable/selector_main"
         android:clickable="true"
         android:orientation="horizontal" >
 
@@ -124,7 +126,7 @@
             android:contentDescription="@string/content_description"
             android:padding="10dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/find_game" />
+            android:src="@drawable/me_setting" />
 
         <TextView
             android:layout_width="0dp"
