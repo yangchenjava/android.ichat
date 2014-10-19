@@ -6,7 +6,23 @@
     <!-- content_description -->
     <string name="content_description">content_description</string>
 
-    <!-- popup_menu -->
+    <!-- title_bar -->
+    <string name="fragment_auth_login">登录或注册</string>
+
+    <!-- auth -->
+    <string name="auth_login_button">登录</string>
+    <string name="auth_login_description">使用账号进行登录</string>
+    <string name="auth_register_button">注册</string>
+    <string name="auth_register_description">一键注册 , 轻松搞定</string>
+
+    <!-- login -->
+    <string name="login_input_username">账号</string>
+    <string name="login_input_password">密码</string>
+    <string name="login_input_username_hint">请填写账号</string>
+    <string name="login_input_password_hint">请填写密码</string>
+    <string name="login_forget_password">忘记密码 ?</string>
+
+    <!-- popup_window -->
     <string name="popup_window_group">发起群聊</string>
     <string name="popup_window_add">添加朋友</string>
     <string name="popup_window_scan">扫一扫</string>

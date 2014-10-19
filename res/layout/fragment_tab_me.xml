@@ -53,64 +53,75 @@
             android:gravity="center_vertical"
             android:paddingBottom="10dp"
             android:text="微信号 : yangchen_java"
-            android:textColor="@color/me_info_username"
+            android:textColor="@color/font_gray"
             android:textSize="14sp" />
     </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/selector_main"
-        android:clickable="true"
-        android:orientation="horizontal" >
-
-        <ImageView
-            android:layout_width="70dp"
-            android:layout_height="50dp"
-            android:contentDescription="@string/content_description"
-            android:padding="10dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/me_album" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:text="@string/me_album"
-            android:textColor="@android:color/black"
-            android:textSize="16sp" />
-    </LinearLayout>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/main_dividing_line" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        android:background="@drawable/selector_main"
-        android:clickable="true"
-        android:orientation="horizontal" >
+        android:background="@android:color/white"
+        android:orientation="vertical" >
 
-        <ImageView
-            android:layout_width="70dp"
-            android:layout_height="50dp"
-            android:contentDescription="@string/content_description"
-            android:padding="10dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/me_collection" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_main"
+            android:clickable="true"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:contentDescription="@string/content_description"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/me_album" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="@string/me_album"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:text="@string/me_collection"
-            android:textColor="@android:color/black"
-            android:textSize="16sp" />
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginStart="15dp"
+            android:background="@color/main_dividing_line" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_main"
+            android:clickable="true"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:contentDescription="@string/content_description"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/me_collection" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="@string/me_collection"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
