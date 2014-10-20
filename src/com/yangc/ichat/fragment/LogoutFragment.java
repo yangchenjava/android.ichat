@@ -27,6 +27,12 @@ public class LogoutFragment extends Fragment {
 				authActivity.addFragmentToStack(new LoginFragment(authActivity), true);
 			}
 		});
+		((Button) view.findViewById(R.id.btn_auth_register)).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				authActivity.addFragmentToStack(new RegisterFragment(authActivity), true);
+			}
+		});
 		return view;
 	}
 

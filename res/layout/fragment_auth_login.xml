@@ -12,7 +12,7 @@
         android:background="@drawable/title_bar" >
 
         <ImageView
-            android:id="@+id/iv_title_bar_backspace"
+            android:id="@+id/iv_login_backspace"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="@drawable/selector_title_bar"
@@ -25,10 +25,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_toEndOf="@id/iv_title_bar_backspace"
-            android:layout_toRightOf="@id/iv_title_bar_backspace"
+            android:layout_toEndOf="@id/iv_login_backspace"
+            android:layout_toRightOf="@id/iv_login_backspace"
             android:gravity="center"
             android:text="@string/fragment_auth_login"
             android:textColor="@android:color/white"
@@ -46,6 +44,7 @@
         android:layout_marginTop="40dp" >
 
         <EditText
+            android:id="@+id/et_login_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/selector_input"
@@ -81,6 +80,7 @@
         android:layout_marginStart="20dp" >
 
         <EditText
+            android:id="@+id/et_login_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/selector_input"

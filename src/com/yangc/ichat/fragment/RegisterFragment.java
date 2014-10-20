@@ -10,18 +10,18 @@ import android.widget.ImageView;
 import com.yangc.ichat.R;
 import com.yangc.ichat.activity.AuthActivity;
 
-public class LoginFragment extends Fragment {
+public class RegisterFragment extends Fragment {
 
 	private AuthActivity authActivity;
 
-	public LoginFragment(AuthActivity authActivity) {
+	public RegisterFragment(AuthActivity authActivity) {
 		this.authActivity = authActivity;
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_auth_login, container, false);
-		((ImageView) view.findViewById(R.id.iv_login_backspace)).setOnClickListener(new View.OnClickListener() {
+		View view = inflater.inflate(R.layout.fragment_auth_register, container, false);
+		((ImageView) view.findViewById(R.id.iv_register_backspace)).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				authActivity.getSupportFragmentManager().popBackStack();

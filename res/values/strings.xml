@@ -17,10 +17,23 @@
 
     <!-- login -->
     <string name="login_input_username">账号</string>
-    <string name="login_input_password">密码</string>
     <string name="login_input_username_hint">请填写账号</string>
+    <string name="login_input_password">密码</string>
     <string name="login_input_password_hint">请填写密码</string>
     <string name="login_forget_password">忘记密码 ?</string>
+
+    <!-- register -->
+    <string name="register_input_username_hint">注册后不可修改</string>
+    <string name="register_input_password_1_hint">请填写注册密码</string>
+    <string name="register_input_password_2_hint">请填写确认密码</string>
+    <string name="register_next_button">下一步</string>
+    <string name="register_input_nickname">昵称</string>
+    <string name="register_input_nickname_hint">请填写昵称</string>
+    <string name="register_input_sex">性别</string>
+    <string name="register_input_phone">电话</string>
+    <string name="register_input_phone_hint">电话用于找回密码</string>
+    <string name="register_input_signature">个性签名</string>
+    <string name="register_input_signature_hint">请填写个性签名</string>
 
     <!-- popup_window -->
     <string name="popup_window_group">发起群聊</string>
