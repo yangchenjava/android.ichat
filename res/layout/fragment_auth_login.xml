@@ -28,7 +28,7 @@
             android:layout_toEndOf="@id/iv_login_backspace"
             android:layout_toRightOf="@id/iv_login_backspace"
             android:gravity="center"
-            android:text="@string/fragment_auth_login"
+            android:text="@string/fragment_auth_logout"
             android:textColor="@android:color/white"
             android:textSize="18sp" />
     </RelativeLayout>

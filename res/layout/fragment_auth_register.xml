@@ -29,7 +29,7 @@
             android:layout_toEndOf="@id/iv_register_backspace"
             android:layout_toRightOf="@id/iv_register_backspace"
             android:gravity="center"
-            android:text="@string/fragment_auth_login"
+            android:text="@string/fragment_auth_logout"
             android:textColor="@android:color/white"
             android:textSize="18sp" />
     </RelativeLayout>
@@ -39,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:visibility="gone" >
+        android:visibility="visible" >
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -140,7 +140,7 @@
                 android:paddingLeft="10dp"
                 android:paddingRight="0dp"
                 android:paddingStart="10dp"
-                android:text="@string/login_input_password"
+                android:text="@string/register_input_password_2"
                 android:textColor="@color/font_dark_gray"
                 android:textSize="15sp" />
         </RelativeLayout>
@@ -168,14 +168,13 @@
         android:layout_height="match_parent"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:visibility="visible" >
+        android:visibility="gone" >
 
         <ImageView
             android:id="@+id/iv_register_photo"
             android:layout_width="100dp"
             android:layout_height="80dp"
-            android:layout_marginBottom="20dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:clickable="true"
             android:contentDescription="@string/content_description"
             android:scaleType="fitCenter"
@@ -221,6 +220,53 @@
             android:layout_marginRight="20dp"
             android:layout_marginStart="20dp" >
 
+            <RadioGroup
+                android:id="@+id/rg_register_sex"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="80dp"
+                android:layout_marginStart="80dp"
+                android:orientation="horizontal" >
+
+                <RadioButton
+                    android:id="@+id/rb_register_sex_male"
+                    style="@style/radio_sex"
+                    android:checked="true"
+                    android:drawableLeft="@drawable/selector_radio_sex"
+                    android:drawableStart="@drawable/selector_radio_sex"
+                    android:text="@string/register_input_sex_male" />
+
+                <RadioButton
+                    android:id="@+id/rb_register_sex_female"
+                    style="@style/radio_sex"
+                    android:checked="false"
+                    android:drawableLeft="@drawable/selector_radio_sex"
+                    android:drawableStart="@drawable/selector_radio_sex"
+                    android:text="@string/register_input_sex_female" />
+            </RadioGroup>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:paddingEnd="0dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="0dp"
+                android:paddingStart="10dp"
+                android:text="@string/register_input_sex"
+                android:textColor="@color/font_dark_gray"
+                android:textSize="15sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp" >
+
             <EditText
                 android:id="@+id/et_register_phone"
                 android:layout_width="match_parent"
@@ -259,12 +305,11 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/selector_input"
                 android:hint="@string/register_input_signature_hint"
-                android:inputType="text"
+                android:inputType="textMultiLine"
                 android:paddingEnd="0dp"
                 android:paddingLeft="80dp"
                 android:paddingRight="0dp"
                 android:paddingStart="80dp"
-                android:singleLine="true"
                 android:textSize="15sp" />
 
             <TextView
@@ -289,11 +334,11 @@
             android:layout_marginRight="20dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
-            android:background="@drawable/selector_button_white"
+            android:background="@drawable/selector_button_green"
             android:paddingBottom="10dp"
             android:paddingTop="10dp"
             android:text="@string/auth_register_button"
-            android:textColor="@android:color/black"
+            android:textColor="@android:color/white"
             android:textSize="18sp" />
     </LinearLayout>
 
