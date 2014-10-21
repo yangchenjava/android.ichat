@@ -2,21 +2,15 @@ package com.yangc.ichat.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.yangc.ichat.R;
-import com.yangc.ichat.activity.AuthActivity;
 
 public class LoginFragment extends Fragment {
-
-	private AuthActivity authActivity;
-
-	public LoginFragment(AuthActivity authActivity) {
-		this.authActivity = authActivity;
-	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -24,7 +18,10 @@ public class LoginFragment extends Fragment {
 		((ImageView) view.findViewById(R.id.iv_login_backspace)).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				authActivity.getSupportFragmentManager().popBackStack();
+				FragmentActivity fragmentActivity = getActivity();
+				if (fragmentActivity != null) {
+					fragmentActivity.getSupportFragmentManager().popBackStack();
+				}
 			}
 		});
 		return view;

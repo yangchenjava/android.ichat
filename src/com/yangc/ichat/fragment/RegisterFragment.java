@@ -2,6 +2,7 @@ package com.yangc.ichat.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,19 +12,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.yangc.ichat.R;
-import com.yangc.ichat.activity.AuthActivity;
 
 public class RegisterFragment extends Fragment {
-
-	private AuthActivity authActivity;
 
 	private TextView tvRegisterBackspace;
 	private LinearLayout llRegister_1;
 	private LinearLayout llRegister_2;
-
-	public RegisterFragment(AuthActivity authActivity) {
-		this.authActivity = authActivity;
-	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -31,14 +25,7 @@ public class RegisterFragment extends Fragment {
 		((ImageView) view.findViewById(R.id.iv_register_backspace)).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				int visibility = llRegister_1.getVisibility();
-				if (visibility == View.VISIBLE) {
-					authActivity.getSupportFragmentManager().popBackStack();
-				} else if (visibility == View.GONE) {
-					llRegister_1.setVisibility(View.VISIBLE);
-					llRegister_2.setVisibility(View.GONE);
-					tvRegisterBackspace.setText(R.string.fragment_auth_logout);
-				}
+				clickBackspace();
 			}
 		});
 		this.tvRegisterBackspace = (TextView) view.findViewById(R.id.tv_register_backspace);
@@ -59,6 +46,20 @@ public class RegisterFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
+	}
+
+	public void clickBackspace() {
+		int visibility = this.llRegister_1.getVisibility();
+		if (visibility == View.VISIBLE) {
+			FragmentActivity fragmentActivity = this.getActivity();
+			if (fragmentActivity != null) {
+				fragmentActivity.getSupportFragmentManager().popBackStack();
+			}
+		} else if (visibility == View.GONE) {
+			this.llRegister_1.setVisibility(View.VISIBLE);
+			this.llRegister_2.setVisibility(View.GONE);
+			this.tvRegisterBackspace.setText(R.string.fragment_auth_logout);
+		}
 	}
 
 }

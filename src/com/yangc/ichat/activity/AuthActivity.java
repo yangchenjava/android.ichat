@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentTransaction;
 
 import com.yangc.ichat.R;
 import com.yangc.ichat.fragment.LogoutFragment;
+import com.yangc.ichat.fragment.RegisterFragment;
 
 public class AuthActivity extends FragmentActivity {
 
@@ -15,7 +16,7 @@ public class AuthActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_auth);
 
-		this.addFragmentToStack(new LogoutFragment(this), false);
+		this.addFragmentToStack(new LogoutFragment(), false);
 	}
 
 	public void addFragmentToStack(Fragment fragment, boolean isAddStack) {
@@ -25,6 +26,16 @@ public class AuthActivity extends FragmentActivity {
 			fragmentTransaction.addToBackStack(null);
 		}
 		fragmentTransaction.commit();
+	}
+
+	@Override
+	public void onBackPressed() {
+		Fragment fragment = this.getSupportFragmentManager().findFragmentById(R.id.rl_auth);
+		if (fragment instanceof RegisterFragment) {
+			((RegisterFragment) fragment).clickBackspace();
+		} else {
+			super.onBackPressed();
+		}
 	}
 
 }

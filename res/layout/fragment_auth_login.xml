@@ -49,11 +49,11 @@
             android:layout_height="wrap_content"
             android:background="@drawable/selector_input"
             android:hint="@string/login_input_username_hint"
-            android:inputType="text"
+            android:inputType="textUri"
             android:paddingEnd="0dp"
-            android:paddingLeft="80dp"
+            android:paddingLeft="90dp"
             android:paddingRight="0dp"
-            android:paddingStart="80dp"
+            android:paddingStart="90dp"
             android:singleLine="true"
             android:textSize="15sp" />
 
@@ -87,9 +87,9 @@
             android:hint="@string/login_input_password_hint"
             android:inputType="textPassword"
             android:paddingEnd="0dp"
-            android:paddingLeft="80dp"
+            android:paddingLeft="90dp"
             android:paddingRight="0dp"
-            android:paddingStart="80dp"
+            android:paddingStart="90dp"
             android:singleLine="true"
             android:textSize="15sp" />
 
