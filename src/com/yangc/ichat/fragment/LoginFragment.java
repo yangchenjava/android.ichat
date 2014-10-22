@@ -1,6 +1,12 @@
 package com.yangc.ichat.fragment;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -22,6 +28,7 @@ import com.yangc.ichat.activity.MainActivity;
 import com.yangc.ichat.bean.ResultBean;
 import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
+import com.yangc.ichat.utils.Md5Utils;
 import com.yangc.ichat.utils.VolleyUtils;
 import com.yangc.ichat.volley.GsonObjectRequest;
 
@@ -31,6 +38,11 @@ public class LoginFragment extends Fragment {
 
 	private EditText etLoginUsername;
 	private EditText etLoginPassword;
+
+	private String username;
+	private String password;
+
+	private ProgressDialog progressDialog;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -50,21 +62,16 @@ public class LoginFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				if (authActivity != null) {
-					String username = etLoginUsername.getText().toString();
-					String password = etLoginPassword.getText().toString();
+					username = etLoginUsername.getText().toString();
+					password = Md5Utils.getMD5(etLoginPassword.getText().toString());
 					if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
 						AndroidUtils.alertToast(authActivity, R.string.error_username_password_null);
 					} else {
-						Request<ResultBean> request = new GsonObjectRequest<ResultBean>(Request.Method.POST, Constants.LOGIN, ResultBean.class, new Response.Listener<ResultBean>() {
-							@Override
-							public void onResponse(ResultBean result) {
-								if (result.isSuccess()) {
-									authActivity.startActivity(new Intent(authActivity, MainActivity.class));
-								} else {
-									AndroidUtils.alertToast(authActivity, result.getMessage());
-								}
-							}
-						}, errorListener);
+						progressDialog = ProgressDialog.show(authActivity, "", authActivity.getResources().getString(R.string.text_load), true);
+						Map<String, String> params = new HashMap<String, String>(2);
+						params.put("username", username);
+						params.put("password", password);
+						Request<ResultBean> request = new GsonObjectRequest<ResultBean>(Request.Method.POST, Constants.LOGIN, params, ResultBean.class, listener, errorListener);
 						VolleyUtils.addRequest(request, AuthActivity.TAG);
 					}
 				}
@@ -73,11 +80,35 @@ public class LoginFragment extends Fragment {
 		return view;
 	}
 
+	private Response.Listener<ResultBean> listener = new Response.Listener<ResultBean>() {
+		@Override
+		public void onResponse(ResultBean result) {
+			if (result.isSuccess()) {
+				SharedPreferences.Editor editor = authActivity.getSharedPreferences(Constants.APP, Context.MODE_PRIVATE).edit();
+				editor.putString("username", username).putString("password", password).commit();
+				cancelProgressDialog();
+				authActivity.startActivity(new Intent(authActivity, MainActivity.class));
+				authActivity.finish();
+			} else {
+				cancelProgressDialog();
+				AndroidUtils.alertToast(authActivity, result.getMessage());
+			}
+		}
+	};
+
 	private ErrorListener errorListener = new Response.ErrorListener() {
 		@Override
 		public void onErrorResponse(VolleyError error) {
+			cancelProgressDialog();
 			AndroidUtils.alertToast(authActivity, R.string.error_network);
 			Log.e(AuthActivity.TAG, error.getMessage(), error.getCause());
 		}
 	};
+
+	private void cancelProgressDialog() {
+		if (this.progressDialog != null) {
+			this.progressDialog.cancel();
+		}
+	}
+
 }
