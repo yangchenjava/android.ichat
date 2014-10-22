@@ -2,7 +2,6 @@ package com.yangc.ichat.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +11,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.yangc.ichat.R;
+import com.yangc.ichat.activity.AuthActivity;
 
 public class RegisterFragment extends Fragment {
+
+	private AuthActivity authActivity;
 
 	private TextView tvRegisterBackspace;
 	private LinearLayout llRegister_1;
@@ -21,6 +23,7 @@ public class RegisterFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		this.authActivity = (AuthActivity) this.getActivity();
 		View view = inflater.inflate(R.layout.fragment_auth_register, container, false);
 		((ImageView) view.findViewById(R.id.iv_register_backspace)).setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -51,9 +54,8 @@ public class RegisterFragment extends Fragment {
 	public void clickBackspace() {
 		int visibility = this.llRegister_1.getVisibility();
 		if (visibility == View.VISIBLE) {
-			FragmentActivity fragmentActivity = this.getActivity();
-			if (fragmentActivity != null) {
-				fragmentActivity.getSupportFragmentManager().popBackStack();
+			if (this.authActivity != null) {
+				this.authActivity.getSupportFragmentManager().popBackStack();
 			}
 		} else if (visibility == View.GONE) {
 			this.llRegister_1.setVisibility(View.VISIBLE);

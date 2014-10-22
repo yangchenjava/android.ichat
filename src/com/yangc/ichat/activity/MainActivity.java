@@ -20,8 +20,11 @@ import com.yangc.ichat.fragment.AddressbookFragment;
 import com.yangc.ichat.fragment.FindFragment;
 import com.yangc.ichat.fragment.MeFragment;
 import com.yangc.ichat.fragment.WechatFragment;
+import com.yangc.ichat.utils.VolleyUtils;
 
 public class MainActivity extends FragmentActivity {
+
+	public static final String TAG = MainActivity.class.getName();
 
 	private static int CURRENT_TAB_ID;
 
@@ -78,6 +81,17 @@ public class MainActivity extends FragmentActivity {
 		super.onResume();
 		this.resetView();
 		this.initView(CURRENT_TAB_ID == 0 ? R.id.ll_tab_wechat : CURRENT_TAB_ID);
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		VolleyUtils.cancelAllRequest(TAG);
+	}
+
+	@Override
+	public void onBackPressed() {
+		this.moveTaskToBack(true);
 	}
 
 	@Override
