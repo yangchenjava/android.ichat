@@ -11,30 +11,24 @@ import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-public class GsonArrayRequest<T> extends Request<T> {
+public class MultiPartRequest<T> extends Request<T> {
 
 	private final Gson gson;
-	private final Map<String, String> params;
-	private final TypeToken<T> typeToken;
+	private final Map<String, Object> params;
+	private final Class<T> clazz;
 	private final Listener<T> listener;
 
-	public GsonArrayRequest(int method, String url, Map<String, String> params, TypeToken<T> typeToken, Listener<T> listener, ErrorListener errorListener) {
+	public MultiPartRequest(int method, String url, Map<String, Object> params, Class<T> clazz, Listener<T> listener, ErrorListener errorListener) {
 		super(method, url, errorListener);
 		this.gson = new Gson();
 		this.params = params;
-		this.typeToken = typeToken;
+		this.clazz = clazz;
 		this.listener = listener;
 	}
 
-	@Override
-	protected Map<String, String> getParams() throws AuthFailureError {
+	public Map<String, Object> getMultiPartParams() throws AuthFailureError {
 		return this.params;
-	}
-
-	public GsonArrayRequest(String url, Map<String, String> params, TypeToken<T> typeToken, Listener<T> listener, ErrorListener errorListener) {
-		this(Method.GET, url, params, typeToken, listener, errorListener);
 	}
 
 	@Override
@@ -50,7 +44,7 @@ public class GsonArrayRequest<T> extends Request<T> {
 		} catch (UnsupportedEncodingException e) {
 			parsed = new String(response.data);
 		}
-		T result = this.gson.fromJson(parsed, this.typeToken.getType());
+		T result = this.gson.fromJson(parsed, this.clazz);
 		return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
 	}
 

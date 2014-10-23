@@ -15,7 +15,7 @@ import com.google.gson.Gson;
 public class GsonObjectRequest<T> extends Request<T> {
 
 	private final Gson gson;
-	private Map<String, String> params;
+	private final Map<String, String> params;
 	private final Class<T> clazz;
 	private final Listener<T> listener;
 

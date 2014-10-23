@@ -9,6 +9,11 @@
     <!-- error -->
     <string name="error_network">网络连接不可用 , 请稍后重试</string>
     <string name="error_username_password_null">用户名或密码不能为空</string>
+    <string name="error_username_validate">用户名长度为8&#8211;15的英文数字下划线中划线</string>
+    <string name="error_password_validate">密码长度为6&#8211;15的英文数字下划线中划线</string>
+    <string name="error_password_twice_validate">两次输入的密码不同</string>
+    <string name="error_nickname_null">昵称不能为空</string>
+    <string name="error_phone_validate">请输入正确的手机号码</string>
 
     <!-- content_description -->
     <string name="content_description">content_description</string>

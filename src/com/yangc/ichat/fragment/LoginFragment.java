@@ -48,37 +48,43 @@ public class LoginFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		this.authActivity = (AuthActivity) this.getActivity();
 		View view = inflater.inflate(R.layout.fragment_auth_login, container, false);
-		((ImageView) view.findViewById(R.id.iv_login_backspace)).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (authActivity != null) {
-					authActivity.getSupportFragmentManager().popBackStack();
-				}
-			}
-		});
+		((ImageView) view.findViewById(R.id.iv_login_backspace)).setOnClickListener(this.backspaceListener);
 		this.etLoginUsername = (EditText) view.findViewById(R.id.et_login_username);
 		this.etLoginPassword = (EditText) view.findViewById(R.id.et_login_password);
-		((Button) view.findViewById(R.id.btn_login)).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (authActivity != null) {
-					username = etLoginUsername.getText().toString();
-					password = Md5Utils.getMD5(etLoginPassword.getText().toString());
-					if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
-						AndroidUtils.alertToast(authActivity, R.string.error_username_password_null);
-					} else {
-						progressDialog = ProgressDialog.show(authActivity, "", authActivity.getResources().getString(R.string.text_load), true);
-						Map<String, String> params = new HashMap<String, String>(2);
-						params.put("username", username);
-						params.put("password", password);
-						Request<ResultBean> request = new GsonObjectRequest<ResultBean>(Request.Method.POST, Constants.LOGIN, params, ResultBean.class, listener, errorListener);
-						VolleyUtils.addRequest(request, AuthActivity.TAG);
-					}
-				}
-			}
-		});
+		((Button) view.findViewById(R.id.btn_login)).setOnClickListener(this.loginListener);
 		return view;
 	}
+
+	// 后退监听
+	private View.OnClickListener backspaceListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			if (authActivity != null) {
+				authActivity.getSupportFragmentManager().popBackStack();
+			}
+		}
+	};
+
+	// 登录监听
+	private View.OnClickListener loginListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			if (authActivity != null) {
+				username = etLoginUsername.getText().toString().trim();
+				password = Md5Utils.getMD5(etLoginPassword.getText().toString().trim());
+				if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
+					AndroidUtils.alertToast(authActivity, R.string.error_username_password_null);
+				} else {
+					progressDialog = ProgressDialog.show(authActivity, "", authActivity.getResources().getString(R.string.text_load), true);
+					Map<String, String> params = new HashMap<String, String>(2);
+					params.put("username", username);
+					params.put("password", password);
+					Request<ResultBean> request = new GsonObjectRequest<ResultBean>(Request.Method.POST, Constants.LOGIN, params, ResultBean.class, listener, errorListener);
+					VolleyUtils.addRequest(request, AuthActivity.TAG);
+				}
+			}
+		}
+	};
 
 	private Response.Listener<ResultBean> listener = new Response.Listener<ResultBean>() {
 		@Override
