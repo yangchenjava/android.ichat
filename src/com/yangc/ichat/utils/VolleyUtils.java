@@ -9,13 +9,13 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.yangc.ichat.volley.BitmapLruCache;
+import com.yangc.ichat.volley.MultiPartStack;
 import com.yangc.ichat.volley.Volley;
 
 public class VolleyUtils {
 
-	private static final String DEFAULT_CACHE_DIR = "portrait";
-
-	private static RequestQueue requestQueue;
+	private static RequestQueue normalRequestQueue;
+	private static RequestQueue multiPartRequestQueue;
 	private static ImageLoader imageLoader;
 
 	private VolleyUtils() {
@@ -30,34 +30,51 @@ public class VolleyUtils {
 	public static void init(Context context) {
 		File cachePath = null;
 		if (AndroidUtils.checkSDCard()) {
-			cachePath = new File(context.getExternalCacheDir(), DEFAULT_CACHE_DIR);
+			cachePath = new File(context.getExternalCacheDir(), Constants.DEFAULT_CACHE_DIR);
 		} else {
-			cachePath = new File(context.getCacheDir(), DEFAULT_CACHE_DIR);
+			cachePath = new File(context.getCacheDir(), Constants.DEFAULT_CACHE_DIR);
 		}
-		requestQueue = Volley.newRequestQueue(context, cachePath);
+		normalRequestQueue = Volley.newRequestQueue(context, cachePath);
+		multiPartRequestQueue = Volley.newRequestQueue(context, new MultiPartStack());
 
 		int memoryClass = ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
 		int maxSize = 1024 * 1024 * memoryClass / 8;
-		imageLoader = new ImageLoader(requestQueue, new BitmapLruCache(maxSize));
+		imageLoader = new ImageLoader(normalRequestQueue, new BitmapLruCache(maxSize));
 	}
 
-	public static RequestQueue getRequestQueue() {
-		if (requestQueue != null) {
-			return requestQueue;
+	public static RequestQueue getNormalRequestQueue() {
+		if (normalRequestQueue != null) {
+			return normalRequestQueue;
 		} else {
 			throw new IllegalStateException("RequestQueue not initialized");
 		}
 	}
 
-	public static void addRequest(Request<?> request, Object tag) {
+	public static RequestQueue getMultiPartRequestQueue() {
+		if (multiPartRequestQueue != null) {
+			return multiPartRequestQueue;
+		} else {
+			throw new IllegalStateException("RequestQueue not initialized");
+		}
+	}
+
+	public static void addNormalRequest(Request<?> request, Object tag) {
 		if (tag != null) {
 			request.setTag(tag);
 		}
-		requestQueue.add(request);
+		normalRequestQueue.add(request);
+	}
+
+	public static void addMultiPartRequest(Request<?> request, Object tag) {
+		if (tag != null) {
+			request.setTag(tag);
+		}
+		multiPartRequestQueue.add(request);
 	}
 
 	public static void cancelAllRequest(Object tag) {
-		requestQueue.cancelAll(tag);
+		normalRequestQueue.cancelAll(tag);
+		multiPartRequestQueue.cancelAll(tag);
 	}
 
 	public static ImageLoader getImageLoader() {

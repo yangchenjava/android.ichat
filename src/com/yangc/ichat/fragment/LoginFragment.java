@@ -75,12 +75,12 @@ public class LoginFragment extends Fragment {
 				if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
 					AndroidUtils.alertToast(authActivity, R.string.error_username_password_null);
 				} else {
-					progressDialog = ProgressDialog.show(authActivity, "", authActivity.getResources().getString(R.string.text_load), true);
+					progressDialog = ProgressDialog.show(authActivity, "", authActivity.getResources().getString(R.string.text_load), true, true);
 					Map<String, String> params = new HashMap<String, String>(2);
 					params.put("username", username);
 					params.put("password", password);
 					Request<ResultBean> request = new GsonObjectRequest<ResultBean>(Request.Method.POST, Constants.LOGIN, params, ResultBean.class, listener, errorListener);
-					VolleyUtils.addRequest(request, AuthActivity.TAG);
+					VolleyUtils.addNormalRequest(request, AuthActivity.TAG);
 				}
 			}
 		}

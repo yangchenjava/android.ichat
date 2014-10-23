@@ -54,6 +54,7 @@ public class RegisterFragment extends Fragment {
 		this.etRegisterPassword_2 = (EditText) view.findViewById(R.id.et_register_password_2);
 		((Button) view.findViewById(R.id.btn_register_next)).setOnClickListener(this.registerNextListener);
 
+		((ImageView) view.findViewById(R.id.iv_register_photo)).setOnClickListener(this.photoListener);
 		this.etRegisterNickname = (EditText) view.findViewById(R.id.et_register_nickname);
 		this.rgRegisterSex = (RadioGroup) view.findViewById(R.id.rg_register_sex);
 		this.etRegisterPhone = (EditText) view.findViewById(R.id.et_register_phone);
@@ -112,11 +113,31 @@ public class RegisterFragment extends Fragment {
 		}
 	};
 
+	// 头像监听
+	private View.OnClickListener photoListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+
+		}
+	};
+
 	// 注册监听
 	private View.OnClickListener registerListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
+			// 验证昵称
+			String nickname = etRegisterNickname.getText().toString().trim();
+			if (TextUtils.isEmpty(nickname)) {
+				AndroidUtils.alertToast(authActivity, R.string.error_nickname_null);
+				return;
+			}
 
+			// 验证手机
+			String phone = etRegisterPhone.getText().toString().trim();
+			if (!TextUtils.isEmpty(phone) && !phone.matches("^1[3-8]{1}\\d{9}$")) {
+				AndroidUtils.alertToast(authActivity, R.string.error_phone_validate);
+				return;
+			}
 		}
 	};
 
