@@ -1,7 +1,10 @@
 package com.yangc.ichat.volley;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.Map;
+
+import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -32,6 +35,13 @@ public class GsonObjectRequest<T> extends Request<T> {
 	}
 
 	@Override
+	public Map<String, String> getHeaders() throws AuthFailureError {
+		Map<String, String> headers = new HashMap<String, String>();
+		CookieHelper.addSessionCookie(headers);
+		return headers;
+	}
+
+	@Override
 	protected Map<String, String> getParams() throws AuthFailureError {
 		return this.params;
 	}
@@ -43,12 +53,14 @@ public class GsonObjectRequest<T> extends Request<T> {
 
 	@Override
 	protected Response<T> parseNetworkResponse(NetworkResponse response) {
+		CookieHelper.saveSessionCookie(response.headers);
 		String parsed;
 		try {
 			parsed = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
 		} catch (UnsupportedEncodingException e) {
 			parsed = new String(response.data);
 		}
+		Log.i("yangchen", parsed);
 		T result = this.gson.fromJson(parsed, this.clazz);
 		return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
 	}

@@ -7,7 +7,11 @@
     <string name="text_load">加载中，请稍后&#8230;</string>
 
     <!-- error -->
+    <string name="error_timeout">请求超时 , 请稍后重试</string>
     <string name="error_network">网络连接不可用 , 请稍后重试</string>
+    <string name="error_unauthorized">认证失败 , 请稍后重试</string>
+    <string name="error_notfound">请求没找到 , 请稍后重试</string>
+    <string name="error_server">服务器异常 , 请稍后重试</string>
     <string name="error_username_password_null">账号或密码不能为空</string>
     <string name="error_username_validate">账号长度为8&#8211;15的英文数字下划线中划线</string>
     <string name="error_password_validate">密码长度为6&#8211;15的英文数字下划线中划线</string>

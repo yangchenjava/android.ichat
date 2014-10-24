@@ -1,9 +1,7 @@
 package com.yangc.ichat.activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -35,9 +33,7 @@ public class BootloaderActivity extends Activity {
 	}
 
 	private void startup() {
-		// 模式: Context.MODE_PRIVATE只有本应用可以使用, Context.MODE_WORLD_READABLE其他应用可以读, Context.MODE_WORLD_WRITEABLE其他应用可以写
-		SharedPreferences sharedPreferences = this.getSharedPreferences(Constants.APP, Context.MODE_PRIVATE);
-		if (TextUtils.isEmpty(sharedPreferences.getString("username", "")) || TextUtils.isEmpty(sharedPreferences.getString("password", ""))) {
+		if (TextUtils.isEmpty(Constants.USERNAME) || TextUtils.isEmpty(Constants.PASSWORD)) {
 			this.startActivity(new Intent(this, AuthActivity.class));
 		} else {
 			this.startActivity(new Intent(this, MainActivity.class));

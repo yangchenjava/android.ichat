@@ -1,5 +1,6 @@
 package com.yangc.ichat.fragment;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,6 +8,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -63,14 +65,6 @@ public class RegisterFragment extends Fragment {
 		return view;
 	}
 
-	// 后退监听
-	private View.OnClickListener backspaceListener = new View.OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			clickBackspace();
-		}
-	};
-
 	public void clickBackspace() {
 		int visibility = this.llRegister_1.getVisibility();
 		if (visibility == View.VISIBLE) {
@@ -84,28 +78,36 @@ public class RegisterFragment extends Fragment {
 		}
 	}
 
+	// 后退监听
+	private View.OnClickListener backspaceListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			clickBackspace();
+		}
+	};
+
 	// 注册下一步监听
 	private View.OnClickListener registerNextListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			// 验证用户名
-			username = etRegisterUsername.getText().toString().trim();
-			if (!username.matches("^[\\w\\-\\/\\.]{8,15}$")) {
-				AndroidUtils.alertToast(authActivity, R.string.error_username_validate);
-				return;
-			}
-
-			// 验证密码
-			password = etRegisterPassword_1.getText().toString().trim();
-			String pwd = etRegisterPassword_2.getText().toString().trim();
-			if (!password.matches("^[\\w\\-]{6,15}$") || !pwd.matches("^[\\w\\-]{6,15}$")) {
-				AndroidUtils.alertToast(authActivity, R.string.error_password_validate);
-				return;
-			} else if (!TextUtils.equals(password, pwd)) {
-				AndroidUtils.alertToast(authActivity, R.string.error_password_twice_validate);
-				return;
-			}
-			password = Md5Utils.getMD5(password);
+//			username = etRegisterUsername.getText().toString().trim();
+//			if (!username.matches("^[\\w\\-\\/\\.]{8,15}$")) {
+//				AndroidUtils.alertToast(authActivity, R.string.error_username_validate);
+//				return;
+//			}
+//
+//			// 验证密码
+//			password = etRegisterPassword_1.getText().toString().trim();
+//			String pwd = etRegisterPassword_2.getText().toString().trim();
+//			if (!password.matches("^[\\w\\-]{6,15}$") || !pwd.matches("^[\\w\\-]{6,15}$")) {
+//				AndroidUtils.alertToast(authActivity, R.string.error_password_validate);
+//				return;
+//			} else if (!TextUtils.equals(password, pwd)) {
+//				AndroidUtils.alertToast(authActivity, R.string.error_password_twice_validate);
+//				return;
+//			}
+//			password = Md5Utils.getMD5(password);
 
 			llRegister_1.setVisibility(View.GONE);
 			llRegister_2.setVisibility(View.VISIBLE);
@@ -117,7 +119,11 @@ public class RegisterFragment extends Fragment {
 	private View.OnClickListener photoListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-
+			AlertDialog alertDialog = new AlertDialog.Builder(authActivity).show();
+			alertDialog.setCanceledOnTouchOutside(true);
+			Window window = alertDialog.getWindow();
+			window.setContentView(R.layout.dialog_select);
+			// window.findViewById()
 		}
 	};
 

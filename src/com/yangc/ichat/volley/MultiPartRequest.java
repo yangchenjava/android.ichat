@@ -1,6 +1,7 @@
 package com.yangc.ichat.volley;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.android.volley.AuthFailureError;
@@ -27,6 +28,13 @@ public class MultiPartRequest<T> extends Request<T> {
 		this.listener = listener;
 	}
 
+	@Override
+	public Map<String, String> getHeaders() throws AuthFailureError {
+		Map<String, String> headers = new HashMap<String, String>();
+		CookieHelper.addSessionCookie(headers);
+		return headers;
+	}
+
 	public Map<String, Object> getMultiPartParams() throws AuthFailureError {
 		return this.params;
 	}
@@ -38,6 +46,7 @@ public class MultiPartRequest<T> extends Request<T> {
 
 	@Override
 	protected Response<T> parseNetworkResponse(NetworkResponse response) {
+		CookieHelper.saveSessionCookie(response.headers);
 		String parsed;
 		try {
 			parsed = new String(response.data, HttpHeaderParser.parseCharset(response.headers));

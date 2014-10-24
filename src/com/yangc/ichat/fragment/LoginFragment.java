@@ -4,9 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -31,6 +29,7 @@ import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.Md5Utils;
 import com.yangc.ichat.utils.VolleyUtils;
 import com.yangc.ichat.volley.GsonObjectRequest;
+import com.yangc.ichat.volley.VolleyErrorHelper;
 
 public class LoginFragment extends Fragment {
 
@@ -90,8 +89,10 @@ public class LoginFragment extends Fragment {
 		@Override
 		public void onResponse(ResultBean result) {
 			if (result.isSuccess()) {
-				SharedPreferences.Editor editor = authActivity.getSharedPreferences(Constants.APP, Context.MODE_PRIVATE).edit();
-				editor.putString("username", username).putString("password", password).commit();
+				// SharedPreferences.Editor editor = authActivity.getSharedPreferences(Constants.APP, Context.MODE_PRIVATE).edit();
+				// editor.putString("username", username).putString("password", password).commit();
+				Constants.USERNAME = username;
+				Constants.PASSWORD = password;
 				cancelProgressDialog();
 				authActivity.startActivity(new Intent(authActivity, MainActivity.class));
 				authActivity.finish();
@@ -106,7 +107,7 @@ public class LoginFragment extends Fragment {
 		@Override
 		public void onErrorResponse(VolleyError error) {
 			cancelProgressDialog();
-			AndroidUtils.alertToast(authActivity, R.string.error_network);
+			AndroidUtils.alertToast(authActivity, VolleyErrorHelper.getResId(error));
 			Log.e(AuthActivity.TAG, error.getMessage(), error.getCause());
 		}
 	};
