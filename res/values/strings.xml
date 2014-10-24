@@ -3,15 +3,18 @@
 
     <string name="app_name">微信+</string>
 
+    <!-- content_description -->
+    <string name="content_description">content_description</string>
+
     <!-- text -->
     <string name="text_load">加载中，请稍后&#8230;</string>
 
     <!-- error -->
-    <string name="error_timeout">请求超时 , 请稍后重试</string>
-    <string name="error_network">网络连接不可用 , 请稍后重试</string>
-    <string name="error_unauthorized">认证失败 , 请稍后重试</string>
-    <string name="error_notfound">请求没找到 , 请稍后重试</string>
-    <string name="error_server">服务器异常 , 请稍后重试</string>
+    <string name="error_timeout">请求超时，请稍后重试</string>
+    <string name="error_network">网络连接不可用，请稍后重试</string>
+    <string name="error_unauthorized">认证失败，请稍后重试</string>
+    <string name="error_notfound">请求没找到，请稍后重试</string>
+    <string name="error_server">服务器异常，请稍后重试</string>
     <string name="error_username_password_null">账号或密码不能为空</string>
     <string name="error_username_validate">账号长度为8&#8211;15的英文数字下划线中划线</string>
     <string name="error_password_validate">密码长度为6&#8211;15的英文数字下划线中划线</string>
@@ -19,8 +22,13 @@
     <string name="error_nickname_null">昵称不能为空</string>
     <string name="error_phone_validate">请输入正确的手机号码</string>
 
-    <!-- content_description -->
-    <string name="content_description">content_description</string>
+    <!-- dialog -->
+    <string name="dialog_title_photo">图片</string>
+    <string name="dialog_camera">拍照</string>
+    <string name="dialog_local">本地相册</string>
+    <string name="dialog_title_sex">性别</string>
+    <string name="dialog_male">男</string>
+    <string name="dialog_female">女</string>
 
     <!-- title_bar -->
     <string name="fragment_auth_logout">登录或注册</string>
@@ -29,14 +37,14 @@
     <string name="auth_login_button">登录</string>
     <string name="auth_login_description">使用账号进行登录</string>
     <string name="auth_register_button">注册</string>
-    <string name="auth_register_description">一键注册 , 轻松搞定</string>
+    <string name="auth_register_description">一键注册，轻松搞定</string>
 
     <!-- login -->
     <string name="login_input_username">账号</string>
     <string name="login_input_username_hint">请填写账号</string>
     <string name="login_input_password">密码</string>
     <string name="login_input_password_hint">请填写密码</string>
-    <string name="login_forget_password">忘记密码 ?</string>
+    <string name="login_forget_password">忘记密码？</string>
 
     <!-- register -->
     <string name="register_input_username_hint">注册后不可修改</string>

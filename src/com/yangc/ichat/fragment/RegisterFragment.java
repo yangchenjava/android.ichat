@@ -1,14 +1,25 @@
 package com.yangc.ichat.fragment;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -19,9 +30,13 @@ import android.widget.TextView;
 import com.yangc.ichat.R;
 import com.yangc.ichat.activity.AuthActivity;
 import com.yangc.ichat.utils.AndroidUtils;
-import com.yangc.ichat.utils.Md5Utils;
+import com.yangc.ichat.utils.Constants;
 
 public class RegisterFragment extends Fragment {
+
+	private static final int PHOTO_CAMERA = 1; // 拍照
+	private static final int PHOTO_LOCAL = 2; // 从相册中选择
+	private static final int PHOTO_CUT = 3; // 结果
 
 	private AuthActivity authActivity;
 
@@ -32,6 +47,7 @@ public class RegisterFragment extends Fragment {
 	private EditText etRegisterUsername;
 	private EditText etRegisterPassword_1;
 	private EditText etRegisterPassword_2;
+	private ImageView etRegisterPhoto;
 	private EditText etRegisterNickname;
 	private RadioGroup rgRegisterSex;
 	private EditText etRegisterPhone;
@@ -39,6 +55,7 @@ public class RegisterFragment extends Fragment {
 
 	private String username;
 	private String password;
+	private File photo;
 
 	private ProgressDialog progressDialog;
 
@@ -56,7 +73,8 @@ public class RegisterFragment extends Fragment {
 		this.etRegisterPassword_2 = (EditText) view.findViewById(R.id.et_register_password_2);
 		((Button) view.findViewById(R.id.btn_register_next)).setOnClickListener(this.registerNextListener);
 
-		((ImageView) view.findViewById(R.id.iv_register_photo)).setOnClickListener(this.photoListener);
+		this.etRegisterPhoto = (ImageView) view.findViewById(R.id.iv_register_photo);
+		this.etRegisterPhoto.setOnClickListener(this.photoListener);
 		this.etRegisterNickname = (EditText) view.findViewById(R.id.et_register_nickname);
 		this.rgRegisterSex = (RadioGroup) view.findViewById(R.id.rg_register_sex);
 		this.etRegisterPhone = (EditText) view.findViewById(R.id.et_register_phone);
@@ -65,7 +83,103 @@ public class RegisterFragment extends Fragment {
 		return view;
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (this.photo != null && this.photo.getName().equals("me.png")) {
+			this.etRegisterPhoto.setImageBitmap(AndroidUtils.getBitmap(this.photo.getAbsolutePath()));
+		}
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+		case PHOTO_CAMERA:
+			if (data != null) {
+				this.startImageZoom(Uri.fromFile(this.photo));
+			} else if (this.photo != null) {
+				this.photo.delete();
+				this.photo = null;
+			}
+			break;
+		case PHOTO_LOCAL:
+			if (data != null) {
+				this.startImageZoom(data.getData());
+			}
+			break;
+		case PHOTO_CUT:
+			if (data != null) {
+				this.setImageToView(data);
+			} else if (this.photo != null) {
+				this.photo.delete();
+				this.photo = null;
+			}
+			break;
+		}
+	}
+
+	private void initPhoto(String fileName) {
+		this.photo = new File(AndroidUtils.getCacheDir(authActivity, Constants.DEFAULT_CACHE_DIR), fileName);
+		try {
+			this.photo.createNewFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void startImageZoom(Uri uri) {
+		Intent intent = new Intent("com.android.camera.action.CROP");
+		intent.setDataAndType(uri, "image/*");
+		// crop为true是设置在开启的intent中设置显示的view可以剪裁
+		intent.putExtra("crop", "true");
+		// aspectX aspectY 是宽高的比例
+		intent.putExtra("aspectX", 1);
+		intent.putExtra("aspectY", 1);
+		// outputX outputY 是剪裁图片的宽高
+		intent.putExtra("outputX", 512);
+		intent.putExtra("outputY", 512);
+		intent.putExtra("return-data", true);
+		this.startActivityForResult(intent, PHOTO_CUT);
+	}
+
+	// 将进行剪裁后的图片显示到UI界面上
+	private void setImageToView(Intent data) {
+		Bundle bundle = data.getExtras();
+		if (bundle != null) {
+			Bitmap bitmap = bundle.getParcelable("data");
+			FileOutputStream fos = null;
+			try {
+				if (this.photo != null) {
+					this.photo.delete();
+					this.photo = null;
+				}
+				this.initPhoto("me.png");
+				fos = new FileOutputStream(this.photo);
+				bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+				fos.flush();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if (fos != null) {
+						fos.close();
+						fos = null;
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
 	public void clickBackspace() {
+		View currentFocus = this.authActivity.getCurrentFocus();
+		if (currentFocus != null) {
+			InputMethodManager imm = (InputMethodManager) this.authActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+		}
 		int visibility = this.llRegister_1.getVisibility();
 		if (visibility == View.VISIBLE) {
 			if (this.authActivity != null) {
@@ -91,23 +205,23 @@ public class RegisterFragment extends Fragment {
 		@Override
 		public void onClick(View v) {
 			// 验证用户名
-//			username = etRegisterUsername.getText().toString().trim();
-//			if (!username.matches("^[\\w\\-\\/\\.]{8,15}$")) {
-//				AndroidUtils.alertToast(authActivity, R.string.error_username_validate);
-//				return;
-//			}
-//
-//			// 验证密码
-//			password = etRegisterPassword_1.getText().toString().trim();
-//			String pwd = etRegisterPassword_2.getText().toString().trim();
-//			if (!password.matches("^[\\w\\-]{6,15}$") || !pwd.matches("^[\\w\\-]{6,15}$")) {
-//				AndroidUtils.alertToast(authActivity, R.string.error_password_validate);
-//				return;
-//			} else if (!TextUtils.equals(password, pwd)) {
-//				AndroidUtils.alertToast(authActivity, R.string.error_password_twice_validate);
-//				return;
-//			}
-//			password = Md5Utils.getMD5(password);
+			// username = etRegisterUsername.getText().toString().trim();
+			// if (!username.matches("^[\\w\\-\\/\\.]{8,15}$")) {
+			// AndroidUtils.alertToast(authActivity, R.string.error_username_validate);
+			// return;
+			// }
+			//
+			// // 验证密码
+			// password = etRegisterPassword_1.getText().toString().trim();
+			// String pwd = etRegisterPassword_2.getText().toString().trim();
+			// if (!password.matches("^[\\w\\-]{6,15}$") || !pwd.matches("^[\\w\\-]{6,15}$")) {
+			// AndroidUtils.alertToast(authActivity, R.string.error_password_validate);
+			// return;
+			// } else if (!TextUtils.equals(password, pwd)) {
+			// AndroidUtils.alertToast(authActivity, R.string.error_password_twice_validate);
+			// return;
+			// }
+			// password = Md5Utils.getMD5(password);
 
 			llRegister_1.setVisibility(View.GONE);
 			llRegister_2.setVisibility(View.VISIBLE);
@@ -119,11 +233,42 @@ public class RegisterFragment extends Fragment {
 	private View.OnClickListener photoListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			AlertDialog alertDialog = new AlertDialog.Builder(authActivity).show();
+			final AlertDialog alertDialog = new AlertDialog.Builder(authActivity).show();
 			alertDialog.setCanceledOnTouchOutside(true);
 			Window window = alertDialog.getWindow();
 			window.setContentView(R.layout.dialog_select);
-			// window.findViewById()
+			((TextView) window.findViewById(R.id.tv_dialog_select_title)).setText(R.string.dialog_title_photo);
+			// 打开相机
+			TextView tvDialogSelectFirst = (TextView) window.findViewById(R.id.tv_dialog_select_first);
+			tvDialogSelectFirst.setText(R.string.dialog_camera);
+			tvDialogSelectFirst.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					alertDialog.cancel();
+					// 调用系统的拍照功能
+					Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+					initPhoto("temp.png");
+					// 指定调用相机拍照后照片的储存路径
+					intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
+					startActivityForResult(intent, PHOTO_CAMERA);
+				}
+			});
+			// 打开相册
+			TextView tvDialogSelectSecond = (TextView) window.findViewById(R.id.tv_dialog_select_second);
+			tvDialogSelectSecond.setText(R.string.dialog_local);
+			tvDialogSelectSecond.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					alertDialog.cancel();
+					Intent intent = new Intent(Intent.ACTION_PICK);
+					if (AndroidUtils.checkSDCard()) {
+						intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+					} else {
+						intent.setDataAndType(MediaStore.Images.Media.INTERNAL_CONTENT_URI, "image/*");
+					}
+					startActivityForResult(intent, PHOTO_LOCAL);
+				}
+			});
 		}
 	};
 

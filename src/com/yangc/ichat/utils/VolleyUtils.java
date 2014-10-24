@@ -1,7 +1,5 @@
 package com.yangc.ichat.utils;
 
-import java.io.File;
-
 import android.app.ActivityManager;
 import android.content.Context;
 
@@ -28,13 +26,7 @@ public class VolleyUtils {
 	 * @param context
 	 */
 	public static void init(Context context) {
-		File cachePath = null;
-		if (AndroidUtils.checkSDCard()) {
-			cachePath = new File(context.getExternalCacheDir(), Constants.DEFAULT_CACHE_DIR);
-		} else {
-			cachePath = new File(context.getCacheDir(), Constants.DEFAULT_CACHE_DIR);
-		}
-		normalRequestQueue = Volley.newRequestQueue(context, cachePath);
+		normalRequestQueue = Volley.newRequestQueue(context, AndroidUtils.getCacheDir(context, Constants.DEFAULT_CACHE_DIR));
 		multiPartRequestQueue = Volley.newRequestQueue(context, new MultiPartStack());
 
 		int memoryClass = ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
