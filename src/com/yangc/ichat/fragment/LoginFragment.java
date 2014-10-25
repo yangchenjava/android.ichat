@@ -6,6 +6,7 @@ import java.util.Map;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -96,8 +97,9 @@ public class LoginFragment extends Fragment {
 		@Override
 		public void onResponse(ResultBean result) {
 			if (result.isSuccess()) {
-				// SharedPreferences.Editor editor = authActivity.getSharedPreferences(Constants.APP, Context.MODE_PRIVATE).edit();
-				// editor.putString("username", username).putString("password", password).commit();
+				SharedPreferences.Editor editor = authActivity.getSharedPreferences(Constants.APP, Context.MODE_PRIVATE).edit();
+				editor.putString("userId", result.getMessage()).putString("username", username).putString("password", password).commit();
+				Constants.USER_ID = result.getMessage();
 				Constants.USERNAME = username;
 				Constants.PASSWORD = password;
 				cancelProgressDialog();

@@ -20,8 +20,8 @@ public class MultiPartRequest<T> extends Request<T> {
 	private final Class<T> clazz;
 	private final Listener<T> listener;
 
-	public MultiPartRequest(int method, String url, Map<String, Object> params, Class<T> clazz, Listener<T> listener, ErrorListener errorListener) {
-		super(method, url, errorListener);
+	public MultiPartRequest(String url, Map<String, Object> params, Class<T> clazz, Listener<T> listener, ErrorListener errorListener) {
+		super(Request.Method.POST, url, errorListener);
 		this.gson = new Gson();
 		this.params = params;
 		this.clazz = clazz;

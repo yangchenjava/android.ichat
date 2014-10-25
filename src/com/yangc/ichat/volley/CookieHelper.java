@@ -8,9 +8,9 @@ public class CookieHelper {
 
 	private static final String COOKIE_KEY = "Cookie";
 	private static final String SET_COOKIE_KEY = "Set-Cookie";
-	private static final String SESSION_COOKIE = "SSOcookie";
+	public static final String SESSION_COOKIE = "SSOcookie";
 
-	private static String SESSION_ID;
+	public static String SESSION_ID;
 
 	public static void addSessionCookie(Map<String, String> headers) {
 		if (!TextUtils.isEmpty(SESSION_ID)) {

@@ -4,17 +4,21 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,10 +31,20 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.VolleyError;
 import com.yangc.ichat.R;
 import com.yangc.ichat.activity.AuthActivity;
+import com.yangc.ichat.activity.MainActivity;
+import com.yangc.ichat.bean.ResultBean;
 import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
+import com.yangc.ichat.utils.Md5Utils;
+import com.yangc.ichat.utils.VolleyUtils;
+import com.yangc.ichat.volley.MultiPartRequest;
+import com.yangc.ichat.volley.VolleyErrorHelper;
 
 public class RegisterFragment extends Fragment {
 
@@ -205,23 +219,23 @@ public class RegisterFragment extends Fragment {
 		@Override
 		public void onClick(View v) {
 			// 验证用户名
-			// username = etRegisterUsername.getText().toString().trim();
-			// if (!username.matches("^[\\w\\-\\/\\.]{8,15}$")) {
-			// AndroidUtils.alertToast(authActivity, R.string.error_username_validate);
-			// return;
-			// }
-			//
-			// // 验证密码
-			// password = etRegisterPassword_1.getText().toString().trim();
-			// String pwd = etRegisterPassword_2.getText().toString().trim();
-			// if (!password.matches("^[\\w\\-]{6,15}$") || !pwd.matches("^[\\w\\-]{6,15}$")) {
-			// AndroidUtils.alertToast(authActivity, R.string.error_password_validate);
-			// return;
-			// } else if (!TextUtils.equals(password, pwd)) {
-			// AndroidUtils.alertToast(authActivity, R.string.error_password_twice_validate);
-			// return;
-			// }
-			// password = Md5Utils.getMD5(password);
+			username = etRegisterUsername.getText().toString().trim();
+			if (!username.matches("^[\\w\\-\\/\\.]{8,15}$")) {
+				AndroidUtils.alertToast(authActivity, R.string.error_username_validate);
+				return;
+			}
+
+			// 验证密码
+			password = etRegisterPassword_1.getText().toString().trim();
+			String pwd = etRegisterPassword_2.getText().toString().trim();
+			if (!password.matches("^[\\w\\-]{6,15}$") || !pwd.matches("^[\\w\\-]{6,15}$")) {
+				AndroidUtils.alertToast(authActivity, R.string.error_password_validate);
+				return;
+			} else if (!TextUtils.equals(password, pwd)) {
+				AndroidUtils.alertToast(authActivity, R.string.error_password_twice_validate);
+				return;
+			}
+			password = Md5Utils.getMD5(password);
 
 			llRegister_1.setVisibility(View.GONE);
 			llRegister_2.setVisibility(View.VISIBLE);
@@ -289,7 +303,56 @@ public class RegisterFragment extends Fragment {
 				AndroidUtils.alertToast(authActivity, R.string.error_phone_validate);
 				return;
 			}
+
+			progressDialog = ProgressDialog.show(authActivity, "", authActivity.getResources().getString(R.string.text_load), true, true);
+			Map<String, Object> params = new HashMap<String, Object>(7);
+			params.put("username", username);
+			params.put("password", password);
+			params.put("name", nickname);
+			params.put("sex", rgRegisterSex.getCheckedRadioButtonId() == R.id.rb_register_sex_female ? 0 : 1);
+			params.put("phone", phone);
+			params.put("signature", etRegisterSignature.getText().toString());
+			if (photo != null) {
+				params.put("photo", photo);
+			}
+			Request<ResultBean> request = new MultiPartRequest<ResultBean>(Constants.REGISTER, params, ResultBean.class, listener, errorListener);
+			VolleyUtils.addMultiPartRequest(request, AuthActivity.TAG);
 		}
 	};
+
+	private Response.Listener<ResultBean> listener = new Response.Listener<ResultBean>() {
+		@Override
+		public void onResponse(ResultBean result) {
+			if (result.isSuccess()) {
+				SharedPreferences.Editor editor = authActivity.getSharedPreferences(Constants.APP, Context.MODE_PRIVATE).edit();
+				editor.putString("userId", result.getMessage()).putString("username", username).putString("password", password).commit();
+				Constants.USER_ID = result.getMessage();
+				Constants.USERNAME = username;
+				Constants.PASSWORD = password;
+				// TODO 数据库操作
+				cancelProgressDialog();
+				authActivity.startActivity(new Intent(authActivity, MainActivity.class));
+				authActivity.finish();
+			} else {
+				cancelProgressDialog();
+				AndroidUtils.alertToast(authActivity, result.getMessage());
+			}
+		}
+	};
+
+	private ErrorListener errorListener = new Response.ErrorListener() {
+		@Override
+		public void onErrorResponse(VolleyError error) {
+			cancelProgressDialog();
+			AndroidUtils.alertToast(authActivity, VolleyErrorHelper.getResId(error));
+			Log.e(AuthActivity.TAG, error.getMessage(), error.getCause());
+		}
+	};
+
+	private void cancelProgressDialog() {
+		if (this.progressDialog != null) {
+			this.progressDialog.cancel();
+		}
+	}
 
 }

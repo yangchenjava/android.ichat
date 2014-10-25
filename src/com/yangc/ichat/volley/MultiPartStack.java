@@ -6,15 +6,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.http.Consts;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.HTTP;
+
+import android.text.TextUtils;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -22,28 +25,26 @@ import com.android.volley.toolbox.HttpStack;
 
 public class MultiPartStack implements HttpStack {
 
-	private static final String HEADER_CONTENT_TYPE = "Content-Type";
-
 	@Override
 	public HttpResponse performRequest(Request<?> request, Map<String, String> additionalHeaders) throws IOException, AuthFailureError {
 		if (!(request instanceof MultiPartRequest)) {
 			throw new IllegalStateException("please choose MultiPartRequest!!!");
 		}
 		MultiPartRequest<?> multiPartRequest = (MultiPartRequest<?>) request;
-		Map<String, String> map = new HashMap<String, String>();
-		map.putAll(multiPartRequest.getHeaders());
-		map.putAll(additionalHeaders);
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.putAll(multiPartRequest.getHeaders());
+		headers.putAll(additionalHeaders);
 
-		CloseableHttpClient closeableHttpClient = HttpClients.createDefault();
 		HttpPost httpPost = new HttpPost(multiPartRequest.getUrl());
-		httpPost.setConfig(RequestConfig.custom().setConnectionRequestTimeout(multiPartRequest.getTimeoutMs()).setConnectTimeout(multiPartRequest.getTimeoutMs()).build());
-		httpPost.addHeader(HEADER_CONTENT_TYPE, multiPartRequest.getBodyContentType());
-		for (Entry<String, String> entry : map.entrySet()) {
+		HttpParams httpParams = httpPost.getParams();
+		HttpConnectionParams.setConnectionTimeout(httpParams, multiPartRequest.getTimeoutMs());
+		HttpConnectionParams.setSoTimeout(httpParams, multiPartRequest.getTimeoutMs());
+		for (Entry<String, String> entry : headers.entrySet()) {
 			httpPost.setHeader(entry.getKey(), entry.getValue());
 		}
 
 		MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create().setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-		ContentType contentType = ContentType.create("text/plain", Consts.UTF_8);
+		ContentType contentType = ContentType.create(HTTP.PLAIN_TEXT_TYPE, HTTP.UTF_8);
 		Map<String, Object> paramsMap = multiPartRequest.getMultiPartParams();
 		if (paramsMap != null && !paramsMap.isEmpty()) {
 			for (Entry<String, Object> entry : paramsMap.entrySet()) {
@@ -55,8 +56,16 @@ public class MultiPartStack implements HttpStack {
 			}
 		}
 		httpPost.setEntity(multipartEntityBuilder.build());
-		HttpResponse httpResponse = closeableHttpClient.execute(httpPost);
-		closeableHttpClient.close();
+
+		DefaultHttpClient httpClient = new DefaultHttpClient(httpParams);
+		HttpResponse httpResponse = httpClient.execute(httpPost);
+		// 获取sessionid
+		for (Cookie cookie : httpClient.getCookieStore().getCookies()) {
+			if (TextUtils.equals(cookie.getName(), CookieHelper.SESSION_COOKIE)) {
+				CookieHelper.SESSION_ID = cookie.getValue();
+				break;
+			}
+		}
 		return httpResponse;
 	}
 

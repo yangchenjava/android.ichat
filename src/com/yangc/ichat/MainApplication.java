@@ -15,6 +15,7 @@ public class MainApplication extends Application {
 		VolleyUtils.init(this);
 		// 模式: Context.MODE_PRIVATE只有本应用可以使用, Context.MODE_WORLD_READABLE其他应用可以读, Context.MODE_WORLD_WRITEABLE其他应用可以写
 		SharedPreferences sharedPreferences = this.getSharedPreferences(Constants.APP, Context.MODE_PRIVATE);
+		Constants.USER_ID = sharedPreferences.getString("userId", "");
 		Constants.USERNAME = sharedPreferences.getString("username", "");
 		Constants.PASSWORD = sharedPreferences.getString("password", "");
 	}

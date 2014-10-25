@@ -37,7 +37,7 @@ public class BootloaderActivity extends Activity {
 			this.startActivity(new Intent(this, AuthActivity.class));
 		} else {
 			this.startActivity(new Intent(this, MainActivity.class));
-			// 启动TCP服务
+			// TODO 启动TCP服务
 		}
 		this.finish();
 	}
