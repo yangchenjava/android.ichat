@@ -1,14 +1,10 @@
 package com.yangc.ichat.utils;
 
 import java.io.File;
-import java.io.InputStream;
 import java.lang.reflect.Field;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.BitmapFactory.Options;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
@@ -105,65 +101,6 @@ public class AndroidUtils {
 		}
 		cacheDir.mkdirs();
 		return cacheDir;
-	}
-
-	/**
-	 * @功能: 直接获取图片
-	 * @作者: yangc
-	 * @创建日期: 2012-12-11 下午03:35:00
-	 * @param pathName
-	 * @return
-	 */
-	public static Bitmap getBitmap(String pathName) {
-		return BitmapFactory.decodeFile(pathName);
-	}
-
-	/**
-	 * @功能: 根据指定缩放比例获取图片
-	 * @作者: yangc
-	 * @创建日期: 2012-12-11 下午03:38:36
-	 * @param pathName
-	 * @param size
-	 * @return
-	 */
-	public static Bitmap getBitmap(String pathName, int size) {
-		Options opts = new Options();
-		opts.inSampleSize = size;
-		return BitmapFactory.decodeFile(pathName, opts);
-	}
-
-	/**
-	 * @功能: 根据指定缩放比例获取图片
-	 * @作者: yangc
-	 * @创建日期: 2013-1-28 下午03:48:31
-	 * @param is
-	 * @param size
-	 * @return
-	 */
-	public static Bitmap getBitmap(InputStream is, int size) {
-		Options opts = new Options();
-		opts.inSampleSize = size;
-		return BitmapFactory.decodeStream(is, null, opts);
-	}
-
-	/**
-	 * @功能: 按宽高压缩图片
-	 * @作者: yangc
-	 * @创建日期: 2012-12-11 下午03:49:15
-	 * @param pathName
-	 * @param width
-	 * @param height
-	 * @return
-	 */
-	public static Bitmap getBitmap(String pathName, int width, int height) {
-		Options opts = new Options();
-		opts.inJustDecodeBounds = true;
-		BitmapFactory.decodeFile(pathName, opts);
-		int xScale = opts.outWidth / width;
-		int yScale = opts.outHeight / height;
-		opts.inSampleSize = xScale > yScale ? xScale : yScale;
-		opts.inJustDecodeBounds = false;
-		return BitmapFactory.decodeFile(pathName, opts);
 	}
 
 	/**

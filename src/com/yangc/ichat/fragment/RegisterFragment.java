@@ -40,6 +40,7 @@ import com.yangc.ichat.activity.AuthActivity;
 import com.yangc.ichat.activity.MainActivity;
 import com.yangc.ichat.bean.ResultBean;
 import com.yangc.ichat.utils.AndroidUtils;
+import com.yangc.ichat.utils.BitmapUtils;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.Md5Utils;
 import com.yangc.ichat.utils.VolleyUtils;
@@ -101,7 +102,7 @@ public class RegisterFragment extends Fragment {
 	public void onResume() {
 		super.onResume();
 		if (this.photo != null && this.photo.getName().equals("me.png")) {
-			this.etRegisterPhoto.setImageBitmap(AndroidUtils.getBitmap(this.photo.getAbsolutePath()));
+			this.etRegisterPhoto.setImageBitmap(BitmapUtils.getBitmap(this.photo.getAbsolutePath()));
 		}
 	}
 
@@ -112,8 +113,7 @@ public class RegisterFragment extends Fragment {
 			if (data != null) {
 				this.startImageZoom(Uri.fromFile(this.photo));
 			} else if (this.photo != null) {
-				this.photo.delete();
-				this.photo = null;
+				this.distoryPhoto();
 			}
 			break;
 		case PHOTO_LOCAL:
@@ -125,8 +125,7 @@ public class RegisterFragment extends Fragment {
 			if (data != null) {
 				this.setImageToView(data);
 			} else if (this.photo != null) {
-				this.photo.delete();
-				this.photo = null;
+				this.distoryPhoto();
 			}
 			break;
 		}
@@ -138,6 +137,13 @@ public class RegisterFragment extends Fragment {
 			this.photo.createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	private void distoryPhoto() {
+		if (this.photo != null) {
+			this.photo.delete();
+			this.photo = null;
 		}
 	}
 
@@ -163,10 +169,7 @@ public class RegisterFragment extends Fragment {
 			Bitmap bitmap = bundle.getParcelable("data");
 			FileOutputStream fos = null;
 			try {
-				if (this.photo != null) {
-					this.photo.delete();
-					this.photo = null;
-				}
+				this.distoryPhoto();
 				this.initPhoto("me.png");
 				fos = new FileOutputStream(this.photo);
 				bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
@@ -197,6 +200,7 @@ public class RegisterFragment extends Fragment {
 		int visibility = this.llRegister_1.getVisibility();
 		if (visibility == View.VISIBLE) {
 			if (this.authActivity != null) {
+				this.distoryPhoto();
 				this.authActivity.getSupportFragmentManager().popBackStack();
 			}
 		} else if (visibility == View.GONE) {
@@ -275,11 +279,7 @@ public class RegisterFragment extends Fragment {
 				public void onClick(View v) {
 					alertDialog.cancel();
 					Intent intent = new Intent(Intent.ACTION_PICK);
-					if (AndroidUtils.checkSDCard()) {
-						intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-					} else {
-						intent.setDataAndType(MediaStore.Images.Media.INTERNAL_CONTENT_URI, "image/*");
-					}
+					intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
 					startActivityForResult(intent, PHOTO_LOCAL);
 				}
 			});
