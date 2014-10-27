@@ -308,7 +308,7 @@ public class RegisterFragment extends Fragment {
 			Map<String, Object> params = new HashMap<String, Object>(7);
 			params.put("username", username);
 			params.put("password", password);
-			params.put("name", nickname);
+			params.put("nickname", nickname);
 			params.put("sex", rgRegisterSex.getCheckedRadioButtonId() == R.id.rb_register_sex_female ? 0 : 1);
 			params.put("phone", phone);
 			params.put("signature", etRegisterSignature.getText().toString());
