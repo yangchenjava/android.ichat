@@ -18,6 +18,9 @@ import android.graphics.drawable.Drawable;
 
 public class BitmapUtils {
 
+	private BitmapUtils() {
+	}
+
 	/**
 	 * @功能: 直接获取图片
 	 * @作者: yangc

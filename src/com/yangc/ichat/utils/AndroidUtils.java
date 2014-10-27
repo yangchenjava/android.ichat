@@ -104,6 +104,25 @@ public class AndroidUtils {
 	}
 
 	/**
+	 * @功能: 获取存储文件夹
+	 * @作者: yangc
+	 * @创建日期: 2014年10月24日 下午9:35:05
+	 * @param context
+	 * @param dirName
+	 * @return
+	 */
+	public static File getStorageDir(Context context, String dirName) {
+		File storageDir = null;
+		if (AndroidUtils.checkSDCard()) {
+			storageDir = new File(Environment.getExternalStorageDirectory(), dirName);
+		} else {
+			storageDir = new File(context.getFilesDir(), dirName);
+		}
+		storageDir.mkdirs();
+		return storageDir;
+	}
+
+	/**
 	 * @功能: 弹出Toast
 	 * @作者: yangc
 	 * @创建日期: 2012-12-3 下午04:57:27
