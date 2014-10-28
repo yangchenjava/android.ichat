@@ -4,9 +4,35 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/main_bkg"
-    android:orientation="vertical"
-    android:paddingBottom="15dp"
-    android:paddingTop="15dp" >
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/title_bar" >
+
+        <ImageView
+            android:id="@+id/iv_me_detail_backspace"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/selector_title_bar"
+            android:clickable="true"
+            android:contentDescription="@string/content_description"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/title_bar_backspace" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@id/iv_me_detail_backspace"
+            android:layout_toRightOf="@id/iv_me_detail_backspace"
+            android:gravity="center"
+            android:text="@string/fragment_me_detail"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,6 +42,7 @@
         android:orientation="vertical" >
 
         <RelativeLayout
+            android:id="@+id/rl_me_detail_photo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/selector_main"
@@ -27,23 +54,21 @@
 
             <TextView
                 android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_height="70dp"
                 android:gravity="center_vertical"
-                android:text="@string/me_info_photo"
+                android:text="@string/me_detail_photo"
                 android:textColor="@android:color/black"
                 android:textSize="16sp" />
 
             <ImageView
-                android:id="@+id/iv_me_info_photo"
-                android:layout_width="100dp"
-                android:layout_height="80dp"
+                android:id="@+id/iv_me_detail_photo"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_gravity="end"
+                android:layout_centerVertical="true"
                 android:contentDescription="@string/content_description"
-                android:padding="8dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/me_info" />
+                android:scaleType="fitCenter" />
         </RelativeLayout>
 
         <TextView
@@ -56,6 +81,7 @@
             android:background="@color/main_dividing_line" />
 
         <LinearLayout
+            android:id="@+id/ll_me_detail_nickname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/selector_main"
@@ -70,11 +96,51 @@
                 android:layout_width="80dp"
                 android:layout_height="50dp"
                 android:gravity="center_vertical"
-                android:text="@string/me_info_nickname"
+                android:text="@string/me_detail_nickname"
                 android:textColor="@android:color/black"
                 android:textSize="16sp" />
 
             <TextView
+                android:id="@+id/tv_me_detail_nickname"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                android:textColor="@color/font_gray"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginStart="15dp"
+            android:background="@color/main_dividing_line" />
+
+        <LinearLayout
+            android:id="@+id/ll_me_detail_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_main"
+            android:clickable="true"
+            android:orientation="horizontal"
+            android:paddingEnd="15dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:paddingStart="15dp" >
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="50dp"
+                android:gravity="center_vertical"
+                android:text="@string/me_detail_phone"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_me_detail_phone"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
@@ -107,44 +173,7 @@
                 android:layout_width="80dp"
                 android:layout_height="50dp"
                 android:gravity="center_vertical"
-                android:text="@string/me_info_phone"
-                android:textColor="@android:color/black"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:gravity="center_vertical|end"
-                android:textColor="@color/font_gray"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginEnd="15dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginStart="15dp"
-            android:background="@color/main_dividing_line" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/selector_main"
-            android:clickable="true"
-            android:orientation="horizontal"
-            android:paddingEnd="15dp"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:paddingStart="15dp" >
-
-            <TextView
-                android:layout_width="80dp"
-                android:layout_height="50dp"
-                android:gravity="center_vertical"
-                android:text="@string/me_info_code"
+                android:text="@string/me_detail_code"
                 android:textColor="@android:color/black"
                 android:textSize="16sp" />
 
@@ -165,6 +194,7 @@
         android:orientation="vertical" >
 
         <LinearLayout
+            android:id="@+id/ll_me_detail_sex"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/selector_main"
@@ -179,11 +209,12 @@
                 android:layout_width="80dp"
                 android:layout_height="50dp"
                 android:gravity="center_vertical"
-                android:text="@string/me_info_sex"
+                android:text="@string/me_detail_sex"
                 android:textColor="@android:color/black"
                 android:textSize="16sp" />
 
             <TextView
+                android:id="@+id/tv_me_detail_sex"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
@@ -202,6 +233,7 @@
             android:background="@color/main_dividing_line" />
 
         <LinearLayout
+            android:id="@+id/ll_me_detail_signature"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/selector_main"
@@ -216,11 +248,12 @@
                 android:layout_width="80dp"
                 android:layout_height="50dp"
                 android:gravity="center_vertical"
-                android:text="@string/me_info_signature"
+                android:text="@string/me_detail_signature"
                 android:textColor="@android:color/black"
                 android:textSize="16sp" />
 
             <TextView
+                android:id="@+id/tv_me_detail_signature"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"

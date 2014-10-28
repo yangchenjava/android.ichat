@@ -1,5 +1,9 @@
 package com.yangc.ichat.utils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import android.graphics.Bitmap;
@@ -197,6 +201,37 @@ public class BitmapUtils {
 		paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
 		canvas.drawRect(0, height, width, bitmapWithReflection.getHeight() + reflectionGap, paint);
 		return bitmapWithReflection;
+	}
+
+	/**
+	 * @功能: 将bitmap写到磁盘上
+	 * @作者: yangc
+	 * @创建日期: 2014年10月28日 下午11:42:49
+	 * @param bitmap
+	 * @param file
+	 * @return
+	 */
+	public static boolean writeBitmapToFile(Bitmap bitmap, File file) {
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream(file);
+			boolean result = bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+			fos.flush();
+			fos.close();
+			fos = null;
+			return result;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (fos != null) fos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
 	}
 
 }

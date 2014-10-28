@@ -1,41 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rl_me_detail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:gravity="center" >
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/title_bar" >
-
-        <ImageView
-            android:id="@+id/iv_me_backspace"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@drawable/selector_title_bar"
-            android:clickable="true"
-            android:contentDescription="@string/content_description"
-            android:padding="10dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/title_bar_backspace" />
-
-        <TextView
-            android:id="@+id/tv_me_backspace"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_toEndOf="@id/iv_me_backspace"
-            android:layout_toRightOf="@id/iv_me_backspace"
-            android:gravity="center"
-            android:text="@string/fragment_me_info"
-            android:textColor="@android:color/white"
-            android:textSize="18sp" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/rl_me_detail"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-</LinearLayout>
+</RelativeLayout>
