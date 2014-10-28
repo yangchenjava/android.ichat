@@ -26,7 +26,7 @@ public class TIchatHistoryDao extends AbstractDao<TIchatHistory, Long> {
     */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property UserId = new Property(1, Long.class, "userId", false, "USER_ID");
+        public final static Property Username = new Property(1, String.class, "username", false, "USERNAME");
         public final static Property Chat = new Property(2, String.class, "chat", false, "CHAT");
         public final static Property ChatStatus = new Property(3, Long.class, "chatStatus", false, "CHAT_STATUS");
         public final static Property TransmitStatus = new Property(4, Long.class, "transmitStatus", false, "TRANSMIT_STATUS");
@@ -47,14 +47,14 @@ public class TIchatHistoryDao extends AbstractDao<TIchatHistory, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "'T_ICHAT_HISTORY' (" + //
                 "'_id' INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
-                "'USER_ID' INTEGER," + // 1: userId
+                "'USERNAME' TEXT," + // 1: username
                 "'CHAT' TEXT," + // 2: chat
                 "'CHAT_STATUS' INTEGER," + // 3: chatStatus
                 "'TRANSMIT_STATUS' INTEGER," + // 4: transmitStatus
                 "'DATE' INTEGER);"); // 5: date
         // Add Indexes
-        db.execSQL("CREATE INDEX " + constraint + "IDX_T_ICHAT_HISTORY_USER_ID ON T_ICHAT_HISTORY" +
-                " (USER_ID);");
+        db.execSQL("CREATE INDEX " + constraint + "IDX_T_ICHAT_HISTORY_USERNAME ON T_ICHAT_HISTORY" +
+                " (USERNAME);");
     }
 
     /** Drops the underlying database table. */
@@ -73,9 +73,9 @@ public class TIchatHistoryDao extends AbstractDao<TIchatHistory, Long> {
             stmt.bindLong(1, id);
         }
  
-        Long userId = entity.getUserId();
-        if (userId != null) {
-            stmt.bindLong(2, userId);
+        String username = entity.getUsername();
+        if (username != null) {
+            stmt.bindString(2, username);
         }
  
         String chat = entity.getChat();
@@ -110,7 +110,7 @@ public class TIchatHistoryDao extends AbstractDao<TIchatHistory, Long> {
     public TIchatHistory readEntity(Cursor cursor, int offset) {
         TIchatHistory entity = new TIchatHistory( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // userId
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // username
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // chat
             cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3), // chatStatus
             cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4), // transmitStatus
@@ -123,7 +123,7 @@ public class TIchatHistoryDao extends AbstractDao<TIchatHistory, Long> {
     @Override
     public void readEntity(Cursor cursor, TIchatHistory entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setUserId(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
+        entity.setUsername(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setChat(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setChatStatus(cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3));
         entity.setTransmitStatus(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));

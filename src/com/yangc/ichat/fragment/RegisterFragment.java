@@ -332,8 +332,8 @@ public class RegisterFragment extends Fragment {
 				me.setPassword(password);
 
 				SharedPreferences.Editor editor = authActivity.getSharedPreferences(Constants.APP, Context.MODE_PRIVATE).edit();
-				editor.putString("userId", "" + me.getId()).putString("username", username).putString("password", password).commit();
-				Constants.USER_ID = "" + me.getId();
+				editor.putString("userId", "" + me.getUserId()).putString("username", username).putString("password", password).commit();
+				Constants.USER_ID = "" + me.getUserId();
 				Constants.USERNAME = username;
 				Constants.PASSWORD = password;
 
@@ -343,6 +343,7 @@ public class RegisterFragment extends Fragment {
 				}
 
 				// 数据库操作
+				DatabaseUtils.getDaoSession(authActivity).getTIchatMeDao().deleteAll();
 				DatabaseUtils.getDaoSession(authActivity).getTIchatMeDao().insert(me);
 
 				cancelProgressDialog();

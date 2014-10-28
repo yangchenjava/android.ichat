@@ -7,15 +7,15 @@ package com.yangc.ichat.database.bean;
 public class TIchatMe {
 
     private Long id;
-    private Long userId;
-    private String username;
-    private String password;
-    private Long personId;
     private String nickname;
     private Long sex;
     private String phone;
+    private String spell;
     private String photo;
     private String signature;
+    private Long userId;
+    private String username;
+    private String password;
 
     public TIchatMe() {
     }
@@ -24,17 +24,17 @@ public class TIchatMe {
         this.id = id;
     }
 
-    public TIchatMe(Long id, Long userId, String username, String password, Long personId, String nickname, Long sex, String phone, String photo, String signature) {
+    public TIchatMe(Long id, String nickname, Long sex, String phone, String spell, String photo, String signature, Long userId, String username, String password) {
         this.id = id;
-        this.userId = userId;
-        this.username = username;
-        this.password = password;
-        this.personId = personId;
         this.nickname = nickname;
         this.sex = sex;
         this.phone = phone;
+        this.spell = spell;
         this.photo = photo;
         this.signature = signature;
+        this.userId = userId;
+        this.username = username;
+        this.password = password;
     }
 
     public Long getId() {
@@ -43,38 +43,6 @@ public class TIchatMe {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Long getPersonId() {
-        return personId;
-    }
-
-    public void setPersonId(Long personId) {
-        this.personId = personId;
     }
 
     public String getNickname() {
@@ -101,6 +69,14 @@ public class TIchatMe {
         this.phone = phone;
     }
 
+    public String getSpell() {
+        return spell;
+    }
+
+    public void setSpell(String spell) {
+        this.spell = spell;
+    }
+
     public String getPhoto() {
         return photo;
     }
@@ -115,6 +91,30 @@ public class TIchatMe {
 
     public void setSignature(String signature) {
         this.signature = signature;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
 }

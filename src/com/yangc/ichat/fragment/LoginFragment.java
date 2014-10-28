@@ -27,8 +27,11 @@ import com.yangc.ichat.R;
 import com.yangc.ichat.activity.AuthActivity;
 import com.yangc.ichat.activity.MainActivity;
 import com.yangc.ichat.bean.ResultBean;
+import com.yangc.ichat.database.bean.TIchatMe;
 import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
+import com.yangc.ichat.utils.DatabaseUtils;
+import com.yangc.ichat.utils.JsonUtils;
 import com.yangc.ichat.utils.Md5Utils;
 import com.yangc.ichat.utils.VolleyUtils;
 import com.yangc.ichat.volley.GsonObjectRequest;
@@ -97,11 +100,20 @@ public class LoginFragment extends Fragment {
 		@Override
 		public void onResponse(ResultBean result) {
 			if (result.isSuccess()) {
+				TIchatMe me = JsonUtils.fromJson(result.getMessage(), TIchatMe.class);
+				me.setUsername(username);
+				me.setPassword(password);
+
 				SharedPreferences.Editor editor = authActivity.getSharedPreferences(Constants.APP, Context.MODE_PRIVATE).edit();
-				editor.putString("userId", result.getMessage()).putString("username", username).putString("password", password).commit();
-				Constants.USER_ID = result.getMessage();
+				editor.putString("userId", "" + me.getUserId()).putString("username", username).putString("password", password).commit();
+				Constants.USER_ID = "" + me.getUserId();
 				Constants.USERNAME = username;
 				Constants.PASSWORD = password;
+
+				// 数据库操作
+				DatabaseUtils.getDaoSession(authActivity).getTIchatMeDao().deleteAll();
+				DatabaseUtils.getDaoSession(authActivity).getTIchatMeDao().insert(me);
+
 				cancelProgressDialog();
 				authActivity.startActivity(new Intent(authActivity, MainActivity.class));
 				authActivity.finish();

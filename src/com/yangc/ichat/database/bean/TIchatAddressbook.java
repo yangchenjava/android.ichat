@@ -7,14 +7,14 @@ package com.yangc.ichat.database.bean;
 public class TIchatAddressbook {
 
     private Long id;
-    private Long userId;
-    private String username;
-    private Long personId;
     private String nickname;
     private Long sex;
     private String phone;
+    private String spell;
     private String photo;
     private String signature;
+    private Long userId;
+    private String username;
 
     public TIchatAddressbook() {
     }
@@ -23,16 +23,16 @@ public class TIchatAddressbook {
         this.id = id;
     }
 
-    public TIchatAddressbook(Long id, Long userId, String username, Long personId, String nickname, Long sex, String phone, String photo, String signature) {
+    public TIchatAddressbook(Long id, String nickname, Long sex, String phone, String spell, String photo, String signature, Long userId, String username) {
         this.id = id;
-        this.userId = userId;
-        this.username = username;
-        this.personId = personId;
         this.nickname = nickname;
         this.sex = sex;
         this.phone = phone;
+        this.spell = spell;
         this.photo = photo;
         this.signature = signature;
+        this.userId = userId;
+        this.username = username;
     }
 
     public Long getId() {
@@ -41,30 +41,6 @@ public class TIchatAddressbook {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public Long getPersonId() {
-        return personId;
-    }
-
-    public void setPersonId(Long personId) {
-        this.personId = personId;
     }
 
     public String getNickname() {
@@ -91,6 +67,14 @@ public class TIchatAddressbook {
         this.phone = phone;
     }
 
+    public String getSpell() {
+        return spell;
+    }
+
+    public void setSpell(String spell) {
+        this.spell = spell;
+    }
+
     public String getPhoto() {
         return photo;
     }
@@ -105,6 +89,22 @@ public class TIchatAddressbook {
 
     public void setSignature(String signature) {
         this.signature = signature;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
 }
