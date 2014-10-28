@@ -1,9 +1,11 @@
 package com.yangc.ichat.utils;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.yangc.ichat.database.DaoMaster;
 import com.yangc.ichat.database.DaoSession;
+import com.yangc.ichat.database.bean.TIchatMe;
 
 public class DatabaseUtils {
 
@@ -31,6 +33,21 @@ public class DatabaseUtils {
 			daoSession = daoMaster.newSession();
 		}
 		return daoSession;
+	}
+
+	public static void saveMe(Context context, TIchatMe me, String username, String password) {
+		if (!TextUtils.isEmpty(me.getPhoto())) {
+			me.setPhotoName(me.getPhoto().substring(me.getPhoto().lastIndexOf("/") + 1));
+		}
+		me.setUsername(username);
+		me.setPassword(password);
+
+		getDaoSession(context).getTIchatMeDao().deleteAll();
+		getDaoSession(context).getTIchatMeDao().insert(me);
+	}
+
+	public static TIchatMe getMe(Context context) {
+		return getDaoSession(context).getTIchatMeDao().queryBuilder().unique();
 	}
 
 }

@@ -31,9 +31,10 @@ public class TIchatAddressbookDao extends AbstractDao<TIchatAddressbook, Long> {
         public final static Property Phone = new Property(3, String.class, "phone", false, "PHONE");
         public final static Property Spell = new Property(4, String.class, "spell", false, "SPELL");
         public final static Property Photo = new Property(5, String.class, "photo", false, "PHOTO");
-        public final static Property Signature = new Property(6, String.class, "signature", false, "SIGNATURE");
-        public final static Property UserId = new Property(7, Long.class, "userId", false, "USER_ID");
-        public final static Property Username = new Property(8, String.class, "username", false, "USERNAME");
+        public final static Property PhotoName = new Property(6, String.class, "photoName", false, "PHOTO_NAME");
+        public final static Property Signature = new Property(7, String.class, "signature", false, "SIGNATURE");
+        public final static Property UserId = new Property(8, Long.class, "userId", false, "USER_ID");
+        public final static Property Username = new Property(9, String.class, "username", false, "USERNAME");
     };
 
 
@@ -55,9 +56,10 @@ public class TIchatAddressbookDao extends AbstractDao<TIchatAddressbook, Long> {
                 "'PHONE' TEXT," + // 3: phone
                 "'SPELL' TEXT," + // 4: spell
                 "'PHOTO' TEXT," + // 5: photo
-                "'SIGNATURE' TEXT," + // 6: signature
-                "'USER_ID' INTEGER," + // 7: userId
-                "'USERNAME' TEXT);"); // 8: username
+                "'PHOTO_NAME' TEXT," + // 6: photoName
+                "'SIGNATURE' TEXT," + // 7: signature
+                "'USER_ID' INTEGER," + // 8: userId
+                "'USERNAME' TEXT);"); // 9: username
         // Add Indexes
         db.execSQL("CREATE INDEX " + constraint + "IDX_T_ICHAT_ADDRESSBOOK_USERNAME ON T_ICHAT_ADDRESSBOOK" +
                 " (USERNAME);");
@@ -104,19 +106,24 @@ public class TIchatAddressbookDao extends AbstractDao<TIchatAddressbook, Long> {
             stmt.bindString(6, photo);
         }
  
+        String photoName = entity.getPhotoName();
+        if (photoName != null) {
+            stmt.bindString(7, photoName);
+        }
+ 
         String signature = entity.getSignature();
         if (signature != null) {
-            stmt.bindString(7, signature);
+            stmt.bindString(8, signature);
         }
  
         Long userId = entity.getUserId();
         if (userId != null) {
-            stmt.bindLong(8, userId);
+            stmt.bindLong(9, userId);
         }
  
         String username = entity.getUsername();
         if (username != null) {
-            stmt.bindString(9, username);
+            stmt.bindString(10, username);
         }
     }
 
@@ -136,9 +143,10 @@ public class TIchatAddressbookDao extends AbstractDao<TIchatAddressbook, Long> {
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // phone
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // spell
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // photo
-            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // signature
-            cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7), // userId
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8) // username
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // photoName
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // signature
+            cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8), // userId
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9) // username
         );
         return entity;
     }
@@ -152,9 +160,10 @@ public class TIchatAddressbookDao extends AbstractDao<TIchatAddressbook, Long> {
         entity.setPhone(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
         entity.setSpell(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setPhoto(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setSignature(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
-        entity.setUserId(cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7));
-        entity.setUsername(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setPhotoName(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setSignature(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
+        entity.setUserId(cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8));
+        entity.setUsername(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
      }
     
     /** @inheritdoc */

@@ -4,8 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.util.Log;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
@@ -14,6 +12,7 @@ import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 public class GsonObjectRequest<T> extends Request<T> {
 
@@ -60,9 +59,12 @@ public class GsonObjectRequest<T> extends Request<T> {
 		} catch (UnsupportedEncodingException e) {
 			parsed = new String(response.data);
 		}
-		Log.i("yangchen", parsed);
-		T result = this.gson.fromJson(parsed, this.clazz);
-		return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
+		try {
+			T result = this.gson.fromJson(parsed, this.clazz);
+			return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
+		} catch (JsonSyntaxException e) {
+			return Response.error(new AuthFailureError());
+		}
 	}
 
 }

@@ -12,6 +12,7 @@ public class TIchatMe {
     private String phone;
     private String spell;
     private String photo;
+    private String photoName;
     private String signature;
     private Long userId;
     private String username;
@@ -24,13 +25,14 @@ public class TIchatMe {
         this.id = id;
     }
 
-    public TIchatMe(Long id, String nickname, Long sex, String phone, String spell, String photo, String signature, Long userId, String username, String password) {
+    public TIchatMe(Long id, String nickname, Long sex, String phone, String spell, String photo, String photoName, String signature, Long userId, String username, String password) {
         this.id = id;
         this.nickname = nickname;
         this.sex = sex;
         this.phone = phone;
         this.spell = spell;
         this.photo = photo;
+        this.photoName = photoName;
         this.signature = signature;
         this.userId = userId;
         this.username = username;
@@ -83,6 +85,14 @@ public class TIchatMe {
 
     public void setPhoto(String photo) {
         this.photo = photo;
+    }
+
+    public String getPhotoName() {
+        return photoName;
+    }
+
+    public void setPhotoName(String photoName) {
+        this.photoName = photoName;
     }
 
     public String getSignature() {

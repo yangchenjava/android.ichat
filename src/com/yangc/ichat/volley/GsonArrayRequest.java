@@ -12,6 +12,7 @@ import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 public class GsonArrayRequest<T> extends Request<T> {
@@ -59,8 +60,12 @@ public class GsonArrayRequest<T> extends Request<T> {
 		} catch (UnsupportedEncodingException e) {
 			parsed = new String(response.data);
 		}
-		T result = this.gson.fromJson(parsed, this.typeToken.getType());
-		return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
+		try {
+			T result = this.gson.fromJson(parsed, this.typeToken.getType());
+			return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
+		} catch (JsonSyntaxException e) {
+			return Response.error(new AuthFailureError());
+		}
 	}
 
 }

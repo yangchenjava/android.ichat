@@ -22,17 +22,6 @@ public class BitmapUtils {
 	}
 
 	/**
-	 * @功能: 直接获取图片
-	 * @作者: yangc
-	 * @创建日期: 2012-12-11 下午03:35:00
-	 * @param pathName
-	 * @return
-	 */
-	public static Bitmap getBitmap(String pathName) {
-		return BitmapFactory.decodeFile(pathName);
-	}
-
-	/**
 	 * @功能: 根据指定缩放比例获取图片
 	 * @作者: yangc
 	 * @创建日期: 2012-12-11 下午03:38:36

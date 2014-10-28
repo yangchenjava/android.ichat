@@ -24,8 +24,7 @@
             android:layout_alignParentStart="true"
             android:contentDescription="@string/content_description"
             android:padding="8dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/me_info" />
+            android:scaleType="fitCenter" />
 
         <TextView
             android:id="@+id/tv_me_info_nickname"
@@ -37,7 +36,6 @@
             android:layout_toRightOf="@id/iv_me_info_photo"
             android:gravity="center_vertical"
             android:paddingTop="10dp"
-            android:text="杨晨"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
 
@@ -52,7 +50,6 @@
             android:layout_toRightOf="@id/iv_me_info_photo"
             android:gravity="center_vertical"
             android:paddingBottom="10dp"
-            android:text="微信号 : yangchen_java"
             android:textColor="@color/font_gray"
             android:textSize="14sp" />
     </RelativeLayout>

@@ -11,8 +11,8 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -31,9 +31,9 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.Response.ErrorListener;
 import com.android.volley.VolleyError;
 import com.yangc.ichat.R;
 import com.yangc.ichat.activity.AuthActivity;
@@ -41,7 +41,6 @@ import com.yangc.ichat.activity.MainActivity;
 import com.yangc.ichat.bean.ResultBean;
 import com.yangc.ichat.database.bean.TIchatMe;
 import com.yangc.ichat.utils.AndroidUtils;
-import com.yangc.ichat.utils.BitmapUtils;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.DatabaseUtils;
 import com.yangc.ichat.utils.JsonUtils;
@@ -105,7 +104,7 @@ public class RegisterFragment extends Fragment {
 	public void onResume() {
 		super.onResume();
 		if (this.photo != null && this.photo.getName().equals("me.png")) {
-			this.etRegisterPhoto.setImageBitmap(BitmapUtils.getBitmap(this.photo.getAbsolutePath()));
+			this.etRegisterPhoto.setImageBitmap(BitmapFactory.decodeFile(this.photo.getAbsolutePath()));
 		}
 	}
 
@@ -135,7 +134,7 @@ public class RegisterFragment extends Fragment {
 	}
 
 	private void initPhoto(String fileName) {
-		this.photo = new File(AndroidUtils.getCacheDir(authActivity, Constants.DEFAULT_CACHE_DIR), fileName);
+		this.photo = new File(AndroidUtils.getCacheDir(this.authActivity, Constants.DEFAULT_CACHE_DIR), fileName);
 		try {
 			this.photo.createNewFile();
 		} catch (IOException e) {
@@ -319,6 +318,7 @@ public class RegisterFragment extends Fragment {
 				params.put("photo", photo);
 			}
 			Request<ResultBean> request = new MultiPartRequest<ResultBean>(Constants.REGISTER, params, ResultBean.class, listener, errorListener);
+			request.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 			VolleyUtils.addMultiPartRequest(request, AuthActivity.TAG);
 		}
 	};
@@ -328,23 +328,11 @@ public class RegisterFragment extends Fragment {
 		public void onResponse(ResultBean result) {
 			if (result.isSuccess()) {
 				TIchatMe me = JsonUtils.fromJson(result.getMessage(), TIchatMe.class);
-				me.setUsername(username);
-				me.setPassword(password);
-
-				SharedPreferences.Editor editor = authActivity.getSharedPreferences(Constants.APP, Context.MODE_PRIVATE).edit();
-				editor.putString("userId", "" + me.getUserId()).putString("username", username).putString("password", password).commit();
-				Constants.USER_ID = "" + me.getUserId();
-				Constants.USERNAME = username;
-				Constants.PASSWORD = password;
-
-				if (photo != null) {
-					String photoName = me.getPhoto().substring(me.getPhoto().lastIndexOf("/") + 1);
-					photo.renameTo(new File(AndroidUtils.getStorageDir(authActivity, Constants.APP + "/" + Constants.DEFAULT_CACHE_DIR), photoName));
+				DatabaseUtils.saveMe(authActivity, me, username, password);
+				if (photo != null && !TextUtils.isEmpty(me.getPhoto())) {
+					photo.renameTo(new File(AndroidUtils.getStorageDir(authActivity, Constants.APP + "/" + Constants.DEFAULT_CACHE_DIR), me.getPhotoName()));
 				}
-
-				// 数据库操作
-				DatabaseUtils.getDaoSession(authActivity).getTIchatMeDao().deleteAll();
-				DatabaseUtils.getDaoSession(authActivity).getTIchatMeDao().insert(me);
+				Constants.saveConstants(authActivity, "" + me.getUserId(), username, password);
 
 				cancelProgressDialog();
 				authActivity.startActivity(new Intent(authActivity, MainActivity.class));
@@ -356,7 +344,7 @@ public class RegisterFragment extends Fragment {
 		}
 	};
 
-	private ErrorListener errorListener = new Response.ErrorListener() {
+	private Response.ErrorListener errorListener = new Response.ErrorListener() {
 		@Override
 		public void onErrorResponse(VolleyError error) {
 			cancelProgressDialog();

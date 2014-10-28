@@ -6,7 +6,6 @@ import java.util.Map;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -19,9 +18,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.Response.ErrorListener;
 import com.android.volley.VolleyError;
 import com.yangc.ichat.R;
 import com.yangc.ichat.activity.AuthActivity;
@@ -90,6 +89,7 @@ public class LoginFragment extends Fragment {
 					params.put("username", username);
 					params.put("password", password);
 					Request<ResultBean> request = new GsonObjectRequest<ResultBean>(Request.Method.POST, Constants.LOGIN, params, ResultBean.class, listener, errorListener);
+					request.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 					VolleyUtils.addNormalRequest(request, AuthActivity.TAG);
 				}
 			}
@@ -101,18 +101,8 @@ public class LoginFragment extends Fragment {
 		public void onResponse(ResultBean result) {
 			if (result.isSuccess()) {
 				TIchatMe me = JsonUtils.fromJson(result.getMessage(), TIchatMe.class);
-				me.setUsername(username);
-				me.setPassword(password);
-
-				SharedPreferences.Editor editor = authActivity.getSharedPreferences(Constants.APP, Context.MODE_PRIVATE).edit();
-				editor.putString("userId", "" + me.getUserId()).putString("username", username).putString("password", password).commit();
-				Constants.USER_ID = "" + me.getUserId();
-				Constants.USERNAME = username;
-				Constants.PASSWORD = password;
-
-				// 数据库操作
-				DatabaseUtils.getDaoSession(authActivity).getTIchatMeDao().deleteAll();
-				DatabaseUtils.getDaoSession(authActivity).getTIchatMeDao().insert(me);
+				DatabaseUtils.saveMe(authActivity, me, username, password);
+				Constants.saveConstants(authActivity, "" + me.getUserId(), username, password);
 
 				cancelProgressDialog();
 				authActivity.startActivity(new Intent(authActivity, MainActivity.class));
@@ -124,7 +114,7 @@ public class LoginFragment extends Fragment {
 		}
 	};
 
-	private ErrorListener errorListener = new Response.ErrorListener() {
+	private Response.ErrorListener errorListener = new Response.ErrorListener() {
 		@Override
 		public void onErrorResponse(VolleyError error) {
 			cancelProgressDialog();
