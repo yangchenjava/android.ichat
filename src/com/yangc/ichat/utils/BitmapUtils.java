@@ -1,5 +1,6 @@
 package com.yangc.ichat.utils;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -212,13 +213,13 @@ public class BitmapUtils {
 	 * @return
 	 */
 	public static boolean writeBitmapToFile(Bitmap bitmap, File file) {
-		FileOutputStream fos = null;
+		BufferedOutputStream bos = null;
 		try {
-			fos = new FileOutputStream(file);
-			boolean result = bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-			fos.flush();
-			fos.close();
-			fos = null;
+			bos = new BufferedOutputStream(new FileOutputStream(file));
+			boolean result = bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+			bos.flush();
+			bos.close();
+			bos = null;
 			return result;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -226,7 +227,7 @@ public class BitmapUtils {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (fos != null) fos.close();
+				if (bos != null) bos.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

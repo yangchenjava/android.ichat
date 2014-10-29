@@ -8,6 +8,8 @@
 
     <!-- text -->
     <string name="text_load">后台小弟疯狂奔走中&#8230;</string>
+    <string name="text_complete">完成</string>
+    <string name="text_undefined">未设置</string>
 
     <!-- error -->
     <string name="error_timeout">请求超时，请稍后重试</string>
@@ -33,6 +35,9 @@
     <!-- title_bar -->
     <string name="fragment_auth_logout">登录或注册</string>
     <string name="fragment_me_detail">个人信息</string>
+    <string name="fragment_me_detail_nickname">更改昵称</string>
+    <string name="fragment_me_detail_phone">更改电话</string>
+    <string name="fragment_me_detail_signature">更改个性签名</string>
 
     <!-- auth -->
     <string name="auth_login_button">登录</string>

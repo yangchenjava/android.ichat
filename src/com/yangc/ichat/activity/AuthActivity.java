@@ -6,8 +6,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 
 import com.yangc.ichat.R;
-import com.yangc.ichat.fragment.LogoutFragment;
-import com.yangc.ichat.fragment.RegisterFragment;
+import com.yangc.ichat.fragment.auth.LogoutFragment;
+import com.yangc.ichat.fragment.auth.RegisterFragment;
 import com.yangc.ichat.utils.VolleyUtils;
 
 public class AuthActivity extends FragmentActivity {

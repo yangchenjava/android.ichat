@@ -28,7 +28,7 @@ public class Volley extends com.android.volley.toolbox.Volley {
 		}
 
 		HttpStack stack = null;
-		if (Build.VERSION.SDK_INT >= 9) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
 			stack = new HurlStack();
 		} else {
 			stack = new HttpClientStack(AndroidHttpClient.newInstance(userAgent));

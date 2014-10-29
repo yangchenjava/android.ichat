@@ -1,4 +1,4 @@
-package com.yangc.ichat.fragment;
+package com.yangc.ichat.fragment.tab;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

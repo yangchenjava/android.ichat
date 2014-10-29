@@ -46,6 +46,11 @@ public class DatabaseUtils {
 		getDaoSession(context).getTIchatMeDao().insert(me);
 	}
 
+	public static void updateMe(Context context, TIchatMe me) {
+		getDaoSession(context).getTIchatMeDao().update(me);
+		Constants.IS_UPDATE_ME = true;
+	}
+
 	public static TIchatMe getMe(Context context) {
 		return getDaoSession(context).getTIchatMeDao().queryBuilder().unique();
 	}

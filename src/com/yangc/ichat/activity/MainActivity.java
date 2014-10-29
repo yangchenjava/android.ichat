@@ -16,10 +16,10 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.yangc.ichat.R;
-import com.yangc.ichat.fragment.AddressbookFragment;
-import com.yangc.ichat.fragment.FindFragment;
-import com.yangc.ichat.fragment.MeFragment;
-import com.yangc.ichat.fragment.WechatFragment;
+import com.yangc.ichat.fragment.tab.AddressbookFragment;
+import com.yangc.ichat.fragment.tab.FindFragment;
+import com.yangc.ichat.fragment.tab.MeFragment;
+import com.yangc.ichat.fragment.tab.WechatFragment;
 import com.yangc.ichat.utils.VolleyUtils;
 
 public class MainActivity extends FragmentActivity {

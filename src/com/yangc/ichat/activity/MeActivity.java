@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 
 import com.yangc.ichat.R;
-import com.yangc.ichat.fragment.MeDetailFragment;
+import com.yangc.ichat.fragment.me.MeDetailFragment;
 import com.yangc.ichat.utils.VolleyUtils;
 
 public class MeActivity extends FragmentActivity {
@@ -18,7 +18,7 @@ public class MeActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_me);
 
-		this.addFragmentToStack(new MeDetailFragment(), false);
+		this.addFragmentToStack(new MeDetailFragment(), null, false);
 	}
 
 	@Override
@@ -27,8 +27,11 @@ public class MeActivity extends FragmentActivity {
 		VolleyUtils.cancelAllRequest(TAG);
 	}
 
-	public void addFragmentToStack(Fragment fragment, boolean isAddStack) {
+	public void addFragmentToStack(Fragment fragment, Bundle bundle, boolean isAddStack) {
 		FragmentTransaction fragmentTransaction = this.getSupportFragmentManager().beginTransaction();
+		if (bundle != null && !bundle.isEmpty()) {
+			fragment.setArguments(bundle);
+		}
 		fragmentTransaction.replace(R.id.rl_me_detail, fragment);
 		if (isAddStack) {
 			fragmentTransaction.addToBackStack(null);

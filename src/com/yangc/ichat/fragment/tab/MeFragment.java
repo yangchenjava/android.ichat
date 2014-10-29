@@ -1,6 +1,5 @@
-package com.yangc.ichat.fragment;
+package com.yangc.ichat.fragment.tab;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -77,27 +76,22 @@ public class MeFragment extends Fragment {
 		if (TextUtils.isEmpty(me.getPhoto())) {
 			this.ivMeInfoPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.me_info)));
 		} else {
-			File photoFile = new File(AndroidUtils.getStorageDir(this.mainActivity, Constants.APP + "/" + Constants.DEFAULT_CACHE_DIR), me.getPhotoName());
-			if (photoFile.exists()) {
-				this.ivMeInfoPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(BitmapFactory.decodeFile(photoFile.getAbsolutePath())));
-			} else {
-				ImageLoader.ImageListener imageListener = new ImageLoader.ImageListener() {
-					@Override
-					public void onErrorResponse(VolleyError error) {
+			ImageLoader.ImageListener imageListener = new ImageLoader.ImageListener() {
+				@Override
+				public void onErrorResponse(VolleyError error) {
+					ivMeInfoPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.me_info)));
+				}
+
+				@Override
+				public void onResponse(ImageContainer response, boolean isImmediate) {
+					if (response.getBitmap() != null) {
+						ivMeInfoPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(response.getBitmap()));
+					} else {
 						ivMeInfoPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.me_info)));
 					}
-
-					@Override
-					public void onResponse(ImageContainer response, boolean isImmediate) {
-						if (response.getBitmap() != null) {
-							ivMeInfoPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(response.getBitmap()));
-						} else {
-							ivMeInfoPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.me_info)));
-						}
-					}
-				};
-				VolleyUtils.getImageLoader().get(Constants.SERVER_URL + me.getPhoto(), imageListener);
-			}
+				}
+			};
+			VolleyUtils.getImageLoader().get(Constants.SERVER_URL + me.getPhoto(), imageListener);
 		}
 		this.tvMeInfoNickname.setText(me.getNickname());
 		this.tvMeInfoUsername.setText(this.getResources().getString(R.string.me_info) + me.getUsername());

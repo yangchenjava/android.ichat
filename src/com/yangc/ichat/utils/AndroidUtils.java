@@ -5,6 +5,8 @@ import java.lang.reflect.Field;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
@@ -14,6 +16,23 @@ import android.widget.Toast;
 public class AndroidUtils {
 
 	private AndroidUtils() {
+	}
+
+	/**
+	 * @功能: 获取应用程序版本号
+	 * @作者: yangc
+	 * @创建日期: 2014年10月29日 下午6:02:45
+	 * @param context
+	 * @return
+	 */
+	public static int getAppVersion(Context context) {
+		try {
+			PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+			return info.versionCode;
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+		return 1;
 	}
 
 	/**
@@ -99,7 +118,7 @@ public class AndroidUtils {
 		} else {
 			cacheDir = new File(context.getCacheDir(), dirName);
 		}
-		cacheDir.mkdirs();
+		if (!cacheDir.exists()) cacheDir.mkdirs();
 		return cacheDir;
 	}
 
@@ -118,7 +137,7 @@ public class AndroidUtils {
 		} else {
 			storageDir = new File(context.getFilesDir(), dirName);
 		}
-		storageDir.mkdirs();
+		if (!storageDir.exists()) storageDir.mkdirs();
 		return storageDir;
 	}
 

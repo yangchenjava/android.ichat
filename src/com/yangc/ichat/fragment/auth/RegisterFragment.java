@@ -1,8 +1,6 @@
-package com.yangc.ichat.fragment;
+package com.yangc.ichat.fragment.auth;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +39,7 @@ import com.yangc.ichat.activity.MainActivity;
 import com.yangc.ichat.bean.ResultBean;
 import com.yangc.ichat.database.bean.TIchatMe;
 import com.yangc.ichat.utils.AndroidUtils;
+import com.yangc.ichat.utils.BitmapUtils;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.DatabaseUtils;
 import com.yangc.ichat.utils.JsonUtils;
@@ -54,6 +53,8 @@ public class RegisterFragment extends Fragment {
 	private static final int PHOTO_CAMERA = 1; // 拍照
 	private static final int PHOTO_LOCAL = 2; // 从相册中选择
 	private static final int PHOTO_CUT = 3; // 结果
+	private static final String PNG_TEMP = "temp.png";
+	private static final String PNG_DEST = "me.png";
 
 	private AuthActivity authActivity;
 
@@ -103,7 +104,7 @@ public class RegisterFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (this.photo != null && this.photo.getName().equals("me.png")) {
+		if (this.photo != null && this.photo.getName().equals(PNG_DEST)) {
 			this.etRegisterPhoto.setImageBitmap(BitmapFactory.decodeFile(this.photo.getAbsolutePath()));
 		}
 	}
@@ -134,7 +135,7 @@ public class RegisterFragment extends Fragment {
 	}
 
 	private void initPhoto(String fileName) {
-		this.photo = new File(AndroidUtils.getCacheDir(this.authActivity, Constants.DEFAULT_CACHE_DIR), fileName);
+		this.photo = new File(AndroidUtils.getCacheDir(this.authActivity, Constants.CACHE_PORTRAIT), fileName);
 		try {
 			this.photo.createNewFile();
 		} catch (IOException e) {
@@ -169,27 +170,9 @@ public class RegisterFragment extends Fragment {
 		Bundle bundle = data.getExtras();
 		if (bundle != null) {
 			Bitmap bitmap = bundle.getParcelable("data");
-			FileOutputStream fos = null;
-			try {
-				this.distoryPhoto();
-				this.initPhoto("me.png");
-				fos = new FileOutputStream(this.photo);
-				bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-				fos.flush();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					if (fos != null) {
-						fos.close();
-						fos = null;
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+			this.distoryPhoto();
+			this.initPhoto(PNG_DEST);
+			BitmapUtils.writeBitmapToFile(bitmap, this.photo);
 		}
 	}
 
@@ -201,10 +184,8 @@ public class RegisterFragment extends Fragment {
 		}
 		int visibility = this.llRegister_1.getVisibility();
 		if (visibility == View.VISIBLE) {
-			if (this.authActivity != null) {
-				this.distoryPhoto();
-				this.authActivity.getSupportFragmentManager().popBackStack();
-			}
+			this.distoryPhoto();
+			this.authActivity.getSupportFragmentManager().popBackStack();
 		} else if (visibility == View.GONE) {
 			this.llRegister_1.setVisibility(View.VISIBLE);
 			this.llRegister_2.setVisibility(View.GONE);
@@ -267,7 +248,7 @@ public class RegisterFragment extends Fragment {
 					alertDialog.cancel();
 					// 调用系统的拍照功能
 					Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-					initPhoto("temp.png");
+					initPhoto(PNG_TEMP);
 					// 指定调用相机拍照后照片的储存路径
 					intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
 					startActivityForResult(intent, PHOTO_CAMERA);
@@ -306,7 +287,7 @@ public class RegisterFragment extends Fragment {
 				return;
 			}
 
-			progressDialog = ProgressDialog.show(authActivity, "", authActivity.getResources().getString(R.string.text_load), true, true);
+			progressDialog = ProgressDialog.show(authActivity, "", getResources().getString(R.string.text_load), true, true);
 			Map<String, Object> params = new HashMap<String, Object>(7);
 			params.put("username", username);
 			params.put("password", password);
@@ -327,11 +308,9 @@ public class RegisterFragment extends Fragment {
 		@Override
 		public void onResponse(ResultBean result) {
 			if (result.isSuccess()) {
+				distoryPhoto();
 				TIchatMe me = JsonUtils.fromJson(result.getMessage(), TIchatMe.class);
 				DatabaseUtils.saveMe(authActivity, me, username, password);
-				if (photo != null && !TextUtils.isEmpty(me.getPhoto())) {
-					photo.renameTo(new File(AndroidUtils.getStorageDir(authActivity, Constants.APP + "/" + Constants.DEFAULT_CACHE_DIR), me.getPhotoName()));
-				}
 				Constants.saveConstants(authActivity, "" + me.getUserId(), username, password);
 
 				cancelProgressDialog();

@@ -7,11 +7,14 @@ public class Constants {
 
 	public static final String APP = "ichat";
 
-	public static final String DEFAULT_CACHE_DIR = "portrait";
+	public static final String CACHE_HTTP = "http";
+	public static final String CACHE_PORTRAIT = "portrait";
 
 	public static String USER_ID;
 	public static String USERNAME;
 	public static String PASSWORD;
+
+	public static boolean IS_UPDATE_ME;
 
 	/** 请求地址 */
 	public static final String SERVER_URL = "http://192.168.1.4:8080/com.yangc.bridge/";

@@ -1,4 +1,4 @@
-package com.yangc.ichat.fragment;
+package com.yangc.ichat.fragment.auth;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,17 +21,13 @@ public class LogoutFragment extends Fragment {
 		((Button) view.findViewById(R.id.btn_auth_login)).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (authActivity != null) {
-					authActivity.addFragmentToStack(new LoginFragment(), true);
-				}
+				authActivity.addFragmentToStack(new LoginFragment(), true);
 			}
 		});
 		((Button) view.findViewById(R.id.btn_auth_register)).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (authActivity != null) {
-					authActivity.addFragmentToStack(new RegisterFragment(), true);
-				}
+				authActivity.addFragmentToStack(new RegisterFragment(), true);
 			}
 		});
 		return view;

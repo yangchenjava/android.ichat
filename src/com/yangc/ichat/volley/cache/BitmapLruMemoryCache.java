@@ -1,13 +1,13 @@
-package com.yangc.ichat.volley;
+package com.yangc.ichat.volley.cache;
 
 import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;
 
 import com.android.volley.toolbox.ImageLoader;
 
-public class BitmapLruCache extends LruCache<String, Bitmap> implements ImageLoader.ImageCache {
+public class BitmapLruMemoryCache extends LruCache<String, Bitmap> implements ImageLoader.ImageCache {
 
-	public BitmapLruCache(int maxSize) {
+	public BitmapLruMemoryCache(int maxSize) {
 		super(maxSize);
 	}
 

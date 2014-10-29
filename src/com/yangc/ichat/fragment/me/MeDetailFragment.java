@@ -1,0 +1,289 @@
+package com.yangc.ichat.fragment.me;
+
+import java.io.File;
+import java.io.IOException;
+
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.ImageLoader.ImageContainer;
+import com.yangc.ichat.R;
+import com.yangc.ichat.activity.MeActivity;
+import com.yangc.ichat.database.bean.TIchatMe;
+import com.yangc.ichat.utils.AndroidUtils;
+import com.yangc.ichat.utils.BitmapUtils;
+import com.yangc.ichat.utils.Constants;
+import com.yangc.ichat.utils.DatabaseUtils;
+import com.yangc.ichat.utils.VolleyUtils;
+
+public class MeDetailFragment extends Fragment {
+
+	private static final int PHOTO_CAMERA = 1; // 拍照
+	private static final int PHOTO_LOCAL = 2; // 从相册中选择
+	private static final int PHOTO_CUT = 3; // 结果
+	private static final String PNG_TEMP = "temp.png";
+	private static final String PNG_DEST = "me.png";
+
+	private MeActivity meActivity;
+
+	private ImageView ivMeDetailPhoto;
+	private TextView tvMeDetailNickname;
+	private TextView tvMeDetailPhone;
+	private TextView tvMeDetailSex;
+	private TextView tvMeDetailSignature;
+
+	private TIchatMe me;
+	private File photo;
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		this.meActivity = (MeActivity) this.getActivity();
+		View view = inflater.inflate(R.layout.fragment_me_detail, container, false);
+		((ImageView) view.findViewById(R.id.iv_me_detail_backspace)).setOnClickListener(this.backspaceListener);
+		((RelativeLayout) view.findViewById(R.id.rl_me_detail_photo)).setOnClickListener(this.photoListener);
+		this.ivMeDetailPhoto = (ImageView) view.findViewById(R.id.iv_me_detail_photo);
+		((LinearLayout) view.findViewById(R.id.ll_me_detail_nickname)).setOnClickListener(this.nicknameListener);
+		this.tvMeDetailNickname = (TextView) view.findViewById(R.id.tv_me_detail_nickname);
+		((LinearLayout) view.findViewById(R.id.ll_me_detail_phone)).setOnClickListener(this.phoneListener);
+		this.tvMeDetailPhone = (TextView) view.findViewById(R.id.tv_me_detail_phone);
+		((LinearLayout) view.findViewById(R.id.ll_me_detail_sex)).setOnClickListener(this.sexListener);
+		this.tvMeDetailSex = (TextView) view.findViewById(R.id.tv_me_detail_sex);
+		((LinearLayout) view.findViewById(R.id.ll_me_detail_signature)).setOnClickListener(this.signatureListener);
+		this.tvMeDetailSignature = (TextView) view.findViewById(R.id.tv_me_detail_signature);
+		return view;
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		String undefined = this.getResources().getString(R.string.text_undefined);
+		this.me = DatabaseUtils.getMe(this.meActivity);
+		this.tvMeDetailNickname.setText(TextUtils.isEmpty(this.me.getNickname()) ? undefined : this.me.getNickname());
+		this.tvMeDetailPhone.setText(TextUtils.isEmpty(this.me.getPhone()) ? undefined : this.me.getPhone());
+		this.tvMeDetailSex.setText(this.me.getSex() == 0 ? "女" : "男");
+		this.tvMeDetailSignature.setText(TextUtils.isEmpty(this.me.getSignature()) ? undefined : this.me.getSignature());
+
+		if (this.photo != null && this.photo.getName().equals(PNG_DEST)) {
+			this.ivMeDetailPhoto.setImageBitmap(BitmapFactory.decodeFile(this.photo.getAbsolutePath()));
+		} else {
+			ImageLoader.ImageListener imageListener = new ImageLoader.ImageListener() {
+				@Override
+				public void onErrorResponse(VolleyError error) {
+					ivMeDetailPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.me_info)));
+				}
+
+				@Override
+				public void onResponse(ImageContainer response, boolean isImmediate) {
+					if (response.getBitmap() != null) {
+						ivMeDetailPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(response.getBitmap()));
+					} else {
+						ivMeDetailPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.me_info)));
+					}
+				}
+			};
+			VolleyUtils.getImageLoader().get(Constants.SERVER_URL + me.getPhoto(), imageListener);
+		}
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+		case PHOTO_CAMERA:
+			if (data != null) {
+				this.startImageZoom(Uri.fromFile(this.photo));
+			} else if (this.photo != null) {
+				this.distoryPhoto();
+			}
+			break;
+		case PHOTO_LOCAL:
+			if (data != null) {
+				this.startImageZoom(data.getData());
+			}
+			break;
+		case PHOTO_CUT:
+			if (data != null) {
+				this.setImageToView(data);
+			} else if (this.photo != null) {
+				this.distoryPhoto();
+			}
+			break;
+		}
+	}
+
+	private void initPhoto(String fileName) {
+		this.photo = new File(AndroidUtils.getCacheDir(this.meActivity, Constants.CACHE_PORTRAIT), fileName);
+		try {
+			this.photo.createNewFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void distoryPhoto() {
+		if (this.photo != null) {
+			this.photo.delete();
+			this.photo = null;
+		}
+	}
+
+	private void startImageZoom(Uri uri) {
+		Intent intent = new Intent("com.android.camera.action.CROP");
+		intent.setDataAndType(uri, "image/*");
+		// crop为true是设置在开启的intent中设置显示的view可以剪裁
+		intent.putExtra("crop", "true");
+		// aspectX aspectY 是宽高的比例
+		intent.putExtra("aspectX", 1);
+		intent.putExtra("aspectY", 1);
+		// outputX outputY 是剪裁图片的宽高
+		intent.putExtra("outputX", 512);
+		intent.putExtra("outputY", 512);
+		intent.putExtra("return-data", true);
+		this.startActivityForResult(intent, PHOTO_CUT);
+	}
+
+	// 将进行剪裁后的图片显示到UI界面上
+	private void setImageToView(Intent data) {
+		Bundle bundle = data.getExtras();
+		if (bundle != null) {
+			Bitmap bitmap = bundle.getParcelable("data");
+			this.distoryPhoto();
+			this.initPhoto(PNG_DEST);
+			BitmapUtils.writeBitmapToFile(bitmap, this.photo);
+		}
+	}
+
+	// 后退监听
+	private View.OnClickListener backspaceListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			meActivity.onBackPressed();
+		}
+	};
+
+	// 头像监听
+	private View.OnClickListener photoListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			final AlertDialog alertDialog = new AlertDialog.Builder(meActivity).show();
+			alertDialog.setCanceledOnTouchOutside(true);
+			Window window = alertDialog.getWindow();
+			window.setContentView(R.layout.dialog_select);
+			((TextView) window.findViewById(R.id.tv_dialog_select_title)).setText(R.string.dialog_title_photo);
+			// 打开相机
+			TextView tvDialogSelectFirst = (TextView) window.findViewById(R.id.tv_dialog_select_first);
+			tvDialogSelectFirst.setText(R.string.dialog_camera);
+			tvDialogSelectFirst.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					alertDialog.cancel();
+					// 调用系统的拍照功能
+					Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+					initPhoto(PNG_TEMP);
+					// 指定调用相机拍照后照片的储存路径
+					intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
+					startActivityForResult(intent, PHOTO_CAMERA);
+				}
+			});
+			// 打开相册
+			TextView tvDialogSelectSecond = (TextView) window.findViewById(R.id.tv_dialog_select_second);
+			tvDialogSelectSecond.setText(R.string.dialog_local);
+			tvDialogSelectSecond.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					alertDialog.cancel();
+					Intent intent = new Intent(Intent.ACTION_PICK);
+					intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+					startActivityForResult(intent, PHOTO_LOCAL);
+				}
+			});
+		}
+	};
+
+	// 昵称监听
+	private View.OnClickListener nicknameListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			Bundle bundle = new Bundle(1);
+			bundle.putString("nickname", me.getNickname());
+			meActivity.addFragmentToStack(new MeDetailNicknameFragment(), bundle, true);
+		}
+	};
+
+	// 电话监听
+	private View.OnClickListener phoneListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			Bundle bundle = new Bundle(1);
+			bundle.putString("phone", me.getPhone());
+			meActivity.addFragmentToStack(new MeDetailPhoneFragment(), bundle, true);
+		}
+	};
+
+	// 性别监听
+	private View.OnClickListener sexListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			final AlertDialog alertDialog = new AlertDialog.Builder(meActivity).show();
+			alertDialog.setCanceledOnTouchOutside(true);
+			Window window = alertDialog.getWindow();
+			window.setContentView(R.layout.dialog_select);
+			((TextView) window.findViewById(R.id.tv_dialog_select_title)).setText(R.string.dialog_title_sex);
+			// 男
+			TextView tvDialogSelectFirst = (TextView) window.findViewById(R.id.tv_dialog_select_first);
+			tvDialogSelectFirst.setText(R.string.dialog_male);
+			tvDialogSelectFirst.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if (me.getSex() != 1) {
+						TIchatMe me = DatabaseUtils.getMe(meActivity);
+						me.setSex(1L);
+						DatabaseUtils.updateMe(meActivity, me);
+					}
+					alertDialog.cancel();
+				}
+			});
+			// 女
+			TextView tvDialogSelectSecond = (TextView) window.findViewById(R.id.tv_dialog_select_second);
+			tvDialogSelectSecond.setText(R.string.dialog_female);
+			tvDialogSelectSecond.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if (me.getSex() != 0) {
+						TIchatMe me = DatabaseUtils.getMe(meActivity);
+						me.setSex(0L);
+						DatabaseUtils.updateMe(meActivity, me);
+					}
+					alertDialog.cancel();
+				}
+			});
+		}
+	};
+
+	// 个性签名监听
+	private View.OnClickListener signatureListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			Bundle bundle = new Bundle(1);
+			bundle.putString("signature", me.getSignature());
+			meActivity.addFragmentToStack(new MeDetailSignatureFragment(), bundle, true);
+		}
+	};
+
+}

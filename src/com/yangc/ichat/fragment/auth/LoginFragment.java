@@ -1,4 +1,4 @@
-package com.yangc.ichat.fragment;
+package com.yangc.ichat.fragment.auth;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -68,9 +68,7 @@ public class LoginFragment extends Fragment {
 				InputMethodManager imm = (InputMethodManager) authActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 			}
-			if (authActivity != null) {
-				authActivity.getSupportFragmentManager().popBackStack();
-			}
+			authActivity.getSupportFragmentManager().popBackStack();
 		}
 	};
 
@@ -84,7 +82,7 @@ public class LoginFragment extends Fragment {
 				if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
 					AndroidUtils.alertToast(authActivity, R.string.error_username_password_null);
 				} else {
-					progressDialog = ProgressDialog.show(authActivity, "", authActivity.getResources().getString(R.string.text_load), true, true);
+					progressDialog = ProgressDialog.show(authActivity, "", getResources().getString(R.string.text_load), true, true);
 					Map<String, String> params = new HashMap<String, String>(2);
 					params.put("username", username);
 					params.put("password", password);
