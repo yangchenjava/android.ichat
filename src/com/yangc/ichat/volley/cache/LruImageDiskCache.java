@@ -6,21 +6,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.text.TextUtils;
 
-import com.android.volley.toolbox.ImageLoader;
 import com.jakewharton.disklrucache.DiskLruCache;
 
-public class BitmapLruDiskCache implements ImageLoader.ImageCache {
+public class LruImageDiskCache {
 
 	private DiskLruCache diskLruCache;
 
-	public BitmapLruDiskCache(File cacheDir, int appVersion, long maxSize) {
+	public LruImageDiskCache(File cacheDir, int appVersion, long maxSize) {
 		try {
 			this.diskLruCache = DiskLruCache.open(cacheDir, appVersion, 1, maxSize);
 		} catch (IOException e) {
@@ -28,15 +24,16 @@ public class BitmapLruDiskCache implements ImageLoader.ImageCache {
 		}
 	}
 
-	@Override
-	public Bitmap getBitmap(String url) {
+	public Bitmap get(String key) {
 		DiskLruCache.Snapshot snapshot = null;
 		try {
-			snapshot = this.diskLruCache.get(this.getMD5(url));
+			snapshot = this.diskLruCache.get(key);
 			if (snapshot != null) {
 				InputStream stream = snapshot.getInputStream(0);
 				if (stream != null) {
-					return BitmapFactory.decodeStream(new BufferedInputStream(stream));
+					Bitmap bitmap = BitmapFactory.decodeStream(new BufferedInputStream(stream));
+					stream.close();
+					return bitmap;
 				}
 			}
 		} catch (IOException e) {
@@ -47,11 +44,10 @@ public class BitmapLruDiskCache implements ImageLoader.ImageCache {
 		return null;
 	}
 
-	@Override
-	public void putBitmap(String url, Bitmap bitmap) {
+	public void put(String key, Bitmap bitmap) {
 		DiskLruCache.Editor editor = null;
 		try {
-			editor = this.diskLruCache.edit(this.getMD5(url));
+			editor = this.diskLruCache.edit(key);
 			if (editor != null) {
 				OutputStream stream = new BufferedOutputStream(editor.newOutputStream(0));
 				if (this.writeBitmapToFile(bitmap, stream)) {
@@ -72,19 +68,19 @@ public class BitmapLruDiskCache implements ImageLoader.ImageCache {
 		}
 	}
 
-	public boolean removeBitmap(String url) {
+	public boolean remove(String key) {
 		try {
-			return this.diskLruCache.remove(this.getMD5(url));
+			return this.diskLruCache.remove(key);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return false;
 	}
 
-	public boolean containsUrl(String url) {
+	public boolean containsKey(String key) {
 		DiskLruCache.Snapshot snapshot = null;
 		try {
-			snapshot = this.diskLruCache.get(this.getMD5(url));
+			snapshot = this.diskLruCache.get(key);
 			return snapshot != null;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -94,33 +90,12 @@ public class BitmapLruDiskCache implements ImageLoader.ImageCache {
 		return false;
 	}
 
-	public void clearCache() {
+	public void clear() {
 		try {
 			this.diskLruCache.delete();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private String getMD5(String url) {
-		if (!TextUtils.isEmpty(url)) {
-			MessageDigest digest = null;
-			try {
-				digest = MessageDigest.getInstance("MD5");
-			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
-			}
-
-			byte[] bytes = url.getBytes();
-			byte[] results = digest.digest(bytes);
-			StringBuilder sb = new StringBuilder();
-			for (byte result : results) {
-				// 将byte数组转化为16进制字符存入StringBuilder中
-				sb.append(String.format("%02x", result));
-			}
-			return sb.toString();
-		}
-		return null;
 	}
 
 	private boolean writeBitmapToFile(Bitmap bitmap, OutputStream stream) throws IOException {

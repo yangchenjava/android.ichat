@@ -2,8 +2,11 @@ package com.yangc.ichat.fragment.me;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,6 +15,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,17 +25,23 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.ImageLoader.ImageContainer;
 import com.yangc.ichat.R;
 import com.yangc.ichat.activity.MeActivity;
+import com.yangc.ichat.bean.ResultBean;
 import com.yangc.ichat.database.bean.TIchatMe;
 import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.BitmapUtils;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.DatabaseUtils;
+import com.yangc.ichat.utils.JsonUtils;
 import com.yangc.ichat.utils.VolleyUtils;
+import com.yangc.ichat.volley.MultiPartRequest;
+import com.yangc.ichat.volley.VolleyErrorHelper;
 
 public class MeDetailFragment extends Fragment {
 
@@ -51,6 +61,9 @@ public class MeDetailFragment extends Fragment {
 
 	private TIchatMe me;
 	private File photo;
+
+	private ProgressDialog progressDialog;
+	private Request<ResultBean> request;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -81,7 +94,13 @@ public class MeDetailFragment extends Fragment {
 		this.tvMeDetailSignature.setText(TextUtils.isEmpty(this.me.getSignature()) ? undefined : this.me.getSignature());
 
 		if (this.photo != null && this.photo.getName().equals(PNG_DEST)) {
+			progressDialog = ProgressDialog.show(this.meActivity, "", getResources().getString(R.string.text_load), true);
 			this.ivMeDetailPhoto.setImageBitmap(BitmapFactory.decodeFile(this.photo.getAbsolutePath()));
+			Map<String, Object> params = new HashMap<String, Object>(2);
+			params.put("id", this.me.getId());
+			params.put("photo", photo);
+			this.request = new MultiPartRequest<ResultBean>(Constants.UPDATE_PERSON_PHOTO, params, ResultBean.class, listener, errorListener);
+			VolleyUtils.addMultiPartRequest(this.request, MeActivity.TAG);
 		} else {
 			ImageLoader.ImageListener imageListener = new ImageLoader.ImageListener() {
 				@Override
@@ -90,7 +109,7 @@ public class MeDetailFragment extends Fragment {
 				}
 
 				@Override
-				public void onResponse(ImageContainer response, boolean isImmediate) {
+				public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
 					if (response.getBitmap() != null) {
 						ivMeDetailPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(response.getBitmap()));
 					} else {
@@ -166,6 +185,40 @@ public class MeDetailFragment extends Fragment {
 			this.distoryPhoto();
 			this.initPhoto(PNG_DEST);
 			BitmapUtils.writeBitmapToFile(bitmap, this.photo);
+		}
+	}
+
+	private Response.Listener<ResultBean> listener = new Response.Listener<ResultBean>() {
+		@Override
+		public void onResponse(ResultBean result) {
+			cancelProgressDialog();
+			if (result.isSuccess()) {
+				distoryPhoto();
+				me.setPhoto(JsonUtils.fromJson(result.getMessage(), TIchatMe.class).getPhoto());
+				me.setPhotoName(me.getPhoto().substring(me.getPhoto().lastIndexOf("/") + 1));
+				DatabaseUtils.updateMe(meActivity, me);
+			} else {
+				AndroidUtils.alertToast(meActivity, result.getMessage());
+			}
+		}
+	};
+
+	private Response.ErrorListener errorListener = new Response.ErrorListener() {
+		@Override
+		public void onErrorResponse(VolleyError error) {
+			if (error instanceof AuthFailureError) {
+				VolleyErrorHelper.sessionTimeout(meActivity, request, MeActivity.TAG);
+			} else {
+				cancelProgressDialog();
+				AndroidUtils.alertToast(meActivity, VolleyErrorHelper.getResId(error));
+				Log.e(MeActivity.TAG, error.getMessage(), error.getCause());
+			}
+		}
+	};
+
+	private void cancelProgressDialog() {
+		if (this.progressDialog != null) {
+			this.progressDialog.cancel();
 		}
 	}
 

@@ -21,7 +21,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.ImageLoader.ImageContainer;
 import com.yangc.ichat.R;
 import com.yangc.ichat.activity.MainActivity;
 import com.yangc.ichat.activity.MeActivity;
@@ -63,7 +62,7 @@ public class MeFragment extends Fragment {
 		if (me == null) {
 			this.ivMeInfoPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.me_info)));
 
-			Map<String, String> params = new HashMap<String, String>();
+			Map<String, String> params = new HashMap<String, String>(1);
 			params.put("userId", Constants.USER_ID);
 			this.request = new GsonObjectRequest<TIchatMe>(Request.Method.POST, Constants.USER_INFO, params, TIchatMe.class, listener, errorListener);
 			VolleyUtils.addNormalRequest(request, MainActivity.TAG);
@@ -83,7 +82,7 @@ public class MeFragment extends Fragment {
 				}
 
 				@Override
-				public void onResponse(ImageContainer response, boolean isImmediate) {
+				public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
 					if (response.getBitmap() != null) {
 						ivMeInfoPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(response.getBitmap()));
 					} else {

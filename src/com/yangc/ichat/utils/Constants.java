@@ -14,13 +14,13 @@ public class Constants {
 	public static String USERNAME;
 	public static String PASSWORD;
 
-	public static boolean IS_UPDATE_ME;
-
 	/** 请求地址 */
 	public static final String SERVER_URL = "http://192.168.1.4:8080/com.yangc.bridge/";
 	public static final String LOGIN = SERVER_URL + "resource/interface/login";
 	public static final String REGISTER = SERVER_URL + "resource/interface/register";
 	public static final String USER_INFO = SERVER_URL + "resource/interface/userInfo";
+	public static final String UPDATE_PERSON = SERVER_URL + "resource/interface/updatePerson";
+	public static final String UPDATE_PERSON_PHOTO = SERVER_URL + "resource/interface/updatePersonPhoto";
 	public static final String TEST = SERVER_URL + "resource/interface/test";
 
 	private Constants() {
