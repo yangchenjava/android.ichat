@@ -12,7 +12,7 @@ import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import com.yangc.ichat.bean.ResultBean;
 
 public class GsonObjectRequest<T> extends Request<T> {
 
@@ -59,12 +59,11 @@ public class GsonObjectRequest<T> extends Request<T> {
 		} catch (UnsupportedEncodingException e) {
 			parsed = new String(response.data);
 		}
-		try {
-			T result = this.gson.fromJson(parsed, this.clazz);
-			return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
-		} catch (JsonSyntaxException e) {
+		if (this.gson.fromJson(parsed, ResultBean.class).getStatusCode() == 101) {
 			return Response.error(new AuthFailureError());
 		}
+		T result = this.gson.fromJson(parsed, this.clazz);
+		return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
 	}
 
 }

@@ -95,8 +95,8 @@ public class MeDetailFragment extends Fragment {
 
 		if (this.photo != null && this.photo.getName().equals(PNG_DEST)) {
 			progressDialog = ProgressDialog.show(this.meActivity, "", getResources().getString(R.string.text_load), true);
-			this.ivMeDetailPhoto.setImageBitmap(BitmapFactory.decodeFile(this.photo.getAbsolutePath()));
-			Map<String, Object> params = new HashMap<String, Object>(2);
+			this.ivMeDetailPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(BitmapFactory.decodeFile(this.photo.getAbsolutePath())));
+			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("id", this.me.getId());
 			params.put("photo", photo);
 			this.request = new MultiPartRequest<ResultBean>(Constants.UPDATE_PERSON_PHOTO, params, ResultBean.class, listener, errorListener);
@@ -105,7 +105,7 @@ public class MeDetailFragment extends Fragment {
 			ImageLoader.ImageListener imageListener = new ImageLoader.ImageListener() {
 				@Override
 				public void onErrorResponse(VolleyError error) {
-					ivMeDetailPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.me_info)));
+					ivMeDetailPhoto.setImageResource(R.drawable.me_info);
 				}
 
 				@Override
@@ -113,7 +113,7 @@ public class MeDetailFragment extends Fragment {
 					if (response.getBitmap() != null) {
 						ivMeDetailPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(response.getBitmap()));
 					} else {
-						ivMeDetailPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.me_info)));
+						ivMeDetailPhoto.setImageResource(R.drawable.me_info);
 					}
 				}
 			};
@@ -128,7 +128,7 @@ public class MeDetailFragment extends Fragment {
 			if (data != null) {
 				this.startImageZoom(Uri.fromFile(this.photo));
 			} else if (this.photo != null) {
-				this.distoryPhoto();
+				this.destoryPhoto();
 			}
 			break;
 		case PHOTO_LOCAL:
@@ -140,7 +140,7 @@ public class MeDetailFragment extends Fragment {
 			if (data != null) {
 				this.setImageToView(data);
 			} else if (this.photo != null) {
-				this.distoryPhoto();
+				this.destoryPhoto();
 			}
 			break;
 		}
@@ -155,7 +155,7 @@ public class MeDetailFragment extends Fragment {
 		}
 	}
 
-	private void distoryPhoto() {
+	private void destoryPhoto() {
 		if (this.photo != null) {
 			this.photo.delete();
 			this.photo = null;
@@ -182,7 +182,7 @@ public class MeDetailFragment extends Fragment {
 		Bundle bundle = data.getExtras();
 		if (bundle != null) {
 			Bitmap bitmap = bundle.getParcelable("data");
-			this.distoryPhoto();
+			this.destoryPhoto();
 			this.initPhoto(PNG_DEST);
 			BitmapUtils.writeBitmapToFile(bitmap, this.photo);
 		}
@@ -193,7 +193,7 @@ public class MeDetailFragment extends Fragment {
 		public void onResponse(ResultBean result) {
 			cancelProgressDialog();
 			if (result.isSuccess()) {
-				distoryPhoto();
+				destoryPhoto();
 				me.setPhoto(JsonUtils.fromJson(result.getMessage(), TIchatMe.class).getPhoto());
 				me.setPhotoName(me.getPhoto().substring(me.getPhoto().lastIndexOf("/") + 1));
 				DatabaseUtils.updateMe(meActivity, me);

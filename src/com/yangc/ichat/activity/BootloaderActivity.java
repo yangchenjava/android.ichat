@@ -43,9 +43,10 @@ public class BootloaderActivity extends Activity {
 	}
 
 	@Override
-	protected void onStop() {
-		super.onStop();
+	protected void onDestroy() {
+		super.onDestroy();
 		VolleyUtils.cancelAllRequest(TAG);
+		Log.i(TAG, "destory");
 	}
 
 	private void startup() {
@@ -57,14 +58,14 @@ public class BootloaderActivity extends Activity {
 			// TODO 启动TCP服务
 			TIchatMe me = DatabaseUtils.getMe(this);
 			if (AndroidUtils.checkNetwork(this) && me != null) {
-				Map<String, String> params = new HashMap<String, String>(5);
+				Map<String, String> params = new HashMap<String, String>();
 				params.put("id", "" + me.getId());
 				params.put("nickname", me.getNickname());
 				params.put("sex", "" + me.getSex());
 				params.put("phone", me.getPhone());
 				params.put("signature", me.getSignature());
-				request = new GsonObjectRequest<ResultBean>(Request.Method.POST, Constants.UPDATE_PERSON, params, ResultBean.class, listener, errorListener);
-				VolleyUtils.addNormalRequest(request, TAG);
+				this.request = new GsonObjectRequest<ResultBean>(Request.Method.POST, Constants.UPDATE_PERSON, params, ResultBean.class, listener, errorListener);
+				VolleyUtils.addNormalRequest(this.request, TAG);
 			} else {
 				this.finish();
 			}

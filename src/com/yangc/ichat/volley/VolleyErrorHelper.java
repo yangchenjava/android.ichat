@@ -49,7 +49,7 @@ public class VolleyErrorHelper {
 	 * @param tag
 	 */
 	public static void sessionTimeout(final Context context, final Request<?> request, final String tag) {
-		Map<String, String> params = new HashMap<String, String>(2);
+		Map<String, String> params = new HashMap<String, String>();
 		params.put("username", Constants.USERNAME);
 		params.put("password", Constants.PASSWORD);
 		VolleyUtils.addNormalRequest(new GsonObjectRequest<ResultBean>(Request.Method.POST, Constants.LOGIN, params, ResultBean.class, new Response.Listener<ResultBean>() {

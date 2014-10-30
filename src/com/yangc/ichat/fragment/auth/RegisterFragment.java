@@ -116,7 +116,7 @@ public class RegisterFragment extends Fragment {
 			if (data != null) {
 				this.startImageZoom(Uri.fromFile(this.photo));
 			} else if (this.photo != null) {
-				this.distoryPhoto();
+				this.destoryPhoto();
 			}
 			break;
 		case PHOTO_LOCAL:
@@ -128,7 +128,7 @@ public class RegisterFragment extends Fragment {
 			if (data != null) {
 				this.setImageToView(data);
 			} else if (this.photo != null) {
-				this.distoryPhoto();
+				this.destoryPhoto();
 			}
 			break;
 		}
@@ -143,7 +143,7 @@ public class RegisterFragment extends Fragment {
 		}
 	}
 
-	private void distoryPhoto() {
+	private void destoryPhoto() {
 		if (this.photo != null) {
 			this.photo.delete();
 			this.photo = null;
@@ -170,7 +170,7 @@ public class RegisterFragment extends Fragment {
 		Bundle bundle = data.getExtras();
 		if (bundle != null) {
 			Bitmap bitmap = bundle.getParcelable("data");
-			this.distoryPhoto();
+			this.destoryPhoto();
 			this.initPhoto(PNG_DEST);
 			BitmapUtils.writeBitmapToFile(bitmap, this.photo);
 		}
@@ -184,7 +184,7 @@ public class RegisterFragment extends Fragment {
 		}
 		int visibility = this.llRegister_1.getVisibility();
 		if (visibility == View.VISIBLE) {
-			this.distoryPhoto();
+			this.destoryPhoto();
 			this.authActivity.getSupportFragmentManager().popBackStack();
 		} else if (visibility == View.GONE) {
 			this.llRegister_1.setVisibility(View.VISIBLE);
@@ -288,7 +288,7 @@ public class RegisterFragment extends Fragment {
 			}
 
 			progressDialog = ProgressDialog.show(authActivity, "", getResources().getString(R.string.text_load), true, true);
-			Map<String, Object> params = new HashMap<String, Object>(7);
+			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("username", username);
 			params.put("password", password);
 			params.put("nickname", nickname);
@@ -308,7 +308,7 @@ public class RegisterFragment extends Fragment {
 		@Override
 		public void onResponse(ResultBean result) {
 			if (result.isSuccess()) {
-				distoryPhoto();
+				destoryPhoto();
 				TIchatMe me = JsonUtils.fromJson(result.getMessage(), TIchatMe.class);
 				DatabaseUtils.saveMe(authActivity, me, username, password);
 				Constants.saveConstants(authActivity, "" + me.getUserId(), username, password);

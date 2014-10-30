@@ -12,6 +12,7 @@ import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.Gson;
+import com.yangc.ichat.bean.ResultBean;
 
 public class MultiPartRequest<T> extends Request<T> {
 
@@ -52,6 +53,9 @@ public class MultiPartRequest<T> extends Request<T> {
 			parsed = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
 		} catch (UnsupportedEncodingException e) {
 			parsed = new String(response.data);
+		}
+		if (this.gson.fromJson(parsed, ResultBean.class).getStatusCode() == 101) {
+			return Response.error(new AuthFailureError());
 		}
 		T result = this.gson.fromJson(parsed, this.clazz);
 		return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));

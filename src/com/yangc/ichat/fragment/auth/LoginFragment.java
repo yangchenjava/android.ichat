@@ -83,7 +83,7 @@ public class LoginFragment extends Fragment {
 					AndroidUtils.alertToast(authActivity, R.string.error_username_password_null);
 				} else {
 					progressDialog = ProgressDialog.show(authActivity, "", getResources().getString(R.string.text_load), true, true);
-					Map<String, String> params = new HashMap<String, String>(2);
+					Map<String, String> params = new HashMap<String, String>();
 					params.put("username", username);
 					params.put("password", password);
 					Request<ResultBean> request = new GsonObjectRequest<ResultBean>(Request.Method.POST, Constants.LOGIN, params, ResultBean.class, listener, errorListener);

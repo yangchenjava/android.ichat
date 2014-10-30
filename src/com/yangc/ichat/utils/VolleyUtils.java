@@ -8,9 +8,9 @@ import android.content.Context;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
+import com.yangc.ichat.volley.BitmapLruImageCache;
 import com.yangc.ichat.volley.MultiPartStack;
 import com.yangc.ichat.volley.Volley;
-import com.yangc.ichat.volley.cache.LruImageCache;
 
 public class VolleyUtils {
 
@@ -28,14 +28,14 @@ public class VolleyUtils {
 	 * @param context
 	 */
 	public static void init(Context context) {
-		normalRequestQueue = Volley.newRequestQueue(context, AndroidUtils.getCacheDir(context, Constants.CACHE_HTTP));
-		multiPartRequestQueue = Volley.newRequestQueue(context, new MultiPartStack());
+		File cacheDir = AndroidUtils.getCacheDir(context, Constants.CACHE_PORTRAIT);
+		int maxCacheSizeInBytes = 10 * 1024 * 1024;
+		normalRequestQueue = Volley.newRequestQueue(context, null, cacheDir, maxCacheSizeInBytes);
+		multiPartRequestQueue = Volley.newRequestQueue(context, new MultiPartStack(), cacheDir, maxCacheSizeInBytes);
 
-		File cacheDir = AndroidUtils.getStorageDir(context, Constants.APP + "/" + Constants.CACHE_PORTRAIT);
 		int memoryClass = ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
-		long diskMaxSize = 1024 * 1024 * 10;
-		int memoryMaxSize = 1024 * 1024 * memoryClass / 8;
-		imageLoader = new ImageLoader(normalRequestQueue, new LruImageCache(cacheDir, AndroidUtils.getAppVersion(context), diskMaxSize, memoryMaxSize));
+		int maxSize = 1024 * 1024 * memoryClass / 8;
+		imageLoader = new ImageLoader(normalRequestQueue, new BitmapLruImageCache(maxSize));
 	}
 
 	public static RequestQueue getNormalRequestQueue() {

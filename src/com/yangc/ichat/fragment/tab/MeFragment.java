@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -60,9 +59,9 @@ public class MeFragment extends Fragment {
 		TIchatMe me = DatabaseUtils.getMe(this.mainActivity);
 		// 如果数据库没有数据,则请求,如果有数据但是文件不存在,则请求
 		if (me == null) {
-			this.ivMeInfoPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.me_info)));
+			this.ivMeInfoPhoto.setImageResource(R.drawable.me_info);
 
-			Map<String, String> params = new HashMap<String, String>(1);
+			Map<String, String> params = new HashMap<String, String>();
 			params.put("userId", Constants.USER_ID);
 			this.request = new GsonObjectRequest<TIchatMe>(Request.Method.POST, Constants.USER_INFO, params, TIchatMe.class, listener, errorListener);
 			VolleyUtils.addNormalRequest(request, MainActivity.TAG);
@@ -73,12 +72,12 @@ public class MeFragment extends Fragment {
 
 	private void initMeInfo(TIchatMe me) {
 		if (TextUtils.isEmpty(me.getPhoto())) {
-			this.ivMeInfoPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.me_info)));
+			this.ivMeInfoPhoto.setImageResource(R.drawable.me_info);
 		} else {
 			ImageLoader.ImageListener imageListener = new ImageLoader.ImageListener() {
 				@Override
 				public void onErrorResponse(VolleyError error) {
-					ivMeInfoPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.me_info)));
+					ivMeInfoPhoto.setImageResource(R.drawable.me_info);
 				}
 
 				@Override
@@ -86,7 +85,7 @@ public class MeFragment extends Fragment {
 					if (response.getBitmap() != null) {
 						ivMeInfoPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(response.getBitmap()));
 					} else {
-						ivMeInfoPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.me_info)));
+						ivMeInfoPhoto.setImageResource(R.drawable.me_info);
 					}
 				}
 			};
