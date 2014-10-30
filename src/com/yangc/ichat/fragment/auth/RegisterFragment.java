@@ -27,6 +27,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -240,9 +241,8 @@ public class RegisterFragment extends Fragment {
 			window.setContentView(R.layout.dialog_select);
 			((TextView) window.findViewById(R.id.tv_dialog_select_title)).setText(R.string.dialog_title_photo);
 			// 打开相机
-			TextView tvDialogSelectFirst = (TextView) window.findViewById(R.id.tv_dialog_select_first);
-			tvDialogSelectFirst.setText(R.string.dialog_camera);
-			tvDialogSelectFirst.setOnClickListener(new View.OnClickListener() {
+			((TextView) window.findViewById(R.id.tv_dialog_select_first)).setText(R.string.dialog_camera);
+			((RelativeLayout) window.findViewById(R.id.rl_dialog_select_first)).setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					alertDialog.cancel();
@@ -255,9 +255,8 @@ public class RegisterFragment extends Fragment {
 				}
 			});
 			// 打开相册
-			TextView tvDialogSelectSecond = (TextView) window.findViewById(R.id.tv_dialog_select_second);
-			tvDialogSelectSecond.setText(R.string.dialog_local);
-			tvDialogSelectSecond.setOnClickListener(new View.OnClickListener() {
+			((TextView) window.findViewById(R.id.tv_dialog_select_second)).setText(R.string.dialog_local);
+			((RelativeLayout) window.findViewById(R.id.rl_dialog_select_second)).setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					alertDialog.cancel();

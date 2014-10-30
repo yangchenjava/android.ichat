@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -240,9 +241,8 @@ public class MeDetailFragment extends Fragment {
 			window.setContentView(R.layout.dialog_select);
 			((TextView) window.findViewById(R.id.tv_dialog_select_title)).setText(R.string.dialog_title_photo);
 			// 打开相机
-			TextView tvDialogSelectFirst = (TextView) window.findViewById(R.id.tv_dialog_select_first);
-			tvDialogSelectFirst.setText(R.string.dialog_camera);
-			tvDialogSelectFirst.setOnClickListener(new View.OnClickListener() {
+			((TextView) window.findViewById(R.id.tv_dialog_select_first)).setText(R.string.dialog_camera);
+			((RelativeLayout) window.findViewById(R.id.rl_dialog_select_first)).setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					alertDialog.cancel();
@@ -255,9 +255,8 @@ public class MeDetailFragment extends Fragment {
 				}
 			});
 			// 打开相册
-			TextView tvDialogSelectSecond = (TextView) window.findViewById(R.id.tv_dialog_select_second);
-			tvDialogSelectSecond.setText(R.string.dialog_local);
-			tvDialogSelectSecond.setOnClickListener(new View.OnClickListener() {
+			((TextView) window.findViewById(R.id.tv_dialog_select_second)).setText(R.string.dialog_local);
+			((RelativeLayout) window.findViewById(R.id.rl_dialog_select_second)).setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					alertDialog.cancel();
@@ -298,32 +297,51 @@ public class MeDetailFragment extends Fragment {
 			Window window = alertDialog.getWindow();
 			window.setContentView(R.layout.dialog_select);
 			((TextView) window.findViewById(R.id.tv_dialog_select_title)).setText(R.string.dialog_title_sex);
+			final ImageView ivDialogSelectFirst = (ImageView) window.findViewById(R.id.iv_dialog_select_first);
+			final ImageView ivDialogSelectSecond = (ImageView) window.findViewById(R.id.iv_dialog_select_second);
+			if (me.getSex() == 1) {
+				ivDialogSelectFirst.setVisibility(View.VISIBLE);
+			} else {
+				ivDialogSelectSecond.setVisibility(View.VISIBLE);
+			}
 			// 男
-			TextView tvDialogSelectFirst = (TextView) window.findViewById(R.id.tv_dialog_select_first);
-			tvDialogSelectFirst.setText(R.string.dialog_male);
-			tvDialogSelectFirst.setOnClickListener(new View.OnClickListener() {
+			((TextView) window.findViewById(R.id.tv_dialog_select_first)).setText(R.string.dialog_male);
+			((RelativeLayout) window.findViewById(R.id.rl_dialog_select_first)).setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					if (me.getSex() != 1) {
+						ivDialogSelectFirst.setVisibility(View.VISIBLE);
+						ivDialogSelectSecond.setVisibility(View.GONE);
 						TIchatMe me = DatabaseUtils.getMe(meActivity);
 						me.setSex(1L);
 						DatabaseUtils.updateMe(meActivity, me);
 					}
-					alertDialog.cancel();
+					new Handler().postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							alertDialog.cancel();
+						}
+					}, 300);
 				}
 			});
 			// 女
-			TextView tvDialogSelectSecond = (TextView) window.findViewById(R.id.tv_dialog_select_second);
-			tvDialogSelectSecond.setText(R.string.dialog_female);
-			tvDialogSelectSecond.setOnClickListener(new View.OnClickListener() {
+			((TextView) window.findViewById(R.id.tv_dialog_select_second)).setText(R.string.dialog_female);
+			((RelativeLayout) window.findViewById(R.id.rl_dialog_select_second)).setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					if (me.getSex() != 0) {
+						ivDialogSelectFirst.setVisibility(View.GONE);
+						ivDialogSelectSecond.setVisibility(View.VISIBLE);
 						TIchatMe me = DatabaseUtils.getMe(meActivity);
 						me.setSex(0L);
 						DatabaseUtils.updateMe(meActivity, me);
 					}
-					alertDialog.cancel();
+					new Handler().postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							alertDialog.cancel();
+						}
+					}, 300);
 				}
 			});
 		}
