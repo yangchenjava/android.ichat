@@ -196,7 +196,6 @@ public class MeDetailFragment extends Fragment {
 			if (result.isSuccess()) {
 				destoryPhoto();
 				me.setPhoto(JsonUtils.fromJson(result.getMessage(), TIchatMe.class).getPhoto());
-				me.setPhotoName(me.getPhoto().substring(me.getPhoto().lastIndexOf("/") + 1));
 				DatabaseUtils.updateMe(meActivity, me);
 			} else {
 				AndroidUtils.alertToast(meActivity, result.getMessage());

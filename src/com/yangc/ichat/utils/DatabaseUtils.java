@@ -1,10 +1,12 @@
 package com.yangc.ichat.utils;
 
+import java.util.List;
+
 import android.content.Context;
-import android.text.TextUtils;
 
 import com.yangc.ichat.database.DaoMaster;
 import com.yangc.ichat.database.DaoSession;
+import com.yangc.ichat.database.bean.TIchatAddressbook;
 import com.yangc.ichat.database.bean.TIchatMe;
 
 public class DatabaseUtils {
@@ -36,9 +38,6 @@ public class DatabaseUtils {
 	}
 
 	public static void saveMe(Context context, TIchatMe me, String username, String password) {
-		if (!TextUtils.isEmpty(me.getPhoto())) {
-			me.setPhotoName(me.getPhoto().substring(me.getPhoto().lastIndexOf("/") + 1));
-		}
 		me.setUsername(username);
 		me.setPassword(password);
 
@@ -52,6 +51,14 @@ public class DatabaseUtils {
 
 	public static TIchatMe getMe(Context context) {
 		return getDaoSession(context).getTIchatMeDao().queryBuilder().unique();
+	}
+
+	public static void saveOrUpdateAddressbook(Context context, List<TIchatAddressbook> addressbookList) {
+		getDaoSession(context).getTIchatAddressbookDao().insertOrReplaceInTx(addressbookList);
+	}
+
+	public static List<TIchatAddressbook> getAddressbookList(Context context) {
+		return getDaoSession(context).getTIchatAddressbookDao().loadAll();
 	}
 
 }
