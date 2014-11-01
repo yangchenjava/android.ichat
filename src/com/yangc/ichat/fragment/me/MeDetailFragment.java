@@ -87,7 +87,7 @@ public class MeDetailFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		String undefined = this.getResources().getString(R.string.text_undefined);
+		String undefined = this.getResources().getString(R.string.me_detail_undefined);
 		this.me = DatabaseUtils.getMe(this.meActivity);
 		this.tvMeDetailNickname.setText(TextUtils.isEmpty(this.me.getNickname()) ? undefined : this.me.getNickname());
 		this.tvMeDetailPhone.setText(TextUtils.isEmpty(this.me.getPhone()) ? undefined : this.me.getPhone());

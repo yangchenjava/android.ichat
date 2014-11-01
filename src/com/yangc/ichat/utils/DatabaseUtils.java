@@ -8,6 +8,7 @@ import com.yangc.ichat.database.DaoMaster;
 import com.yangc.ichat.database.DaoSession;
 import com.yangc.ichat.database.bean.TIchatAddressbook;
 import com.yangc.ichat.database.bean.TIchatMe;
+import com.yangc.ichat.database.dao.TIchatAddressbookDao.Properties;
 
 public class DatabaseUtils {
 
@@ -58,7 +59,7 @@ public class DatabaseUtils {
 	}
 
 	public static List<TIchatAddressbook> getAddressbookList(Context context) {
-		return getDaoSession(context).getTIchatAddressbookDao().loadAll();
+		return getDaoSession(context).getTIchatAddressbookDao().queryBuilder().orderAsc(Properties.Spell).list();
 	}
 
 }

@@ -8,20 +8,19 @@ import java.util.Map.Entry;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.params.CookiePolicy;
+import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.cookie.Cookie;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.HTTP;
 
 import android.text.TextUtils;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.toolbox.HttpStack;
+import com.yangc.ichat.http.MultipartEntity;
 
 public class MultiPartStack implements HttpStack {
 
@@ -37,25 +36,25 @@ public class MultiPartStack implements HttpStack {
 
 		HttpPost httpPost = new HttpPost(multiPartRequest.getUrl());
 		HttpParams httpParams = httpPost.getParams();
+		HttpClientParams.setCookiePolicy(httpParams, CookiePolicy.BROWSER_COMPATIBILITY);
 		HttpConnectionParams.setConnectionTimeout(httpParams, multiPartRequest.getTimeoutMs());
 		HttpConnectionParams.setSoTimeout(httpParams, multiPartRequest.getTimeoutMs());
 		for (Entry<String, String> entry : headers.entrySet()) {
 			httpPost.setHeader(entry.getKey(), entry.getValue());
 		}
 
-		MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create().setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-		ContentType contentType = ContentType.create(HTTP.PLAIN_TEXT_TYPE, HTTP.UTF_8);
+		MultipartEntity multipartEntity = new MultipartEntity();
 		Map<String, Object> paramsMap = multiPartRequest.getMultiPartParams();
 		if (paramsMap != null && !paramsMap.isEmpty()) {
 			for (Entry<String, Object> entry : paramsMap.entrySet()) {
 				if (entry.getValue() instanceof File) {
-					multipartEntityBuilder.addBinaryBody(entry.getKey(), (File) entry.getValue());
+					multipartEntity.addPart(entry.getKey(), (File) entry.getValue());
 				} else {
-					multipartEntityBuilder.addTextBody(entry.getKey(), entry.getValue().toString(), contentType);
+					multipartEntity.addPart(entry.getKey(), entry.getValue().toString());
 				}
 			}
 		}
-		httpPost.setEntity(multipartEntityBuilder.build());
+		httpPost.setEntity(multipartEntity);
 
 		DefaultHttpClient httpClient = new DefaultHttpClient(httpParams);
 		HttpResponse httpResponse = httpClient.execute(httpPost);

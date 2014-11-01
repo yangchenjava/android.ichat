@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@android:color/white" >
 
     <ListView
         android:id="@+id/lv_addressbook"
@@ -13,15 +14,26 @@
         android:dividerHeight="1dp"
         android:drawSelectorOnTop="false"
         android:fadingEdge="none"
-        android:scrollbars="vertical" >
+        android:scrollbars="none" >
     </ListView>
 
     <com.yangc.ichat.widget.IndexScroller
         android:id="@+id/is_index"
-        android:layout_width="30dp"
+        android:layout_width="25dp"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:background="@android:color/transparent" />
+
+    <TextView
+        android:id="@+id/tv_index_word"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/shape_bkg_green"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="50sp"
+        android:visibility="gone" />
 
 </RelativeLayout>

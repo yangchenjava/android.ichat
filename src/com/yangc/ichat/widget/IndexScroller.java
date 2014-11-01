@@ -4,21 +4,22 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
 public class IndexScroller extends View {
 
-	private WordChanged onTouchWordChangedListener;
-	private char[] words = { '★', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '#' };
+	private OnTouchWordChangedListener onTouchWordChangedListener;
+	private String[] words = { "★", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "#" };
 	private int choose = -1;
 	private Paint paint = new Paint();
 	private boolean showBackground;
 
-	public interface WordChanged {
+	public interface OnTouchWordChangedListener {
 		public void onTouchWordChanged(String word);
+
+		public void onTouchWordLeft();
 	}
 
 	public IndexScroller(Context context) {
@@ -33,12 +34,8 @@ public class IndexScroller extends View {
 		super(context, attrs, defStyle);
 	}
 
-	public void setOnTouchWordChangedListener(WordChanged onTouchWordChangedListener) {
+	public void setOnTouchWordChangedListener(OnTouchWordChangedListener onTouchWordChangedListener) {
 		this.onTouchWordChangedListener = onTouchWordChangedListener;
-	}
-
-	public void setWords(String words) {
-		this.words = words.toCharArray();
 	}
 
 	@Override
@@ -55,19 +52,19 @@ public class IndexScroller extends View {
 			if (this.showBackground) {
 				this.paint.setColor(Color.WHITE);
 			} else {
-				this.paint.setColor(Color.parseColor("#40474F"));
+				this.paint.setColor(Color.parseColor("#88888D"));
 			}
-			this.paint.setTypeface(Typeface.DEFAULT_BOLD);
+			// this.paint.setTypeface(Typeface.DEFAULT_BOLD);
 			// 消除字体锯齿
 			this.paint.setAntiAlias(true);
-			this.paint.setTextSize(18);
+			this.paint.setTextSize(16);
 			if (i == this.choose) {
-				this.paint.setColor(Color.parseColor("#3399FF"));
+				this.paint.setColor(Color.parseColor("#38C03F"));
 				this.paint.setFakeBoldText(true);
 			}
-			float xPos = width / 2 - this.paint.measureText(String.valueOf(this.words[i])) / 2;
+			float xPos = width / 2 - this.paint.measureText(this.words[i]) / 2;
 			float yPos = singleHeight * i + singleHeight;
-			canvas.drawText(String.valueOf(this.words[i]), xPos, yPos, this.paint);
+			canvas.drawText(this.words[i], xPos, yPos, this.paint);
 			this.paint.reset();
 		}
 	}
@@ -83,7 +80,7 @@ public class IndexScroller extends View {
 			this.showBackground = true;
 			if (this.choose != c && this.onTouchWordChangedListener != null) {
 				if (c >= 0 && c < this.words.length) {
-					this.onTouchWordChangedListener.onTouchWordChanged(String.valueOf(this.words[c]));
+					this.onTouchWordChangedListener.onTouchWordChanged(this.words[c]);
 					this.choose = c;
 					this.invalidate();
 				}
@@ -94,10 +91,11 @@ public class IndexScroller extends View {
 				// 手指滑动右侧边的区域, 超过指定区域, 功能失效
 				if (event.getX() <= -20) {
 					this.showBackground = false;
+					this.onTouchWordChangedListener.onTouchWordLeft();
 					this.choose = -1;
 					this.invalidate();
 				} else if (c >= 0 && c < this.words.length && this.showBackground) {
-					this.onTouchWordChangedListener.onTouchWordChanged(String.valueOf(this.words[c]));
+					this.onTouchWordChangedListener.onTouchWordChanged(this.words[c]);
 					this.choose = c;
 					this.invalidate();
 				}
@@ -105,6 +103,7 @@ public class IndexScroller extends View {
 			break;
 		case MotionEvent.ACTION_UP:
 			this.showBackground = false;
+			this.onTouchWordChangedListener.onTouchWordLeft();
 			this.choose = -1;
 			this.invalidate();
 			break;

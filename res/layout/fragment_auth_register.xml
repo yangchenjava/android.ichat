@@ -232,16 +232,16 @@
                     android:id="@+id/rb_register_sex_male"
                     style="@style/radio_sex"
                     android:checked="true"
-                    android:drawableLeft="@drawable/selector_radio_sex"
-                    android:drawableStart="@drawable/selector_radio_sex"
+                    android:drawableLeft="@drawable/selector_radio"
+                    android:drawableStart="@drawable/selector_radio"
                     android:text="@string/register_input_sex_male" />
 
                 <RadioButton
                     android:id="@+id/rb_register_sex_female"
                     style="@style/radio_sex"
                     android:checked="false"
-                    android:drawableLeft="@drawable/selector_radio_sex"
-                    android:drawableStart="@drawable/selector_radio_sex"
+                    android:drawableLeft="@drawable/selector_radio"
+                    android:drawableStart="@drawable/selector_radio"
                     android:text="@string/register_input_sex_female" />
             </RadioGroup>
 

@@ -6,7 +6,11 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.yangc.ichat.R;
 import com.yangc.ichat.database.bean.TIchatAddressbook;
 
 public class AddressbookFragmentAdapter extends BaseAdapter {
@@ -36,7 +40,61 @@ public class AddressbookFragmentAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		return null;
+		View view;
+		ViewHolder viewHolder;
+		if (convertView == null) {
+			view = View.inflate(this.context, R.layout.fragment_tab_addressbook_item, null);
+			viewHolder = new ViewHolder();
+			viewHolder.rlAddressbookItem = (RelativeLayout) view.findViewById(R.id.rl_addressbook_item);
+			viewHolder.tvAddressbookItemWord = (TextView) view.findViewById(R.id.tv_addressbook_item_word);
+			viewHolder.ivAddressbookItemPhoto = (ImageView) view.findViewById(R.id.iv_addressbook_item_photo);
+			viewHolder.tvAddressbookItemNickname = (TextView) view.findViewById(R.id.tv_addressbook_item_nickname);
+			viewHolder.tvAddressbookItemSignature = (TextView) view.findViewById(R.id.tv_addressbook_item_signature);
+			viewHolder.tvAddressbookItemTotal = (TextView) view.findViewById(R.id.tv_addressbook_item_total);
+			view.setTag(viewHolder);
+		} else {
+			view = convertView;
+			viewHolder = (ViewHolder) view.getTag();
+		}
+
+		TIchatAddressbook addressbook = this.list.get(position);
+		if (addressbook.getId() != null) {
+			viewHolder.rlAddressbookItem.setBackgroundResource(R.drawable.selector_main);
+			viewHolder.tvAddressbookItemWord.setVisibility(View.GONE);
+			viewHolder.ivAddressbookItemPhoto.setVisibility(View.VISIBLE);
+			viewHolder.ivAddressbookItemPhoto.setImageResource(R.drawable.me_info);
+			viewHolder.tvAddressbookItemNickname.setVisibility(View.VISIBLE);
+			viewHolder.tvAddressbookItemNickname.setText(addressbook.getNickname());
+			viewHolder.tvAddressbookItemSignature.setVisibility(View.VISIBLE);
+			viewHolder.tvAddressbookItemSignature.setText(addressbook.getSignature());
+			viewHolder.tvAddressbookItemTotal.setVisibility(View.GONE);
+		} else {
+			if (position == this.list.size() - 1) {
+				viewHolder.rlAddressbookItem.setBackgroundResource(android.R.color.white);
+				viewHolder.tvAddressbookItemWord.setVisibility(View.GONE);
+				viewHolder.tvAddressbookItemTotal.setVisibility(View.VISIBLE);
+				viewHolder.tvAddressbookItemTotal.setText(addressbook.getNickname());
+			} else {
+				viewHolder.rlAddressbookItem.setBackgroundResource(R.drawable.layer_dividing_line);
+				viewHolder.tvAddressbookItemWord.setVisibility(View.VISIBLE);
+				viewHolder.tvAddressbookItemWord.setText(addressbook.getNickname());
+				viewHolder.tvAddressbookItemTotal.setVisibility(View.GONE);
+			}
+			viewHolder.ivAddressbookItemPhoto.setVisibility(View.GONE);
+			viewHolder.tvAddressbookItemNickname.setVisibility(View.GONE);
+			viewHolder.tvAddressbookItemSignature.setVisibility(View.GONE);
+		}
+
+		return view;
+	}
+
+	private class ViewHolder {
+		RelativeLayout rlAddressbookItem;
+		TextView tvAddressbookItemWord;
+		ImageView ivAddressbookItemPhoto;
+		TextView tvAddressbookItemNickname;
+		TextView tvAddressbookItemSignature;
+		TextView tvAddressbookItemTotal;
 	}
 
 }

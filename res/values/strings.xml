@@ -8,8 +8,6 @@
 
     <!-- text -->
     <string name="text_load">后台小弟疯狂奔走中&#8230;</string>
-    <string name="text_complete">完成</string>
-    <string name="text_undefined">未设置</string>
 
     <!-- error -->
     <string name="error_timeout">请求超时，请稍后重试</string>
@@ -81,6 +79,9 @@
     <string name="tab_find">发现</string>
     <string name="tab_me">我</string>
 
+    <!-- addressbook -->
+    <string name="addressbook_total">位联系人</string>
+
     <!-- find -->
     <string name="find_friend">朋友圈</string>
     <string name="find_scan">扫一扫</string>
@@ -101,5 +102,7 @@
     <string name="me_detail_code">二维码名片</string>
     <string name="me_detail_sex">性别</string>
     <string name="me_detail_signature">个性签名</string>
+    <string name="me_detail_undefined">未设置</string>
+    <string name="me_detail_complete_button">完成</string>
 
 </resources>
