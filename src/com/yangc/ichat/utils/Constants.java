@@ -7,6 +7,7 @@ public class Constants {
 
 	public static final String APP = "ichat";
 
+	public static final String CACHE_HTTP = "http";
 	public static final String CACHE_PORTRAIT = "portrait";
 
 	public static String USER_ID;

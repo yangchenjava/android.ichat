@@ -19,15 +19,16 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.yangc.ichat.R;
 import com.yangc.ichat.activity.MainActivity;
 import com.yangc.ichat.activity.MeActivity;
 import com.yangc.ichat.database.bean.TIchatMe;
 import com.yangc.ichat.utils.AndroidUtils;
-import com.yangc.ichat.utils.BitmapUtils;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.DatabaseUtils;
+import com.yangc.ichat.utils.UILUtils;
 import com.yangc.ichat.utils.VolleyUtils;
 import com.yangc.ichat.volley.GsonObjectRequest;
 import com.yangc.ichat.volley.VolleyErrorHelper;
@@ -35,6 +36,7 @@ import com.yangc.ichat.volley.VolleyErrorHelper;
 public class MeFragment extends Fragment {
 
 	private MainActivity mainActivity;
+	private DisplayImageOptions options;
 
 	private ImageView ivMeInfoPhoto;
 	private TextView tvMeInfoNickname;
@@ -45,6 +47,7 @@ public class MeFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		this.mainActivity = (MainActivity) this.getActivity();
+		this.options = UILUtils.getDisplayImageOptions();
 		View view = inflater.inflate(R.layout.fragment_tab_me, container, false);
 		((RelativeLayout) view.findViewById(R.id.rl_me_info)).setOnClickListener(this.meInfoListener);
 		this.ivMeInfoPhoto = (ImageView) view.findViewById(R.id.iv_me_info_photo);
@@ -74,22 +77,7 @@ public class MeFragment extends Fragment {
 		if (TextUtils.isEmpty(me.getPhoto())) {
 			this.ivMeInfoPhoto.setImageResource(R.drawable.me_info);
 		} else {
-			ImageLoader.ImageListener imageListener = new ImageLoader.ImageListener() {
-				@Override
-				public void onErrorResponse(VolleyError error) {
-					ivMeInfoPhoto.setImageResource(R.drawable.me_info);
-				}
-
-				@Override
-				public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-					if (response.getBitmap() != null) {
-						ivMeInfoPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(response.getBitmap()));
-					} else {
-						ivMeInfoPhoto.setImageResource(R.drawable.me_info);
-					}
-				}
-			};
-			VolleyUtils.getImageLoader().get(Constants.SERVER_URL + me.getPhoto(), imageListener);
+			ImageLoader.getInstance().displayImage(Constants.SERVER_URL + me.getPhoto(), this.ivMeInfoPhoto, this.options);
 		}
 		this.tvMeInfoNickname.setText(me.getNickname());
 		this.tvMeInfoUsername.setText(this.getResources().getString(R.string.me_info) + me.getUsername());

@@ -9,7 +9,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,7 +29,8 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.yangc.ichat.R;
 import com.yangc.ichat.activity.MeActivity;
 import com.yangc.ichat.bean.ResultBean;
@@ -40,6 +40,7 @@ import com.yangc.ichat.utils.BitmapUtils;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.DatabaseUtils;
 import com.yangc.ichat.utils.JsonUtils;
+import com.yangc.ichat.utils.UILUtils;
 import com.yangc.ichat.utils.VolleyUtils;
 import com.yangc.ichat.volley.MultiPartRequest;
 import com.yangc.ichat.volley.VolleyErrorHelper;
@@ -53,6 +54,7 @@ public class MeDetailFragment extends Fragment {
 	private static final String PNG_DEST = "me.png";
 
 	private MeActivity meActivity;
+	private DisplayImageOptions options;
 
 	private ImageView ivMeDetailPhoto;
 	private TextView tvMeDetailNickname;
@@ -61,7 +63,7 @@ public class MeDetailFragment extends Fragment {
 	private TextView tvMeDetailSignature;
 
 	private TIchatMe me;
-	private File photo;
+	private File photoFile;
 
 	private ProgressDialog progressDialog;
 	private Request<ResultBean> request;
@@ -69,6 +71,7 @@ public class MeDetailFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		this.meActivity = (MeActivity) this.getActivity();
+		this.options = UILUtils.getDisplayImageOptions();
 		View view = inflater.inflate(R.layout.fragment_me_detail, container, false);
 		((ImageView) view.findViewById(R.id.iv_me_detail_backspace)).setOnClickListener(this.backspaceListener);
 		((RelativeLayout) view.findViewById(R.id.rl_me_detail_photo)).setOnClickListener(this.photoListener);
@@ -94,31 +97,15 @@ public class MeDetailFragment extends Fragment {
 		this.tvMeDetailSex.setText(this.me.getSex() == 0 ? "女" : "男");
 		this.tvMeDetailSignature.setText(TextUtils.isEmpty(this.me.getSignature()) ? undefined : this.me.getSignature());
 
-		if (this.photo != null && this.photo.getName().equals(PNG_DEST)) {
+		if (this.photoFile != null && this.photoFile.getName().equals(PNG_DEST)) {
 			progressDialog = ProgressDialog.show(this.meActivity, "", getResources().getString(R.string.text_load), true);
-			this.ivMeDetailPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(BitmapFactory.decodeFile(this.photo.getAbsolutePath())));
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("id", this.me.getId());
-			params.put("photo", photo);
+			params.put("photo", photoFile);
 			this.request = new MultiPartRequest<ResultBean>(Constants.UPDATE_PERSON_PHOTO, params, ResultBean.class, listener, errorListener);
 			VolleyUtils.addMultiPartRequest(this.request, MeActivity.TAG);
 		} else {
-			ImageLoader.ImageListener imageListener = new ImageLoader.ImageListener() {
-				@Override
-				public void onErrorResponse(VolleyError error) {
-					ivMeDetailPhoto.setImageResource(R.drawable.me_info);
-				}
-
-				@Override
-				public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-					if (response.getBitmap() != null) {
-						ivMeDetailPhoto.setImageBitmap(BitmapUtils.getRoundedCornerBitmap(response.getBitmap()));
-					} else {
-						ivMeDetailPhoto.setImageResource(R.drawable.me_info);
-					}
-				}
-			};
-			VolleyUtils.getImageLoader().get(Constants.SERVER_URL + me.getPhoto(), imageListener);
+			ImageLoader.getInstance().displayImage(Constants.SERVER_URL + me.getPhoto(), this.ivMeDetailPhoto, this.options);
 		}
 	}
 
@@ -127,9 +114,9 @@ public class MeDetailFragment extends Fragment {
 		switch (requestCode) {
 		case PHOTO_CAMERA:
 			if (data != null) {
-				this.startImageZoom(Uri.fromFile(this.photo));
-			} else if (this.photo != null) {
-				this.destoryPhoto();
+				this.startImageZoom(Uri.fromFile(this.photoFile));
+			} else if (this.photoFile != null) {
+				this.destoryPhotoFile();
 			}
 			break;
 		case PHOTO_LOCAL:
@@ -140,26 +127,26 @@ public class MeDetailFragment extends Fragment {
 		case PHOTO_CUT:
 			if (data != null) {
 				this.setImageToView(data);
-			} else if (this.photo != null) {
-				this.destoryPhoto();
+			} else if (this.photoFile != null) {
+				this.destoryPhotoFile();
 			}
 			break;
 		}
 	}
 
-	private void initPhoto(String fileName) {
-		this.photo = new File(AndroidUtils.getCacheDir(this.meActivity, Constants.CACHE_PORTRAIT), fileName);
+	private void initPhotoFile(String fileName) {
+		this.photoFile = new File(AndroidUtils.getCacheDir(this.meActivity, Constants.CACHE_PORTRAIT), fileName);
 		try {
-			this.photo.createNewFile();
+			this.photoFile.createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void destoryPhoto() {
-		if (this.photo != null) {
-			this.photo.delete();
-			this.photo = null;
+	private void destoryPhotoFile() {
+		if (this.photoFile != null) {
+			this.photoFile.delete();
+			this.photoFile = null;
 		}
 	}
 
@@ -183,9 +170,9 @@ public class MeDetailFragment extends Fragment {
 		Bundle bundle = data.getExtras();
 		if (bundle != null) {
 			Bitmap bitmap = bundle.getParcelable("data");
-			this.destoryPhoto();
-			this.initPhoto(PNG_DEST);
-			BitmapUtils.writeBitmapToFile(bitmap, this.photo);
+			this.destoryPhotoFile();
+			this.initPhotoFile(PNG_DEST);
+			BitmapUtils.writeBitmapToFile(bitmap, this.photoFile);
 		}
 	}
 
@@ -194,8 +181,10 @@ public class MeDetailFragment extends Fragment {
 		public void onResponse(ResultBean result) {
 			cancelProgressDialog();
 			if (result.isSuccess()) {
-				destoryPhoto();
-				me.setPhoto(JsonUtils.fromJson(result.getMessage(), TIchatMe.class).getPhoto());
+				String photo = JsonUtils.fromJson(result.getMessage(), TIchatMe.class).getPhoto();
+				ImageLoader.getInstance().displayImage(Constants.SERVER_URL + photo, ivMeDetailPhoto, options);
+				destoryPhotoFile();
+				me.setPhoto(photo);
 				DatabaseUtils.updateMe(meActivity, me);
 			} else {
 				AndroidUtils.alertToast(meActivity, result.getMessage());
@@ -247,9 +236,9 @@ public class MeDetailFragment extends Fragment {
 					alertDialog.cancel();
 					// 调用系统的拍照功能
 					Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-					initPhoto(PNG_TEMP);
+					initPhotoFile(PNG_TEMP);
 					// 指定调用相机拍照后照片的储存路径
-					intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
+					intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
 					startActivityForResult(intent, PHOTO_CAMERA);
 				}
 			});

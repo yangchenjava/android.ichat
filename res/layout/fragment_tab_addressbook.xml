@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:cacheColorHint="@android:color/transparent"
         android:divider="@color/dividing_line_addressbook"
-        android:dividerHeight="1dp"
+        android:dividerHeight="0.5dp"
         android:drawSelectorOnTop="false"
         android:fadingEdge="none"
         android:scrollbars="none" >

@@ -16,7 +16,7 @@ import org.apache.http.message.BasicHeader;
 
 public class MultipartEntity implements HttpEntity {
 
-	private final static char[] MULTIPART_CHARS = "-_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+	private static final char[] MULTIPART_CHARS = "-_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
 
 	private String boundary = null;
 

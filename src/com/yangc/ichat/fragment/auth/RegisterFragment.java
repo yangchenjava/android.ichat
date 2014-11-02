@@ -74,7 +74,7 @@ public class RegisterFragment extends Fragment {
 
 	private String username;
 	private String password;
-	private File photo;
+	private File photoFile;
 
 	private ProgressDialog progressDialog;
 
@@ -105,8 +105,8 @@ public class RegisterFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (this.photo != null && this.photo.getName().equals(PNG_DEST)) {
-			this.etRegisterPhoto.setImageBitmap(BitmapFactory.decodeFile(this.photo.getAbsolutePath()));
+		if (this.photoFile != null && this.photoFile.getName().equals(PNG_DEST)) {
+			this.etRegisterPhoto.setImageBitmap(BitmapFactory.decodeFile(this.photoFile.getAbsolutePath()));
 		}
 	}
 
@@ -115,9 +115,9 @@ public class RegisterFragment extends Fragment {
 		switch (requestCode) {
 		case PHOTO_CAMERA:
 			if (data != null) {
-				this.startImageZoom(Uri.fromFile(this.photo));
-			} else if (this.photo != null) {
-				this.destoryPhoto();
+				this.startImageZoom(Uri.fromFile(this.photoFile));
+			} else if (this.photoFile != null) {
+				this.destoryPhotoFile();
 			}
 			break;
 		case PHOTO_LOCAL:
@@ -128,26 +128,26 @@ public class RegisterFragment extends Fragment {
 		case PHOTO_CUT:
 			if (data != null) {
 				this.setImageToView(data);
-			} else if (this.photo != null) {
-				this.destoryPhoto();
+			} else if (this.photoFile != null) {
+				this.destoryPhotoFile();
 			}
 			break;
 		}
 	}
 
-	private void initPhoto(String fileName) {
-		this.photo = new File(AndroidUtils.getCacheDir(this.authActivity, Constants.CACHE_PORTRAIT), fileName);
+	private void initPhotoFile(String fileName) {
+		this.photoFile = new File(AndroidUtils.getCacheDir(this.authActivity, Constants.CACHE_PORTRAIT), fileName);
 		try {
-			this.photo.createNewFile();
+			this.photoFile.createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void destoryPhoto() {
-		if (this.photo != null) {
-			this.photo.delete();
-			this.photo = null;
+	private void destoryPhotoFile() {
+		if (this.photoFile != null) {
+			this.photoFile.delete();
+			this.photoFile = null;
 		}
 	}
 
@@ -171,9 +171,9 @@ public class RegisterFragment extends Fragment {
 		Bundle bundle = data.getExtras();
 		if (bundle != null) {
 			Bitmap bitmap = bundle.getParcelable("data");
-			this.destoryPhoto();
-			this.initPhoto(PNG_DEST);
-			BitmapUtils.writeBitmapToFile(bitmap, this.photo);
+			this.destoryPhotoFile();
+			this.initPhotoFile(PNG_DEST);
+			BitmapUtils.writeBitmapToFile(bitmap, this.photoFile);
 		}
 	}
 
@@ -185,7 +185,7 @@ public class RegisterFragment extends Fragment {
 		}
 		int visibility = this.llRegister_1.getVisibility();
 		if (visibility == View.VISIBLE) {
-			this.destoryPhoto();
+			this.destoryPhotoFile();
 			this.authActivity.getSupportFragmentManager().popBackStack();
 		} else if (visibility == View.GONE) {
 			this.llRegister_1.setVisibility(View.VISIBLE);
@@ -248,9 +248,9 @@ public class RegisterFragment extends Fragment {
 					alertDialog.cancel();
 					// 调用系统的拍照功能
 					Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-					initPhoto(PNG_TEMP);
+					initPhotoFile(PNG_TEMP);
 					// 指定调用相机拍照后照片的储存路径
-					intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
+					intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
 					startActivityForResult(intent, PHOTO_CAMERA);
 				}
 			});
@@ -294,8 +294,8 @@ public class RegisterFragment extends Fragment {
 			params.put("sex", rgRegisterSex.getCheckedRadioButtonId() == R.id.rb_register_sex_female ? 0 : 1);
 			params.put("phone", phone);
 			params.put("signature", etRegisterSignature.getText().toString());
-			if (photo != null) {
-				params.put("photo", photo);
+			if (photoFile != null) {
+				params.put("photo", photoFile);
 			}
 			Request<ResultBean> request = new MultiPartRequest<ResultBean>(Constants.REGISTER, params, ResultBean.class, listener, errorListener);
 			request.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
@@ -307,7 +307,7 @@ public class RegisterFragment extends Fragment {
 		@Override
 		public void onResponse(ResultBean result) {
 			if (result.isSuccess()) {
-				destoryPhoto();
+				destoryPhotoFile();
 				TIchatMe me = JsonUtils.fromJson(result.getMessage(), TIchatMe.class);
 				DatabaseUtils.saveMe(authActivity, me, username, password);
 				Constants.saveConstants(authActivity, "" + me.getUserId(), username, password);

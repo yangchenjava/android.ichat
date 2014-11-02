@@ -3,6 +3,7 @@ package com.yangc.ichat.fragment.tab.adapter;
 import java.util.List;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -10,13 +11,18 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.yangc.ichat.R;
 import com.yangc.ichat.database.bean.TIchatAddressbook;
+import com.yangc.ichat.utils.Constants;
+import com.yangc.ichat.utils.UILUtils;
 
 public class AddressbookFragmentAdapter extends BaseAdapter {
 
 	private Context context;
 	private List<TIchatAddressbook> list;
+	private DisplayImageOptions options = UILUtils.getDisplayImageOptions();
 
 	public AddressbookFragmentAdapter(Context context, List<TIchatAddressbook> list) {
 		this.context = context;
@@ -62,11 +68,19 @@ public class AddressbookFragmentAdapter extends BaseAdapter {
 			viewHolder.rlAddressbookItem.setBackgroundResource(R.drawable.selector_main);
 			viewHolder.tvAddressbookItemWord.setVisibility(View.GONE);
 			viewHolder.ivAddressbookItemPhoto.setVisibility(View.VISIBLE);
-			viewHolder.ivAddressbookItemPhoto.setImageResource(R.drawable.me_info);
+			if (TextUtils.isEmpty(addressbook.getPhoto())) {
+				viewHolder.ivAddressbookItemPhoto.setImageResource(R.drawable.me_info);
+			} else {
+				ImageLoader.getInstance().displayImage(Constants.SERVER_URL + addressbook.getPhoto(), viewHolder.ivAddressbookItemPhoto, this.options);
+			}
 			viewHolder.tvAddressbookItemNickname.setVisibility(View.VISIBLE);
 			viewHolder.tvAddressbookItemNickname.setText(addressbook.getNickname());
-			viewHolder.tvAddressbookItemSignature.setVisibility(View.VISIBLE);
-			viewHolder.tvAddressbookItemSignature.setText(addressbook.getSignature());
+			if (TextUtils.isEmpty(addressbook.getSignature())) {
+				viewHolder.tvAddressbookItemSignature.setVisibility(View.GONE);
+			} else {
+				viewHolder.tvAddressbookItemSignature.setVisibility(View.VISIBLE);
+				viewHolder.tvAddressbookItemSignature.setText(addressbook.getSignature());
+			}
 			viewHolder.tvAddressbookItemTotal.setVisibility(View.GONE);
 		} else {
 			if (position == this.list.size() - 1) {
