@@ -147,7 +147,6 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	private void initView(int tabId) {
-		CURRENT_TAB_ID = tabId;
 		switch (tabId) {
 		case R.id.ll_tab_wechat:
 			((ImageView) this.llTabWechat.findViewById(R.id.iv_tab_wechat)).setImageResource(R.drawable.tab_wechat_select);
@@ -167,8 +166,17 @@ public class MainActivity extends FragmentActivity {
 			break;
 		}
 		FragmentTransaction fragmentTransaction = this.getSupportFragmentManager().beginTransaction();
-		fragmentTransaction.replace(R.id.rl_main, this.fragments.get(tabId));
+		Fragment currentFragment = this.getSupportFragmentManager().findFragmentByTag("" + CURRENT_TAB_ID);
+		if (currentFragment != null) {
+			fragmentTransaction.hide(currentFragment);
+		}
+		if (this.fragments.get(tabId).isAdded()) {
+			fragmentTransaction.show(this.fragments.get(tabId));
+		} else {
+			fragmentTransaction.add(R.id.rl_main, this.fragments.get(tabId), "" + tabId);
+		}
 		fragmentTransaction.commit();
+		CURRENT_TAB_ID = tabId;
 	}
 
 	private class ClickListener implements View.OnClickListener {

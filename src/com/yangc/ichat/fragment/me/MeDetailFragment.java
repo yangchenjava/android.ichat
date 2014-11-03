@@ -9,6 +9,8 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +19,7 @@ import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -76,6 +79,8 @@ public class MeDetailFragment extends Fragment {
 		((ImageView) view.findViewById(R.id.iv_me_detail_backspace)).setOnClickListener(this.backspaceListener);
 		((RelativeLayout) view.findViewById(R.id.rl_me_detail_photo)).setOnClickListener(this.photoListener);
 		this.ivMeDetailPhoto = (ImageView) view.findViewById(R.id.iv_me_detail_photo);
+		this.ivMeDetailPhoto.setOnTouchListener(this.photoTouchListener);
+		this.ivMeDetailPhoto.setOnClickListener(this.photoClickListener);
 		((LinearLayout) view.findViewById(R.id.ll_me_detail_nickname)).setOnClickListener(this.nicknameListener);
 		this.tvMeDetailNickname = (TextView) view.findViewById(R.id.tv_me_detail_nickname);
 		((LinearLayout) view.findViewById(R.id.ll_me_detail_phone)).setOnClickListener(this.phoneListener);
@@ -253,6 +258,47 @@ public class MeDetailFragment extends Fragment {
 					startActivityForResult(intent, PHOTO_LOCAL);
 				}
 			});
+		}
+	};
+
+	private View.OnTouchListener photoTouchListener = new View.OnTouchListener() {
+		private boolean isInside;
+		private float x;
+		private float y;
+
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			if (v instanceof ImageView) {
+				switch (event.getAction()) {
+				case MotionEvent.ACTION_DOWN:
+					((ImageView) v).setColorFilter(Color.parseColor("#88888D"), PorterDuff.Mode.MULTIPLY);
+					this.isInside = true;
+					this.x = event.getX();
+					this.y = event.getY();
+					break;
+				case MotionEvent.ACTION_UP:
+					if (isInside) {
+						((ImageView) v).clearColorFilter();
+						v.performClick();
+					}
+					break;
+				case MotionEvent.ACTION_MOVE:
+					if (Math.abs(this.x - event.getX()) > 5 || Math.abs(this.y - event.getY()) > 5) {
+						((ImageView) v).clearColorFilter();
+						this.isInside = false;
+					}
+					break;
+				}
+				return true;
+			}
+			return false;
+		}
+	};
+
+	private View.OnClickListener photoClickListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			AndroidUtils.alertToast(meActivity, "ImageView click");
 		}
 	};
 

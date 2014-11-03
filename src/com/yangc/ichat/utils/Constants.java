@@ -15,7 +15,7 @@ public class Constants {
 	public static String PASSWORD;
 
 	/** 请求地址 */
-	public static final String SERVER_URL = "http://192.168.1.4:8080/com.yangc.bridge/";
+	public static final String SERVER_URL = "http://10.23.6.12:81/com.yangc.bridge/";
 	public static final String LOGIN = SERVER_URL + "resource/interface/login";
 	public static final String REGISTER = SERVER_URL + "resource/interface/register";
 	public static final String USER_INFO = SERVER_URL + "resource/interface/userInfo";

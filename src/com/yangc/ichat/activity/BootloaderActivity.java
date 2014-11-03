@@ -54,8 +54,8 @@ public class BootloaderActivity extends Activity {
 			this.startActivity(new Intent(this, AuthActivity.class));
 			this.finish();
 		} else {
-			this.startActivity(new Intent(this, MainActivity.class));
 			// TODO 启动TCP服务
+			// 同步用户信息
 			TIchatMe me = DatabaseUtils.getMe(this);
 			if (AndroidUtils.checkNetwork(this) && me != null) {
 				Map<String, String> params = new HashMap<String, String>();
@@ -66,7 +66,9 @@ public class BootloaderActivity extends Activity {
 				params.put("signature", me.getSignature());
 				this.request = new GsonObjectRequest<ResultBean>(Request.Method.POST, Constants.UPDATE_PERSON, params, ResultBean.class, listener, errorListener);
 				VolleyUtils.addNormalRequest(this.request, TAG);
+				this.startActivity(new Intent(this, MainActivity.class));
 			} else {
+				this.startActivity(new Intent(this, MainActivity.class));
 				this.finish();
 			}
 		}
