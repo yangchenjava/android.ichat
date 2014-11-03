@@ -261,6 +261,7 @@ public class MeDetailFragment extends Fragment {
 		}
 	};
 
+	// imageview点击效果
 	private View.OnTouchListener photoTouchListener = new View.OnTouchListener() {
 		private boolean isInside;
 		private float x;
@@ -295,10 +296,15 @@ public class MeDetailFragment extends Fragment {
 		}
 	};
 
+	// 头像大图查看
 	private View.OnClickListener photoClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			AndroidUtils.alertToast(meActivity, "ImageView click");
+			if (!TextUtils.isEmpty(me.getPhoto())) {
+				Bundle bundle = new Bundle(1);
+				bundle.putString("photo", me.getPhoto());
+				meActivity.addFragmentToStack(new MeDetailPhotoFragment(), bundle, true);
+			}
 		}
 	};
 

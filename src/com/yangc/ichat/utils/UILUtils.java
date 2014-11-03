@@ -30,7 +30,7 @@ public class UILUtils {
 
 	public static DisplayImageOptions getDisplayImageOptions() {
 		DisplayImageOptions options = new DisplayImageOptions.Builder().showImageOnLoading(R.drawable.me_info).showImageForEmptyUri(R.drawable.me_info).showImageOnFail(R.drawable.me_info)
-				.cacheInMemory(true).cacheOnDisk(true).imageScaleType(ImageScaleType.EXACTLY).bitmapConfig(Bitmap.Config.ARGB_8888).displayer(new RoundedBitmapDisplayer(8)).build();
+				.cacheInMemory(true).cacheOnDisk(true).imageScaleType(ImageScaleType.NONE).bitmapConfig(Bitmap.Config.ARGB_8888).displayer(new RoundedBitmapDisplayer(8)).build();
 		return options;
 	}
 
