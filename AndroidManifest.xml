@@ -43,6 +43,10 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
+            android:name=".activity.FriendActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
             android:name=".activity.MeActivity"
             android:screenOrientation="portrait" >
         </activity>

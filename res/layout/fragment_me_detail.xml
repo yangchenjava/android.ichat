@@ -54,7 +54,7 @@
 
             <TextView
                 android:layout_width="80dp"
-                android:layout_height="70dp"
+                android:layout_height="80dp"
                 android:gravity="center_vertical"
                 android:text="@string/me_detail_photo"
                 android:textColor="@android:color/black"
@@ -62,8 +62,8 @@
 
             <ImageView
                 android:id="@+id/iv_me_detail_photo"
-                android:layout_width="55dp"
-                android:layout_height="55dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"

@@ -32,6 +32,7 @@
 
     <!-- title_bar -->
     <string name="fragment_auth_logout">登录或注册</string>
+    <string name="fragment_friend_info">详细资料</string>
     <string name="fragment_me_detail">个人信息</string>
     <string name="fragment_me_detail_nickname">更改昵称</string>
     <string name="fragment_me_detail_phone">更改电话</string>
@@ -81,6 +82,22 @@
 
     <!-- addressbook -->
     <string name="addressbook_total">位联系人</string>
+
+    <!-- friend -->
+    <string name="friend_info_username">微信号：</string>
+    <string name="friend_info_phone">电话</string>
+    <string name="friend_info_signature">个性签名</string>
+    <string name="friend_info_undefined">未设置</string>
+    <string name="friend_info_send_button">发消息</string>
+    <string name="friend_info_cancel_button">取消</string>
+    <string name="friend_info_star_button">标为星标朋友</string>
+    <string name="friend_info_auth_button">设置朋友圈权限</string>
+    <string name="friend_info_card_button">发送该名片</string>
+    <string name="friend_info_note_button">备注名</string>
+    <string name="friend_info_black_button">加入黑名单</string>
+    <string name="friend_info_complain_button">投诉</string>
+    <string name="friend_info_delete_button">删除</string>
+    <string name="friend_info_desktop_button">添加到桌面</string>
 
     <!-- find -->
     <string name="find_friend">朋友圈</string>

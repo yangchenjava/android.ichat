@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_bkg"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/title_bar" >
+
+        <ImageView
+            android:id="@+id/iv_friend_info_backspace"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/selector_title_bar"
+            android:clickable="true"
+            android:contentDescription="@string/content_description"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/title_bar_backspace" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@id/iv_friend_info_backspace"
+            android:layout_toRightOf="@id/iv_friend_info_backspace"
+            android:gravity="center"
+            android:text="@string/fragment_friend_info"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:paddingEnd="15dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:paddingStart="15dp" >
+
+        <ImageView
+            android:id="@+id/iv_friend_info_photo"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:contentDescription="@string/content_description"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:id="@+id/tv_friend_info_nickname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_toEndOf="@id/iv_friend_info_photo"
+            android:layout_toRightOf="@id/iv_friend_info_photo"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tv_friend_info_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_friend_info_nickname"
+            android:layout_toEndOf="@id/iv_friend_info_photo"
+            android:layout_toRightOf="@id/iv_friend_info_photo"
+            android:textColor="@color/font_gray"
+            android:textSize="12sp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:background="@android:color/white"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_main"
+            android:clickable="true"
+            android:orientation="horizontal"
+            android:paddingEnd="15dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:paddingStart="15dp" >
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="50dp"
+                android:gravity="center_vertical"
+                android:text="@string/friend_info_phone"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_friend_info_phone"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                android:textColor="@color/font_gray"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginStart="15dp"
+            android:background="@color/main_dividing_line" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_main"
+            android:clickable="true"
+            android:orientation="horizontal"
+            android:paddingEnd="15dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:paddingStart="15dp" >
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="50dp"
+                android:gravity="center_vertical"
+                android:text="@string/friend_info_signature"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_friend_info_signature"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                android:textColor="@color/font_gray"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_friend_info_send"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginStart="15dp"
+        android:background="@drawable/selector_button_green"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="@string/friend_info_send_button"
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
+
+</LinearLayout>
