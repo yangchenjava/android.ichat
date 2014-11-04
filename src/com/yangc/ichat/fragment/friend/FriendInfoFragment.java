@@ -1,6 +1,5 @@
 package com.yangc.ichat.fragment.friend;
 
-import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -10,17 +9,15 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.yangc.ichat.R;
 import com.yangc.ichat.activity.FriendActivity;
+import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.UILUtils;
 
@@ -144,20 +141,7 @@ public class FriendInfoFragment extends Fragment {
 	private View.OnClickListener sendClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			LayoutInflater inflater = LayoutInflater.from(friendActivity);
-			View view = inflater.inflate(R.layout.dialog_progress, null);
-			LinearLayout layout = (LinearLayout) view.findViewById(R.id.ll_dialog_progress);
-			ImageView spaceshipImage = (ImageView) view.findViewById(R.id.iv_dialog_progress_image);
-			TextView tipTextView = (TextView) view.findViewById(R.id.tv_dialog_progress_text);
-			Animation hyperspaceJumpAnimation = AnimationUtils.loadAnimation(friendActivity, R.anim.rotate_loading);
-			spaceshipImage.startAnimation(hyperspaceJumpAnimation);
-			tipTextView.setText("测试");
-
-			Dialog loadingDialog = new Dialog(friendActivity, R.style.CustomProgressDialog);
-
-			loadingDialog.setCancelable(true);
-			loadingDialog.setContentView(layout, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
-			loadingDialog.show();
+			AndroidUtils.showProgressDialog(friendActivity, getResources().getString(R.string.text_load), true, true);
 		}
 	};
 

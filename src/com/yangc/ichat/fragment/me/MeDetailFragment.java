@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -68,7 +68,7 @@ public class MeDetailFragment extends Fragment {
 	private TIchatMe me;
 	private File photoFile;
 
-	private ProgressDialog progressDialog;
+	private Dialog progressDialog;
 	private Request<ResultBean> request;
 
 	@Override
@@ -103,7 +103,7 @@ public class MeDetailFragment extends Fragment {
 		this.tvMeDetailSignature.setText(TextUtils.isEmpty(this.me.getSignature()) ? undefined : this.me.getSignature());
 
 		if (this.photoFile != null && this.photoFile.getName().equals(PNG_DEST)) {
-			progressDialog = ProgressDialog.show(this.meActivity, "", getResources().getString(R.string.text_load), true);
+			progressDialog = AndroidUtils.showProgressDialog(this.meActivity, getResources().getString(R.string.text_load), true, true);
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("id", this.me.getId());
 			params.put("photo", photoFile);
@@ -212,7 +212,7 @@ public class MeDetailFragment extends Fragment {
 
 	private void cancelProgressDialog() {
 		if (this.progressDialog != null) {
-			this.progressDialog.cancel();
+			this.progressDialog.dismiss();
 		}
 	}
 

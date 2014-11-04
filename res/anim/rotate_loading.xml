@@ -4,14 +4,14 @@
     android:shareInterpolator="true" >
 
     <rotate
-        android:duration="1500"
+        android:duration="1200"
         android:fillAfter="false"
-        android:fromDegrees="0"
+        android:fromDegrees="+360"
         android:pivotX="50%"
         android:pivotY="50%"
         android:repeatCount="infinite"
         android:repeatMode="restart"
         android:startOffset="0"
-        android:toDegrees="+360" />
+        android:toDegrees="0" />
 
 </set>

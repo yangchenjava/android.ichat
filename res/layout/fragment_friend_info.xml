@@ -54,8 +54,8 @@
         <TextView
             android:id="@+id/tv_friend_info_nickname"
             android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:layout_marginBottom="4dp"
+            android:layout_height="30dp"
+            android:layout_marginBottom="2dp"
             android:layout_marginEnd="4dp"
             android:layout_marginRight="4dp"
             android:layout_toEndOf="@id/iv_friend_info_photo"
@@ -77,7 +77,7 @@
         <ImageView
             android:id="@+id/iv_friend_info_sex"
             android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_height="30dp"
             android:layout_toEndOf="@id/tv_friend_info_nickname"
             android:layout_toRightOf="@id/tv_friend_info_nickname"
             android:contentDescription="@string/content_description"

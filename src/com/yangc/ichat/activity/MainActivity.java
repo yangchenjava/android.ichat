@@ -104,7 +104,7 @@ public class MainActivity extends FragmentActivity {
 
 	private void initPopupWindow() {
 		// PopupWindow
-		View popupWindowView = this.getLayoutInflater().inflate(R.layout.popup_window, null);
+		View popupWindowView = View.inflate(this, R.layout.popup_window, null);
 		this.mPopupWindow = new PopupWindow(popupWindowView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
 		// 设置点击返回键和PopupWindow以外的地方,退出
 		this.mPopupWindow.setTouchable(true);

@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -11,7 +12,14 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
 import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.yangc.ichat.R;
 
 public class AndroidUtils {
 
@@ -161,6 +169,30 @@ public class AndroidUtils {
 	 */
 	public static void alertToast(Context context, String text) {
 		Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+	}
+
+	/**
+	 * @功能: 进度对话框
+	 * @作者: yangc
+	 * @创建日期: 2014年11月4日 下午11:24:03
+	 * @param context
+	 * @param message
+	 * @param cancelable
+	 * @param canceledOnTouchOutside
+	 * @return
+	 */
+	public static Dialog showProgressDialog(Context context, String message, boolean cancelable, boolean canceledOnTouchOutside) {
+		View view = View.inflate(context, R.layout.dialog_progress, null);
+		LinearLayout llDialogProgress = (LinearLayout) view.findViewById(R.id.ll_dialog_progress);
+		((ImageView) view.findViewById(R.id.iv_dialog_progress_image)).startAnimation(AnimationUtils.loadAnimation(context, R.anim.rotate_loading));
+		((TextView) view.findViewById(R.id.tv_dialog_progress_text)).setText(message);
+
+		Dialog progressDialog = new Dialog(context, R.style.CustomProgressDialog);
+		progressDialog.setCancelable(cancelable);
+		progressDialog.setCanceledOnTouchOutside(canceledOnTouchOutside);
+		progressDialog.setContentView(llDialogProgress, new LinearLayout.LayoutParams(350, 80));
+		progressDialog.show();
+		return progressDialog;
 	}
 
 }

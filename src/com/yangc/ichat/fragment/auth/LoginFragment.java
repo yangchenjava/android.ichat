@@ -3,7 +3,7 @@ package com.yangc.ichat.fragment.auth;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.app.ProgressDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -46,7 +46,7 @@ public class LoginFragment extends Fragment {
 	private String username;
 	private String password;
 
-	private ProgressDialog progressDialog;
+	private Dialog progressDialog;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -82,7 +82,7 @@ public class LoginFragment extends Fragment {
 				if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
 					AndroidUtils.alertToast(authActivity, R.string.error_username_password_null);
 				} else {
-					progressDialog = ProgressDialog.show(authActivity, "", getResources().getString(R.string.text_load), true, true);
+					progressDialog = AndroidUtils.showProgressDialog(authActivity, getResources().getString(R.string.text_load), true, true);
 					Map<String, String> params = new HashMap<String, String>();
 					params.put("username", username);
 					params.put("password", password);
@@ -123,7 +123,7 @@ public class LoginFragment extends Fragment {
 
 	private void cancelProgressDialog() {
 		if (this.progressDialog != null) {
-			this.progressDialog.cancel();
+			this.progressDialog.dismiss();
 		}
 	}
 

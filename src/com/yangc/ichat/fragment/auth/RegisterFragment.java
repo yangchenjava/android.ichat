@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -76,7 +76,7 @@ public class RegisterFragment extends Fragment {
 	private String password;
 	private File photoFile;
 
-	private ProgressDialog progressDialog;
+	private Dialog progressDialog;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -286,7 +286,7 @@ public class RegisterFragment extends Fragment {
 				return;
 			}
 
-			progressDialog = ProgressDialog.show(authActivity, "", getResources().getString(R.string.text_load), true, true);
+			progressDialog = AndroidUtils.showProgressDialog(authActivity, getResources().getString(R.string.text_load), true, true);
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("username", username);
 			params.put("password", password);
@@ -333,7 +333,7 @@ public class RegisterFragment extends Fragment {
 
 	private void cancelProgressDialog() {
 		if (this.progressDialog != null) {
-			this.progressDialog.cancel();
+			this.progressDialog.dismiss();
 		}
 	}
 
