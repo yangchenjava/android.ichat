@@ -1,5 +1,6 @@
 package com.yangc.ichat.fragment.friend;
 
+import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -9,8 +10,11 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -28,6 +32,7 @@ public class FriendInfoFragment extends Fragment {
 	private ImageView ivFriendInfoPhoto;
 	private TextView tvFriendInfoNickname;
 	private TextView tvFriendInfoUsername;
+	private ImageView ivFriendInfoSex;
 	private TextView tvFriendInfoPhone;
 	private TextView tvFriendInfoSignature;
 
@@ -42,6 +47,7 @@ public class FriendInfoFragment extends Fragment {
 		this.ivFriendInfoPhoto.setOnClickListener(this.photoClickListener);
 		this.tvFriendInfoNickname = (TextView) view.findViewById(R.id.tv_friend_info_nickname);
 		this.tvFriendInfoUsername = (TextView) view.findViewById(R.id.tv_friend_info_username);
+		this.ivFriendInfoSex = (ImageView) view.findViewById(R.id.iv_friend_info_sex);
 		this.tvFriendInfoPhone = (TextView) view.findViewById(R.id.tv_friend_info_phone);
 		this.tvFriendInfoSignature = (TextView) view.findViewById(R.id.tv_friend_info_signature);
 		((Button) view.findViewById(R.id.btn_friend_info_send)).setOnClickListener(this.sendClickListener);
@@ -65,6 +71,7 @@ public class FriendInfoFragment extends Fragment {
 		}
 		this.tvFriendInfoNickname.setText(nickname);
 		this.tvFriendInfoUsername.setText(this.getResources().getString(R.string.friend_info_username) + username);
+		this.ivFriendInfoSex.setImageResource(sex == 0 ? R.drawable.sex_female : R.drawable.sex_male);
 		if (TextUtils.isEmpty(phone)) {
 			this.tvFriendInfoPhone.setText(R.string.friend_info_undefined);
 		} else {
@@ -137,7 +144,20 @@ public class FriendInfoFragment extends Fragment {
 	private View.OnClickListener sendClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
+			LayoutInflater inflater = LayoutInflater.from(friendActivity);
+			View view = inflater.inflate(R.layout.dialog_progress, null);
+			LinearLayout layout = (LinearLayout) view.findViewById(R.id.ll_dialog_progress);
+			ImageView spaceshipImage = (ImageView) view.findViewById(R.id.iv_dialog_progress_image);
+			TextView tipTextView = (TextView) view.findViewById(R.id.tv_dialog_progress_text);
+			Animation hyperspaceJumpAnimation = AnimationUtils.loadAnimation(friendActivity, R.anim.rotate_loading);
+			spaceshipImage.startAnimation(hyperspaceJumpAnimation);
+			tipTextView.setText("测试");
 
+			Dialog loadingDialog = new Dialog(friendActivity, R.style.CustomProgressDialog);
+
+			loadingDialog.setCancelable(true);
+			loadingDialog.setContentView(layout, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
+			loadingDialog.show();
 		}
 	};
 

@@ -36,6 +36,7 @@ public class MeActivity extends FragmentActivity {
 		if (isAddStack) {
 			fragmentTransaction.addToBackStack(null);
 		}
+		fragmentTransaction.setCustomAnimations(R.anim.slide_right_in, R.anim.slide_left_out, R.anim.slide_left_in, R.anim.slide_right_out);
 		fragmentTransaction.commit();
 	}
 

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -24,6 +25,7 @@ import com.google.gson.reflect.TypeToken;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.yangc.ichat.R;
+import com.yangc.ichat.activity.FriendActivity;
 import com.yangc.ichat.activity.MainActivity;
 import com.yangc.ichat.database.bean.TIchatAddressbook;
 import com.yangc.ichat.fragment.tab.adapter.AddressbookFragmentAdapter;
@@ -83,7 +85,16 @@ public class AddressbookFragment extends Fragment {
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 			TIchatAddressbook addressbook = list.get(position);
 			if (addressbook.getId() != null) {
-				// TODO
+				Intent intent = new Intent(mainActivity, FriendActivity.class);
+				Bundle bundle = new Bundle(6);
+				bundle.putString("nickname", addressbook.getNickname());
+				bundle.putLong("sex", addressbook.getSex());
+				bundle.putString("phone", addressbook.getPhone());
+				bundle.putString("photo", addressbook.getPhoto());
+				bundle.putString("signature", addressbook.getSignature());
+				bundle.putString("username", addressbook.getUsername());
+				intent.putExtra("addressbook", bundle);
+				mainActivity.startActivity(intent);
 			}
 		}
 	};
@@ -135,11 +146,15 @@ public class AddressbookFragment extends Fragment {
 	}
 
 	private void requestNetworkData() {
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("userId", Constants.USER_ID);
-		this.request = new GsonArrayRequest<List<TIchatAddressbook>>(Request.Method.POST, Constants.FRIENDS, params, new TypeToken<List<TIchatAddressbook>>() {
-		}, listener, errorListener);
-		VolleyUtils.addNormalRequest(this.request, MainActivity.TAG);
+		if (!Constants.IS_REFRESH_ADDRESSBOOK) {
+			Map<String, String> params = new HashMap<String, String>();
+			params.put("userId", Constants.USER_ID);
+			this.request = new GsonArrayRequest<List<TIchatAddressbook>>(Request.Method.POST, Constants.FRIENDS, params, new TypeToken<List<TIchatAddressbook>>() {
+			}, listener, errorListener);
+			VolleyUtils.addNormalRequest(this.request, MainActivity.TAG);
+
+			Constants.IS_REFRESH_ADDRESSBOOK = true;
+		}
 	}
 
 	private Response.Listener<List<TIchatAddressbook>> listener = new Response.Listener<List<TIchatAddressbook>>() {

@@ -15,6 +15,8 @@ public class Constants {
 	public static String USERNAME;
 	public static String PASSWORD;
 
+	public static boolean IS_REFRESH_ADDRESSBOOK;
+
 	/** 请求地址 */
 	public static final String SERVER_URL = "http://10.23.6.12:81/com.yangc.bridge/";
 	public static final String LOGIN = SERVER_URL + "resource/interface/login";
