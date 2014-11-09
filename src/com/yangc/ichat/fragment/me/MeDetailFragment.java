@@ -34,6 +34,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.yangc.ichat.R;
 import com.yangc.ichat.activity.MeActivity;
 import com.yangc.ichat.bean.ResultBean;
@@ -110,7 +111,12 @@ public class MeDetailFragment extends Fragment {
 			this.request = new MultiPartRequest<ResultBean>(Constants.UPDATE_PERSON_PHOTO, params, ResultBean.class, listener, errorListener);
 			VolleyUtils.addMultiPartRequest(this.request, MeActivity.TAG);
 		} else {
-			ImageLoader.getInstance().displayImage(Constants.SERVER_URL + me.getPhoto(), this.ivMeDetailPhoto, this.options);
+			ImageLoader.getInstance().displayImage(Constants.SERVER_URL + me.getPhoto(), this.ivMeDetailPhoto, this.options, new SimpleImageLoadingListener() {
+				@Override
+				public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+					ivMeDetailPhoto.setBackgroundResource(R.drawable.shape_bkg_photo);
+				}
+			});
 		}
 	}
 
@@ -187,7 +193,12 @@ public class MeDetailFragment extends Fragment {
 			cancelProgressDialog();
 			if (result.isSuccess()) {
 				String photo = JsonUtils.fromJson(result.getMessage(), TIchatMe.class).getPhoto();
-				ImageLoader.getInstance().displayImage(Constants.SERVER_URL + photo, ivMeDetailPhoto, options);
+				ImageLoader.getInstance().displayImage(Constants.SERVER_URL + photo, ivMeDetailPhoto, options, new SimpleImageLoadingListener() {
+					@Override
+					public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+						ivMeDetailPhoto.setBackgroundResource(R.drawable.shape_bkg_photo);
+					}
+				});
 				destoryPhotoFile();
 				me.setPhoto(photo);
 				DatabaseUtils.updateMe(meActivity, me);

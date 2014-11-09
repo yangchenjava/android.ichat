@@ -12,6 +12,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -41,6 +42,18 @@ public class AndroidUtils {
 			e.printStackTrace();
 		}
 		return 1;
+	}
+
+	/**
+	 * @功能: dp转px
+	 * @作者: yangc
+	 * @创建日期: 2014年11月9日 上午2:19:33
+	 * @param context
+	 * @param dp
+	 * @return
+	 */
+	public static int dp2px(Context context, int dp) {
+		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
 	}
 
 	/**

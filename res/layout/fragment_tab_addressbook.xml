@@ -4,17 +4,16 @@
     android:layout_height="match_parent"
     android:background="@android:color/white" >
 
-    <ListView
+    <com.yangc.ichat.widget.swipe.SwipeMenuListView
         android:id="@+id/lv_addressbook"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:cacheColorHint="@android:color/transparent"
         android:divider="@color/dividing_line_addressbook"
-        android:dividerHeight="0.5dp"
+        android:dividerHeight="1px"
         android:drawSelectorOnTop="false"
         android:fadingEdge="none"
-        android:scrollbars="none" >
-    </ListView>
+        android:scrollbars="none" />
 
     <com.yangc.ichat.widget.IndexScroller
         android:id="@+id/is_index"

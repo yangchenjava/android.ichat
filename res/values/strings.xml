@@ -22,6 +22,10 @@
     <string name="error_nickname_null">昵称不能为空</string>
     <string name="error_phone_validate">请输入正确的手机号码</string>
 
+    <!-- right -->
+    <string name="right_top">置 顶</string>
+    <string name="right_remove">删 除</string>
+
     <!-- dialog -->
     <string name="dialog_title_photo">图片</string>
     <string name="dialog_camera">拍照</string>

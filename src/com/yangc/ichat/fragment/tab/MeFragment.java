@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -21,6 +22,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.yangc.ichat.R;
 import com.yangc.ichat.activity.MainActivity;
 import com.yangc.ichat.activity.MeActivity;
@@ -77,7 +79,12 @@ public class MeFragment extends Fragment {
 		if (TextUtils.isEmpty(me.getPhoto())) {
 			this.ivMeInfoPhoto.setImageResource(R.drawable.me_info);
 		} else {
-			ImageLoader.getInstance().displayImage(Constants.SERVER_URL + me.getPhoto(), this.ivMeInfoPhoto, this.options);
+			ImageLoader.getInstance().displayImage(Constants.SERVER_URL + me.getPhoto(), this.ivMeInfoPhoto, this.options, new SimpleImageLoadingListener() {
+				@Override
+				public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+					ivMeInfoPhoto.setBackgroundResource(R.drawable.shape_bkg_photo);
+				}
+			});
 		}
 		this.tvMeInfoNickname.setText(me.getNickname());
 		this.tvMeInfoUsername.setText(this.getResources().getString(R.string.me_info) + me.getUsername());

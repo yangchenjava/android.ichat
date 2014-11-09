@@ -45,9 +45,17 @@ public class AddressbookFragmentAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public int getItemViewType(int position) {
+		if (this.list.get(position).getId() == null) {
+			return 0;
+		}
+		return 1;
+	}
+
+	@Override
+	public View getView(final int position, View convertView, ViewGroup parent) {
 		View view;
-		ViewHolder viewHolder;
+		final ViewHolder viewHolder;
 		if (convertView == null) {
 			view = View.inflate(this.context, R.layout.fragment_tab_addressbook_item, null);
 			viewHolder = new ViewHolder();
@@ -98,7 +106,6 @@ public class AddressbookFragmentAdapter extends BaseAdapter {
 			viewHolder.tvAddressbookItemNickname.setVisibility(View.GONE);
 			viewHolder.tvAddressbookItemSignature.setVisibility(View.GONE);
 		}
-
 		return view;
 	}
 

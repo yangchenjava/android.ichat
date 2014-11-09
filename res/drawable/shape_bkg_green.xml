@@ -8,10 +8,6 @@
     <solid android:color="#38C03F" />
 
     <!-- 设置四个角的角度 -->
-    <corners
-        android:bottomLeftRadius="5dp"
-        android:bottomRightRadius="5dp"
-        android:topLeftRadius="5dp"
-        android:topRightRadius="5dp" />
+    <corners android:radius="5dp" />
 
 </shape>

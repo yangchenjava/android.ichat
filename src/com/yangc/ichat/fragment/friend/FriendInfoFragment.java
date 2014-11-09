@@ -1,5 +1,6 @@
 package com.yangc.ichat.fragment.friend;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.yangc.ichat.R;
 import com.yangc.ichat.activity.FriendActivity;
 import com.yangc.ichat.utils.AndroidUtils;
@@ -64,7 +66,12 @@ public class FriendInfoFragment extends Fragment {
 		if (TextUtils.isEmpty(photo)) {
 			this.ivFriendInfoPhoto.setImageResource(R.drawable.me_info);
 		} else {
-			ImageLoader.getInstance().displayImage(Constants.SERVER_URL + photo, this.ivFriendInfoPhoto, this.options);
+			ImageLoader.getInstance().displayImage(Constants.SERVER_URL + photo, this.ivFriendInfoPhoto, this.options, new SimpleImageLoadingListener() {
+				@Override
+				public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+					ivFriendInfoPhoto.setBackgroundResource(R.drawable.shape_bkg_photo);
+				}
+			});
 		}
 		this.tvFriendInfoNickname.setText(nickname);
 		this.tvFriendInfoUsername.setText(this.getResources().getString(R.string.friend_info_username) + username);

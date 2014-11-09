@@ -10,7 +10,7 @@
     <RelativeLayout
         android:id="@+id/rl_me_info"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="80dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/selector_main"
         android:clickable="true"
@@ -21,12 +21,14 @@
 
         <ImageView
             android:id="@+id/iv_me_info_photo"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="8dp"
             android:contentDescription="@string/content_description"
-            android:padding="8dp"
+            android:padding="1dp"
             android:scaleType="fitCenter" />
 
         <TextView
