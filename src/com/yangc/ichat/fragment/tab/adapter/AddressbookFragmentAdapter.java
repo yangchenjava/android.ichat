@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -19,6 +18,10 @@ import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.UILUtils;
 
 public class AddressbookFragmentAdapter extends BaseAdapter {
+
+	private static final int INDEX = 0;
+	private static final int ITEM = 1;
+	private static final int TOTAL = 2;
 
 	private Context context;
 	private List<TIchatAddressbook> list;
@@ -46,42 +49,56 @@ public class AddressbookFragmentAdapter extends BaseAdapter {
 
 	@Override
 	public int getItemViewType(int position) {
-		if (this.list.get(position).getId() == null) {
-			return 0;
+		if (this.list.get(position).getId() != null) {
+			return ITEM;
+		} else if (position == this.list.size() - 1) {
+			return TOTAL;
+		} else {
+			return INDEX;
 		}
-		return 1;
 	}
 
 	@Override
-	public View getView(final int position, View convertView, ViewGroup parent) {
-		View view;
-		final ViewHolder viewHolder;
-		if (convertView == null) {
-			view = View.inflate(this.context, R.layout.fragment_tab_addressbook_item, null);
-			viewHolder = new ViewHolder();
-			viewHolder.rlAddressbookItem = (RelativeLayout) view.findViewById(R.id.rl_addressbook_item);
-			viewHolder.tvAddressbookItemWord = (TextView) view.findViewById(R.id.tv_addressbook_item_word);
-			viewHolder.ivAddressbookItemPhoto = (ImageView) view.findViewById(R.id.iv_addressbook_item_photo);
-			viewHolder.tvAddressbookItemNickname = (TextView) view.findViewById(R.id.tv_addressbook_item_nickname);
-			viewHolder.tvAddressbookItemSignature = (TextView) view.findViewById(R.id.tv_addressbook_item_signature);
-			viewHolder.tvAddressbookItemTotal = (TextView) view.findViewById(R.id.tv_addressbook_item_total);
-			view.setTag(viewHolder);
-		} else {
-			view = convertView;
-			viewHolder = (ViewHolder) view.getTag();
-		}
+	public int getViewTypeCount() {
+		return 3;
+	}
 
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
 		TIchatAddressbook addressbook = this.list.get(position);
-		if (addressbook.getId() != null) {
-			viewHolder.rlAddressbookItem.setBackgroundResource(R.drawable.selector_main);
-			viewHolder.tvAddressbookItemWord.setVisibility(View.GONE);
-			viewHolder.ivAddressbookItemPhoto.setVisibility(View.VISIBLE);
+		switch (this.getItemViewType(position)) {
+		case INDEX: {
+			IndexViewHolder viewHolder;
+			if (convertView == null) {
+				convertView = View.inflate(this.context, R.layout.fragment_tab_addressbook_index, null);
+				viewHolder = new IndexViewHolder();
+				viewHolder.tvAddressbookItemWord = (TextView) convertView.findViewById(R.id.tv_addressbook_item_word);
+				convertView.setTag(viewHolder);
+			} else {
+				viewHolder = (IndexViewHolder) convertView.getTag();
+			}
+
+			viewHolder.tvAddressbookItemWord.setText(addressbook.getNickname());
+			break;
+		}
+		case ITEM: {
+			ItemViewHolder viewHolder;
+			if (convertView == null) {
+				convertView = View.inflate(this.context, R.layout.fragment_tab_addressbook_item, null);
+				viewHolder = new ItemViewHolder();
+				viewHolder.ivAddressbookItemPhoto = (ImageView) convertView.findViewById(R.id.iv_addressbook_item_photo);
+				viewHolder.tvAddressbookItemNickname = (TextView) convertView.findViewById(R.id.tv_addressbook_item_nickname);
+				viewHolder.tvAddressbookItemSignature = (TextView) convertView.findViewById(R.id.tv_addressbook_item_signature);
+				convertView.setTag(viewHolder);
+			} else {
+				viewHolder = (ItemViewHolder) convertView.getTag();
+			}
+
 			if (TextUtils.isEmpty(addressbook.getPhoto())) {
 				viewHolder.ivAddressbookItemPhoto.setImageResource(R.drawable.me_info);
 			} else {
 				ImageLoader.getInstance().displayImage(Constants.SERVER_URL + addressbook.getPhoto(), viewHolder.ivAddressbookItemPhoto, this.options);
 			}
-			viewHolder.tvAddressbookItemNickname.setVisibility(View.VISIBLE);
 			viewHolder.tvAddressbookItemNickname.setText(addressbook.getNickname());
 			if (TextUtils.isEmpty(addressbook.getSignature())) {
 				viewHolder.tvAddressbookItemSignature.setVisibility(View.GONE);
@@ -89,32 +106,37 @@ public class AddressbookFragmentAdapter extends BaseAdapter {
 				viewHolder.tvAddressbookItemSignature.setVisibility(View.VISIBLE);
 				viewHolder.tvAddressbookItemSignature.setText(addressbook.getSignature());
 			}
-			viewHolder.tvAddressbookItemTotal.setVisibility(View.GONE);
-		} else {
-			if (position == this.list.size() - 1) {
-				viewHolder.rlAddressbookItem.setBackgroundResource(android.R.color.white);
-				viewHolder.tvAddressbookItemWord.setVisibility(View.GONE);
-				viewHolder.tvAddressbookItemTotal.setVisibility(View.VISIBLE);
-				viewHolder.tvAddressbookItemTotal.setText(addressbook.getNickname());
-			} else {
-				viewHolder.rlAddressbookItem.setBackgroundResource(R.drawable.layer_dividing_line);
-				viewHolder.tvAddressbookItemWord.setVisibility(View.VISIBLE);
-				viewHolder.tvAddressbookItemWord.setText(addressbook.getNickname());
-				viewHolder.tvAddressbookItemTotal.setVisibility(View.GONE);
-			}
-			viewHolder.ivAddressbookItemPhoto.setVisibility(View.GONE);
-			viewHolder.tvAddressbookItemNickname.setVisibility(View.GONE);
-			viewHolder.tvAddressbookItemSignature.setVisibility(View.GONE);
+			break;
 		}
-		return view;
+		case TOTAL: {
+			TotalViewHolder viewHolder;
+			if (convertView == null) {
+				convertView = View.inflate(this.context, R.layout.fragment_tab_addressbook_total, null);
+				viewHolder = new TotalViewHolder();
+				viewHolder.tvAddressbookItemTotal = (TextView) convertView.findViewById(R.id.tv_addressbook_item_total);
+				convertView.setTag(viewHolder);
+			} else {
+				viewHolder = (TotalViewHolder) convertView.getTag();
+			}
+
+			viewHolder.tvAddressbookItemTotal.setText(addressbook.getNickname());
+			break;
+		}
+		}
+		return convertView;
 	}
 
-	private class ViewHolder {
-		RelativeLayout rlAddressbookItem;
+	private class IndexViewHolder {
 		TextView tvAddressbookItemWord;
+	}
+
+	private class ItemViewHolder {
 		ImageView ivAddressbookItemPhoto;
 		TextView tvAddressbookItemNickname;
 		TextView tvAddressbookItemSignature;
+	}
+
+	private class TotalViewHolder {
 		TextView tvAddressbookItemTotal;
 	}
 

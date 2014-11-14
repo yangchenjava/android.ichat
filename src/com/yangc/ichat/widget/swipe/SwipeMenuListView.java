@@ -148,9 +148,6 @@ public class SwipeMenuListView extends ListView {
 				mTouchView = null;
 				// return super.onTouchEvent(ev);
 			}
-			if (this.getAdapter().getItemViewType(mTouchPosition) == 0) {
-				return super.onTouchEvent(ev);
-			}
 			if (view instanceof SwipeMenuLayout) {
 				mTouchView = (SwipeMenuLayout) view;
 			}
