@@ -7,14 +7,13 @@ import java.util.Locale;
 import java.util.Map;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
@@ -36,16 +35,12 @@ import com.yangc.ichat.utils.VolleyUtils;
 import com.yangc.ichat.volley.GsonArrayRequest;
 import com.yangc.ichat.volley.VolleyErrorHelper;
 import com.yangc.ichat.widget.IndexScroller;
-import com.yangc.ichat.widget.swipe.SwipeMenu;
-import com.yangc.ichat.widget.swipe.SwipeMenuCreator;
-import com.yangc.ichat.widget.swipe.SwipeMenuItem;
-import com.yangc.ichat.widget.swipe.SwipeMenuListView;
 
 public class AddressbookFragment extends Fragment {
 
 	private MainActivity mainActivity;
 
-	private SwipeMenuListView lvAddressbook;
+	private ListView lvAddressbook;
 	private TextView tvIndexWord;
 	private AddressbookFragmentAdapter adapter;
 
@@ -58,11 +53,7 @@ public class AddressbookFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		this.mainActivity = (MainActivity) this.getActivity();
 		View view = inflater.inflate(R.layout.fragment_tab_addressbook, container, false);
-		this.lvAddressbook = (SwipeMenuListView) view.findViewById(R.id.lv_addressbook);
-		this.lvAddressbook.setMenuCreator(this.menuCreator);
-		this.lvAddressbook.setOnMenuItemClickListener(this.menuItemClickListener);
-		this.lvAddressbook.setOnItemClickListener(this.itemClickListener);
-		this.lvAddressbook.setOnItemLongClickListener(this.itemLongClickListener);
+		this.lvAddressbook = (ListView) view.findViewById(R.id.lv_addressbook);
 		this.lvAddressbook.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true));
 		IndexScroller isIndex = (IndexScroller) view.findViewById(R.id.is_index);
 		isIndex.setOnTouchWordChangedListener(this.touchWordChangedListener);
@@ -83,36 +74,13 @@ public class AddressbookFragment extends Fragment {
 			this.requestNetworkData();
 		}
 
-		this.adapter = new AddressbookFragmentAdapter(this.mainActivity, list);
+		this.adapter = new AddressbookFragmentAdapter(this.mainActivity, this.lvAddressbook, list, this.itemListener, AndroidUtils.getScreenWidth(this.mainActivity));
 		this.lvAddressbook.setAdapter(this.adapter);
 	}
 
-	private SwipeMenuCreator menuCreator = new SwipeMenuCreator() {
+	private AddressbookFragmentAdapter.OnItemListener itemListener = new AddressbookFragmentAdapter.OnItemListener() {
 		@Override
-		public void create(SwipeMenu menu) {
-			SwipeMenuItem item = new SwipeMenuItem(mainActivity);
-			item.setWidth(AndroidUtils.dp2px(mainActivity, 120));
-			item.setBackground(R.drawable.selector_right);
-			item.setIcon(R.drawable.right_remove);
-			item.setTitle(R.string.right_remove);
-			item.setTitleColor(Color.WHITE);
-			item.setTitleSize(14);
-			menu.addMenuItem(item);
-		}
-	};
-
-	private SwipeMenuListView.OnMenuItemClickListener menuItemClickListener = new SwipeMenuListView.OnMenuItemClickListener() {
-		@Override
-		public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
-			// TODO
-			removeData(position);
-			return false;
-		}
-	};
-
-	private AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
-		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		public void onItemClick(int position) {
 			TIchatAddressbook addressbook = list.get(position);
 			if (addressbook.getId() != null) {
 				Intent intent = new Intent(mainActivity, FriendActivity.class);
@@ -127,14 +95,17 @@ public class AddressbookFragment extends Fragment {
 				mainActivity.startActivity(intent);
 			}
 		}
-	};
 
-	private AdapterView.OnItemLongClickListener itemLongClickListener = new AdapterView.OnItemLongClickListener() {
 		@Override
-		public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+		public void onItemLongClick(int position) {
 			// TODO
 			AndroidUtils.alertToast(mainActivity, "long position=" + position);
-			return true;
+		}
+
+		@Override
+		public void onRemoveClick(int position) {
+			// TODO
+			removeData(position);
 		}
 	};
 
