@@ -249,7 +249,7 @@ public class MeDetailFragment extends Fragment {
 			((RelativeLayout) window.findViewById(R.id.rl_dialog_select_first)).setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					alertDialog.cancel();
+					alertDialog.dismiss();
 					// 调用系统的拍照功能
 					Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 					initPhotoFile(PNG_TEMP);
@@ -263,7 +263,7 @@ public class MeDetailFragment extends Fragment {
 			((RelativeLayout) window.findViewById(R.id.rl_dialog_select_second)).setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					alertDialog.cancel();
+					alertDialog.dismiss();
 					Intent intent = new Intent(Intent.ACTION_PICK);
 					intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
 					startActivityForResult(intent, PHOTO_LOCAL);
@@ -370,7 +370,7 @@ public class MeDetailFragment extends Fragment {
 					new Handler().postDelayed(new Runnable() {
 						@Override
 						public void run() {
-							alertDialog.cancel();
+							alertDialog.dismiss();
 						}
 					}, 300);
 				}
@@ -390,7 +390,7 @@ public class MeDetailFragment extends Fragment {
 					new Handler().postDelayed(new Runnable() {
 						@Override
 						public void run() {
-							alertDialog.cancel();
+							alertDialog.dismiss();
 						}
 					}, 300);
 				}

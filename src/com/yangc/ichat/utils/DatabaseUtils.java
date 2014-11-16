@@ -1,5 +1,6 @@
 package com.yangc.ichat.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -55,11 +56,24 @@ public class DatabaseUtils {
 	}
 
 	public static void saveOrUpdateAddressbook(Context context, List<TIchatAddressbook> addressbookList) {
-		getDaoSession(context).getTIchatAddressbookDao().insertOrReplaceInTx(addressbookList);
+		getDaoSession(context).getTIchatAddressbookDao().deleteAll();
+		getDaoSession(context).getTIchatAddressbookDao().insertInTx(addressbookList);
+	}
+
+	public static void deleteAddressbook_logic(Context context, Long id) {
+
+	}
+
+	public static void deleteAddressbook_physical(Context context, Long id) {
+		getDaoSession(context).getTIchatAddressbookDao().deleteByKey(id);
 	}
 
 	public static List<TIchatAddressbook> getAddressbookList(Context context) {
 		return getDaoSession(context).getTIchatAddressbookDao().queryBuilder().orderAsc(Properties.Spell).list();
+	}
+
+	public static List<TIchatAddressbook> getAddressbookListByDelete(Context context) {
+		return new ArrayList<TIchatAddressbook>();
 	}
 
 }

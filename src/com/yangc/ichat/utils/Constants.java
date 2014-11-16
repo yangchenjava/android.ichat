@@ -25,6 +25,7 @@ public class Constants {
 	public static final String UPDATE_PERSON = SERVER_URL + "resource/interface/updatePerson";
 	public static final String UPDATE_PERSON_PHOTO = SERVER_URL + "resource/interface/updatePersonPhoto";
 	public static final String FRIENDS = SERVER_URL + "resource/interface/friends";
+	public static final String DELETE_FRIEND = SERVER_URL + "resource/interface/deleteFriend";
 	public static final String TEST = SERVER_URL + "resource/interface/test";
 
 	private Constants() {

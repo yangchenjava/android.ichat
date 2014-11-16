@@ -33,6 +33,7 @@
     <string name="dialog_title_sex">性别</string>
     <string name="dialog_male">男</string>
     <string name="dialog_female">女</string>
+    <string name="dialog_remove">删除联系人</string>
 
     <!-- title_bar -->
     <string name="fragment_auth_logout">登录或注册</string>
