@@ -15,6 +15,7 @@ public class TIchatAddressbook {
     private String signature;
     private Long userId;
     private String username;
+    private Long deleted;
 
     public TIchatAddressbook() {
     }
@@ -23,7 +24,7 @@ public class TIchatAddressbook {
         this.id = id;
     }
 
-    public TIchatAddressbook(Long id, String nickname, Long sex, String phone, String spell, String photo, String signature, Long userId, String username) {
+    public TIchatAddressbook(Long id, String nickname, Long sex, String phone, String spell, String photo, String signature, Long userId, String username, Long deleted) {
         this.id = id;
         this.nickname = nickname;
         this.sex = sex;
@@ -33,6 +34,7 @@ public class TIchatAddressbook {
         this.signature = signature;
         this.userId = userId;
         this.username = username;
+        this.deleted = deleted;
     }
 
     public Long getId() {
@@ -105,6 +107,14 @@ public class TIchatAddressbook {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Long getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Long deleted) {
+        this.deleted = deleted;
     }
 
 }

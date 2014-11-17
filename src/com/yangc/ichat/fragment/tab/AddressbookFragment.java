@@ -131,7 +131,7 @@ public class AddressbookFragment extends Fragment {
 	private void removeData(int position) {
 		Dialog progressDialog = AndroidUtils.showProgressDialog(this.mainActivity, this.getResources().getString(R.string.text_load), true, true);
 
-		Long friendId = this.list.get(position).getId();
+		Long friendId = this.list.get(position).getUserId();
 		DatabaseUtils.deleteAddressbook_logic(this.mainActivity, friendId);
 		this.loadData(DatabaseUtils.getAddressbookList(this.mainActivity));
 		this.adapter.notifyDataSetChanged();

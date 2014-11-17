@@ -34,6 +34,7 @@ public class TIchatAddressbookDao extends AbstractDao<TIchatAddressbook, Long> {
         public final static Property Signature = new Property(6, String.class, "signature", false, "SIGNATURE");
         public final static Property UserId = new Property(7, Long.class, "userId", false, "USER_ID");
         public final static Property Username = new Property(8, String.class, "username", false, "USERNAME");
+        public final static Property Deleted = new Property(9, Long.class, "deleted", false, "DELETED");
     };
 
 
@@ -57,10 +58,13 @@ public class TIchatAddressbookDao extends AbstractDao<TIchatAddressbook, Long> {
                 "'PHOTO' TEXT," + // 5: photo
                 "'SIGNATURE' TEXT," + // 6: signature
                 "'USER_ID' INTEGER," + // 7: userId
-                "'USERNAME' TEXT);"); // 8: username
+                "'USERNAME' TEXT," + // 8: username
+                "'DELETED' INTEGER);"); // 9: deleted
         // Add Indexes
         db.execSQL("CREATE INDEX " + constraint + "IDX_T_ICHAT_ADDRESSBOOK_USERNAME ON T_ICHAT_ADDRESSBOOK" +
                 " (USERNAME);");
+        db.execSQL("CREATE INDEX " + constraint + "IDX_T_ICHAT_ADDRESSBOOK_DELETED ON T_ICHAT_ADDRESSBOOK" +
+                " (DELETED);");
     }
 
     /** Drops the underlying database table. */
@@ -118,6 +122,11 @@ public class TIchatAddressbookDao extends AbstractDao<TIchatAddressbook, Long> {
         if (username != null) {
             stmt.bindString(9, username);
         }
+ 
+        Long deleted = entity.getDeleted();
+        if (deleted != null) {
+            stmt.bindLong(10, deleted);
+        }
     }
 
     /** @inheritdoc */
@@ -138,7 +147,8 @@ public class TIchatAddressbookDao extends AbstractDao<TIchatAddressbook, Long> {
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // photo
             cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // signature
             cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7), // userId
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8) // username
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // username
+            cursor.isNull(offset + 9) ? null : cursor.getLong(offset + 9) // deleted
         );
         return entity;
     }
@@ -155,6 +165,7 @@ public class TIchatAddressbookDao extends AbstractDao<TIchatAddressbook, Long> {
         entity.setSignature(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
         entity.setUserId(cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7));
         entity.setUsername(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setDeleted(cursor.isNull(offset + 9) ? null : cursor.getLong(offset + 9));
      }
     
     /** @inheritdoc */

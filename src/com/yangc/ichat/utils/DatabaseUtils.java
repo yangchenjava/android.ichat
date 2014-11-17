@@ -1,6 +1,5 @@
 package com.yangc.ichat.utils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -57,23 +56,33 @@ public class DatabaseUtils {
 
 	public static void saveOrUpdateAddressbook(Context context, List<TIchatAddressbook> addressbookList) {
 		getDaoSession(context).getTIchatAddressbookDao().deleteAll();
+		for (TIchatAddressbook addressbook : addressbookList) {
+			addressbook.setDeleted(0L);
+		}
 		getDaoSession(context).getTIchatAddressbookDao().insertInTx(addressbookList);
 	}
 
-	public static void deleteAddressbook_logic(Context context, Long id) {
-
+	public static void deleteAddressbook_logic(Context context, Long userId) {
+		TIchatAddressbook addressbook = getDaoSession(context).getTIchatAddressbookDao().queryBuilder().where(Properties.UserId.eq(userId)).unique();
+		if (addressbook != null) {
+			addressbook.setDeleted(1L);
+			getDaoSession(context).getTIchatAddressbookDao().update(addressbook);
+		}
 	}
 
-	public static void deleteAddressbook_physical(Context context, Long id) {
-		getDaoSession(context).getTIchatAddressbookDao().deleteByKey(id);
+	public static void deleteAddressbook_physical(Context context, Long userId) {
+		TIchatAddressbook addressbook = getDaoSession(context).getTIchatAddressbookDao().queryBuilder().where(Properties.UserId.eq(userId)).unique();
+		if (addressbook != null) {
+			getDaoSession(context).getTIchatAddressbookDao().delete(addressbook);
+		}
 	}
 
 	public static List<TIchatAddressbook> getAddressbookList(Context context) {
-		return getDaoSession(context).getTIchatAddressbookDao().queryBuilder().orderAsc(Properties.Spell).list();
+		return getDaoSession(context).getTIchatAddressbookDao().queryBuilder().where(Properties.Deleted.eq(0L)).orderAsc(Properties.Spell).list();
 	}
 
 	public static List<TIchatAddressbook> getAddressbookListByDelete(Context context) {
-		return new ArrayList<TIchatAddressbook>();
+		return getDaoSession(context).getTIchatAddressbookDao().queryBuilder().where(Properties.Deleted.eq(1L)).list();
 	}
 
 }
