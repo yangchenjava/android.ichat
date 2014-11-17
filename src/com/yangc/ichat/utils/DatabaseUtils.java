@@ -7,6 +7,7 @@ import android.content.Context;
 import com.yangc.ichat.database.DaoMaster;
 import com.yangc.ichat.database.DaoSession;
 import com.yangc.ichat.database.bean.TIchatAddressbook;
+import com.yangc.ichat.database.bean.TIchatHistory;
 import com.yangc.ichat.database.bean.TIchatMe;
 import com.yangc.ichat.database.dao.TIchatAddressbookDao.Properties;
 
@@ -77,12 +78,21 @@ public class DatabaseUtils {
 		}
 	}
 
+	public static TIchatAddressbook getAddressbookByUsername(Context context, String username) {
+		return getDaoSession(context).getTIchatAddressbookDao().queryBuilder().where(Properties.Username.eq(username)).unique();
+	}
+
 	public static List<TIchatAddressbook> getAddressbookList(Context context) {
 		return getDaoSession(context).getTIchatAddressbookDao().queryBuilder().where(Properties.Deleted.eq(0L)).orderAsc(Properties.Spell).list();
 	}
 
 	public static List<TIchatAddressbook> getAddressbookListByDelete(Context context) {
 		return getDaoSession(context).getTIchatAddressbookDao().queryBuilder().where(Properties.Deleted.eq(1L)).list();
+	}
+
+	public static List<TIchatHistory> getHistoryList(Context context) {
+		String where = "JOIN (SELECT MAX(_ID) _ID, USERNAME FROM T_ICHAT_HISTORY GROUP BY USERNAME) C ON C._ID = T._ID ORDER BY C._ID DESC";
+		return getDaoSession(context).getTIchatHistoryDao().queryRawCreate(where).list();
 	}
 
 }
