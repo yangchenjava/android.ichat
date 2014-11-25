@@ -48,6 +48,7 @@ public class AddressbookFragment extends Fragment {
 
 	private ListView lvAddressbook;
 	private TextView tvIndexWord;
+	private TextView tvAddressbookItemTotal;
 	private AddressbookFragmentAdapter adapter;
 
 	private List<TIchatAddressbook> list;
@@ -65,6 +66,10 @@ public class AddressbookFragment extends Fragment {
 		IndexScroller isIndex = (IndexScroller) view.findViewById(R.id.is_index);
 		isIndex.setOnTouchWordChangedListener(this.touchWordChangedListener);
 		this.tvIndexWord = (TextView) view.findViewById(R.id.tv_index_word);
+
+		View footer = inflater.inflate(R.layout.fragment_tab_addressbook_total, this.lvAddressbook, false);
+		this.tvAddressbookItemTotal = (TextView) footer.findViewById(R.id.tv_addressbook_item_total);
+		this.lvAddressbook.addFooterView(footer);
 		return view;
 	}
 
@@ -186,9 +191,8 @@ public class AddressbookFragment extends Fragment {
 			this.list.add(word);
 			this.list.addAll(temp);
 		}
-		TIchatAddressbook total = new TIchatAddressbook();
-		total.setNickname(addressbookList.size() + this.getResources().getString(R.string.addressbook_total));
-		this.list.add(total);
+
+		this.tvAddressbookItemTotal.setText(addressbookList.size() + this.getResources().getString(R.string.addressbook_total));
 	}
 
 	private void syncNetworkData() {

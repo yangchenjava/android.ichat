@@ -27,7 +27,6 @@ public class AddressbookFragmentAdapter extends BaseAdapter {
 
 	private static final int INDEX = 0;
 	private static final int ITEM = 1;
-	private static final int TOTAL = 2;
 
 	private int swipePosition = -1;
 
@@ -71,18 +70,16 @@ public class AddressbookFragmentAdapter extends BaseAdapter {
 
 	@Override
 	public int getItemViewType(int position) {
-		if (this.list.get(position).getId() != null) {
-			return ITEM;
-		} else if (position == this.list.size() - 1) {
-			return TOTAL;
-		} else {
+		if (this.list.get(position).getId() == null) {
 			return INDEX;
+		} else {
+			return ITEM;
 		}
 	}
 
 	@Override
 	public int getViewTypeCount() {
-		return 3;
+		return 2;
 	}
 
 	@Override
@@ -200,29 +197,15 @@ public class AddressbookFragmentAdapter extends BaseAdapter {
 			});
 			break;
 		}
-		case TOTAL: {
-			TotalViewHolder viewHolder;
-			if (convertView == null) {
-				convertView = View.inflate(this.context, R.layout.fragment_tab_addressbook_total, null);
-				viewHolder = new TotalViewHolder();
-				viewHolder.tvAddressbookItemTotal = (TextView) convertView.findViewById(R.id.tv_addressbook_item_total);
-				convertView.setTag(viewHolder);
-			} else {
-				viewHolder = (TotalViewHolder) convertView.getTag();
-			}
-
-			viewHolder.tvAddressbookItemTotal.setText(addressbook.getNickname());
-			break;
-		}
 		}
 		return convertView;
 	}
 
 	private void closeSwipe() {
-		View view = lvAddressbook.getChildAt(swipePosition - lvAddressbook.getFirstVisiblePosition());
+		View view = this.lvAddressbook.getChildAt(this.swipePosition - this.lvAddressbook.getFirstVisiblePosition());
 		if (view != null) {
 			((ItemViewHolder) view.getTag()).hsvAddressbookItem.smoothScrollTo(0, 0);
-			swipePosition = -1;
+			this.swipePosition = -1;
 		}
 	}
 
@@ -237,10 +220,6 @@ public class AddressbookFragmentAdapter extends BaseAdapter {
 		TextView tvAddressbookItemNickname;
 		TextView tvAddressbookItemSignature;
 		LinearLayout llAddressbookItemRight;
-	}
-
-	private class TotalViewHolder {
-		TextView tvAddressbookItemTotal;
 	}
 
 }
