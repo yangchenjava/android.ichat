@@ -115,7 +115,7 @@ public class AddressbookFragment extends Fragment {
 			Window window = alertDialog.getWindow();
 			window.setContentView(R.layout.dialog_select);
 			((TextView) window.findViewById(R.id.tv_dialog_select_title)).setText(list.get(position).getNickname());
-			((TextView) window.findViewById(R.id.tv_dialog_select_first)).setText(R.string.dialog_remove);
+			((TextView) window.findViewById(R.id.tv_dialog_select_first)).setText(R.string.dialog_remove_addressbook);
 			((RelativeLayout) window.findViewById(R.id.rl_dialog_select_first)).setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {

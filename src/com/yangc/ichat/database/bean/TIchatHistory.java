@@ -7,6 +7,7 @@ package com.yangc.ichat.database.bean;
 public class TIchatHistory {
 
     private Long id;
+    private String uuid;
     private String username;
     private String chat;
     private Long chatStatus;
@@ -20,8 +21,9 @@ public class TIchatHistory {
         this.id = id;
     }
 
-    public TIchatHistory(Long id, String username, String chat, Long chatStatus, Long transmitStatus, java.util.Date date) {
+    public TIchatHistory(Long id, String uuid, String username, String chat, Long chatStatus, Long transmitStatus, java.util.Date date) {
         this.id = id;
+        this.uuid = uuid;
         this.username = username;
         this.chat = chat;
         this.chatStatus = chatStatus;
@@ -35,6 +37,14 @@ public class TIchatHistory {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getUsername() {

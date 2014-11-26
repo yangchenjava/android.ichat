@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:cacheColorHint="@android:color/transparent"
-        android:divider="@color/dividing_line_addressbook"
+        android:divider="@color/dividing_line"
         android:dividerHeight="1px"
         android:drawSelectorOnTop="false"
         android:fadingEdge="none"

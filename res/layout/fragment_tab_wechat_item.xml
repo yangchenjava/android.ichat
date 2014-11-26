@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/hsv_wechat_item"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:fadingEdge="none"
+    android:scrollbars="none" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <RelativeLayout
+            android:id="@+id/rl_wechat_item_left"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_main"
+            android:paddingEnd="2dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:paddingStart="2dp" >
+
+            <ImageView
+                android:id="@+id/iv_wechat_item_photo"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:contentDescription="@string/content_description"
+                android:padding="8dp"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:id="@+id/tv_wechat_item_time"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="10dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textColor="@color/font_gray"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_wechat_item_nickname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_toEndOf="@id/iv_wechat_item_photo"
+                android:layout_toLeftOf="@id/tv_wechat_item_time"
+                android:layout_toRightOf="@id/iv_wechat_item_photo"
+                android:layout_toStartOf="@id/tv_wechat_item_time"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_wechat_item_chat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_wechat_item_nickname"
+                android:layout_marginTop="5dp"
+                android:layout_toEndOf="@id/iv_wechat_item_photo"
+                android:layout_toRightOf="@id/iv_wechat_item_photo"
+                android:singleLine="true"
+                android:textColor="@color/font_gray"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_wechat_item_right"
+            android:layout_width="120dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/selector_right"
+            android:clickable="true"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:contentDescription="@string/content_description"
+                android:scaleType="fitCenter"
+                android:src="@drawable/right_remove" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/right_remove"
+                android:textColor="@android:color/white"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</HorizontalScrollView>

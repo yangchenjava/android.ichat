@@ -9,7 +9,8 @@ import com.yangc.ichat.database.DaoSession;
 import com.yangc.ichat.database.bean.TIchatAddressbook;
 import com.yangc.ichat.database.bean.TIchatHistory;
 import com.yangc.ichat.database.bean.TIchatMe;
-import com.yangc.ichat.database.dao.TIchatAddressbookDao.Properties;
+import com.yangc.ichat.database.dao.TIchatAddressbookDao;
+import com.yangc.ichat.database.dao.TIchatHistoryDao;
 
 public class DatabaseUtils {
 
@@ -39,6 +40,8 @@ public class DatabaseUtils {
 		return daoSession;
 	}
 
+	/** ----------------------------------------- TIchatMe ------------------------------------------- */
+
 	public static void saveMe(Context context, TIchatMe me, String username, String password) {
 		me.setUsername(username);
 		me.setPassword(password);
@@ -55,6 +58,8 @@ public class DatabaseUtils {
 		return getDaoSession(context).getTIchatMeDao().queryBuilder().unique();
 	}
 
+	/** ----------------------------------------- TIchatAddressbook ------------------------------------------- */
+
 	public static void saveOrUpdateAddressbook(Context context, List<TIchatAddressbook> addressbookList) {
 		getDaoSession(context).getTIchatAddressbookDao().deleteAll();
 		for (TIchatAddressbook addressbook : addressbookList) {
@@ -64,7 +69,7 @@ public class DatabaseUtils {
 	}
 
 	public static void deleteAddressbook_logic(Context context, Long userId) {
-		TIchatAddressbook addressbook = getDaoSession(context).getTIchatAddressbookDao().queryBuilder().where(Properties.UserId.eq(userId)).unique();
+		TIchatAddressbook addressbook = getDaoSession(context).getTIchatAddressbookDao().queryBuilder().where(TIchatAddressbookDao.Properties.UserId.eq(userId)).unique();
 		if (addressbook != null) {
 			addressbook.setDeleted(1L);
 			getDaoSession(context).getTIchatAddressbookDao().update(addressbook);
@@ -72,26 +77,29 @@ public class DatabaseUtils {
 	}
 
 	public static void deleteAddressbook_physical(Context context, Long userId) {
-		TIchatAddressbook addressbook = getDaoSession(context).getTIchatAddressbookDao().queryBuilder().where(Properties.UserId.eq(userId)).unique();
-		if (addressbook != null) {
-			getDaoSession(context).getTIchatAddressbookDao().delete(addressbook);
-		}
+		getDaoSession(context).getTIchatAddressbookDao().queryBuilder().where(TIchatAddressbookDao.Properties.UserId.eq(userId)).buildDelete().executeDeleteWithoutDetachingEntities();
 	}
 
 	public static TIchatAddressbook getAddressbookByUsername(Context context, String username) {
-		return getDaoSession(context).getTIchatAddressbookDao().queryBuilder().where(Properties.Username.eq(username)).unique();
+		return getDaoSession(context).getTIchatAddressbookDao().queryBuilder().where(TIchatAddressbookDao.Properties.Username.eq(username)).unique();
 	}
 
 	public static List<TIchatAddressbook> getAddressbookList(Context context) {
-		return getDaoSession(context).getTIchatAddressbookDao().queryBuilder().where(Properties.Deleted.eq(0L)).orderAsc(Properties.Spell).list();
+		return getDaoSession(context).getTIchatAddressbookDao().queryBuilder().where(TIchatAddressbookDao.Properties.Deleted.eq(0L)).orderAsc(TIchatAddressbookDao.Properties.Spell).list();
 	}
 
 	public static List<TIchatAddressbook> getAddressbookListByDelete(Context context) {
-		return getDaoSession(context).getTIchatAddressbookDao().queryBuilder().where(Properties.Deleted.eq(1L)).list();
+		return getDaoSession(context).getTIchatAddressbookDao().queryBuilder().where(TIchatAddressbookDao.Properties.Deleted.eq(1L)).list();
+	}
+
+	/** ----------------------------------------- TIchatHistory ------------------------------------------- */
+
+	public static void deleteHistory(Context context, String username) {
+		getDaoSession(context).getTIchatHistoryDao().queryBuilder().where(TIchatHistoryDao.Properties.Username.eq(username)).buildDelete().executeDeleteWithoutDetachingEntities();
 	}
 
 	public static List<TIchatHistory> getHistoryList(Context context) {
-		String where = "JOIN (SELECT MAX(_ID) _ID, USERNAME FROM T_ICHAT_HISTORY GROUP BY USERNAME) C ON C._ID = T._ID ORDER BY C._ID DESC";
+		String where = "JOIN (SELECT MAX(_ID) _ID FROM T_ICHAT_HISTORY GROUP BY USERNAME) C ON C._ID = T._ID ORDER BY C._ID DESC";
 		return getDaoSession(context).getTIchatHistoryDao().queryRawCreate(where).list();
 	}
 

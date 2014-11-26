@@ -26,11 +26,12 @@ public class TIchatHistoryDao extends AbstractDao<TIchatHistory, Long> {
     */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property Username = new Property(1, String.class, "username", false, "USERNAME");
-        public final static Property Chat = new Property(2, String.class, "chat", false, "CHAT");
-        public final static Property ChatStatus = new Property(3, Long.class, "chatStatus", false, "CHAT_STATUS");
-        public final static Property TransmitStatus = new Property(4, Long.class, "transmitStatus", false, "TRANSMIT_STATUS");
-        public final static Property Date = new Property(5, java.util.Date.class, "date", false, "DATE");
+        public final static Property Uuid = new Property(1, String.class, "uuid", false, "UUID");
+        public final static Property Username = new Property(2, String.class, "username", false, "USERNAME");
+        public final static Property Chat = new Property(3, String.class, "chat", false, "CHAT");
+        public final static Property ChatStatus = new Property(4, Long.class, "chatStatus", false, "CHAT_STATUS");
+        public final static Property TransmitStatus = new Property(5, Long.class, "transmitStatus", false, "TRANSMIT_STATUS");
+        public final static Property Date = new Property(6, java.util.Date.class, "date", false, "DATE");
     };
 
 
@@ -47,11 +48,12 @@ public class TIchatHistoryDao extends AbstractDao<TIchatHistory, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "'T_ICHAT_HISTORY' (" + //
                 "'_id' INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
-                "'USERNAME' TEXT," + // 1: username
-                "'CHAT' TEXT," + // 2: chat
-                "'CHAT_STATUS' INTEGER," + // 3: chatStatus
-                "'TRANSMIT_STATUS' INTEGER," + // 4: transmitStatus
-                "'DATE' INTEGER);"); // 5: date
+                "'UUID' TEXT," + // 1: uuid
+                "'USERNAME' TEXT," + // 2: username
+                "'CHAT' TEXT," + // 3: chat
+                "'CHAT_STATUS' INTEGER," + // 4: chatStatus
+                "'TRANSMIT_STATUS' INTEGER," + // 5: transmitStatus
+                "'DATE' INTEGER);"); // 6: date
         // Add Indexes
         db.execSQL("CREATE INDEX " + constraint + "IDX_T_ICHAT_HISTORY_USERNAME ON T_ICHAT_HISTORY" +
                 " (USERNAME);");
@@ -73,29 +75,34 @@ public class TIchatHistoryDao extends AbstractDao<TIchatHistory, Long> {
             stmt.bindLong(1, id);
         }
  
+        String uuid = entity.getUuid();
+        if (uuid != null) {
+            stmt.bindString(2, uuid);
+        }
+ 
         String username = entity.getUsername();
         if (username != null) {
-            stmt.bindString(2, username);
+            stmt.bindString(3, username);
         }
  
         String chat = entity.getChat();
         if (chat != null) {
-            stmt.bindString(3, chat);
+            stmt.bindString(4, chat);
         }
  
         Long chatStatus = entity.getChatStatus();
         if (chatStatus != null) {
-            stmt.bindLong(4, chatStatus);
+            stmt.bindLong(5, chatStatus);
         }
  
         Long transmitStatus = entity.getTransmitStatus();
         if (transmitStatus != null) {
-            stmt.bindLong(5, transmitStatus);
+            stmt.bindLong(6, transmitStatus);
         }
  
         java.util.Date date = entity.getDate();
         if (date != null) {
-            stmt.bindLong(6, date.getTime());
+            stmt.bindLong(7, date.getTime());
         }
     }
 
@@ -110,11 +117,12 @@ public class TIchatHistoryDao extends AbstractDao<TIchatHistory, Long> {
     public TIchatHistory readEntity(Cursor cursor, int offset) {
         TIchatHistory entity = new TIchatHistory( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // username
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // chat
-            cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3), // chatStatus
-            cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4), // transmitStatus
-            cursor.isNull(offset + 5) ? null : new java.util.Date(cursor.getLong(offset + 5)) // date
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // uuid
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // username
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // chat
+            cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4), // chatStatus
+            cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5), // transmitStatus
+            cursor.isNull(offset + 6) ? null : new java.util.Date(cursor.getLong(offset + 6)) // date
         );
         return entity;
     }
@@ -123,11 +131,12 @@ public class TIchatHistoryDao extends AbstractDao<TIchatHistory, Long> {
     @Override
     public void readEntity(Cursor cursor, TIchatHistory entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setUsername(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setChat(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setChatStatus(cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3));
-        entity.setTransmitStatus(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
-        entity.setDate(cursor.isNull(offset + 5) ? null : new java.util.Date(cursor.getLong(offset + 5)));
+        entity.setUuid(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setUsername(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setChat(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setChatStatus(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
+        entity.setTransmitStatus(cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5));
+        entity.setDate(cursor.isNull(offset + 6) ? null : new java.util.Date(cursor.getLong(offset + 6)));
      }
     
     /** @inheritdoc */
