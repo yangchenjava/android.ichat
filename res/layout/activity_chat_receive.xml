@@ -2,23 +2,47 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/layer_dividing_line"
-    android:paddingEnd="20dp"
-    android:paddingLeft="2dp"
-    android:paddingRight="20dp"
-    android:paddingStart="2dp" >
+    android:padding="10dp" >
 
     <TextView
-        android:id="@+id/tv_addressbook_item_word"
-        android:layout_width="match_parent"
-        android:layout_height="25dp"
-        android:gravity="center_vertical"
-        android:paddingEnd="0dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="0dp"
-        android:paddingStart="8dp"
+        android:id="@+id/tv_chat_receive_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/shape_bkg_light_gray"
+        android:paddingBottom="2dp"
+        android:paddingEnd="6dp"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp"
+        android:paddingStart="6dp"
+        android:paddingTop="2dp"
         android:textColor="@android:color/white"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+        android:textSize="12sp" />
+
+    <ImageView
+        android:id="@+id/iv_chat_receive_photo"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_below="@id/tv_chat_receive_time"
+        android:clickable="true"
+        android:contentDescription="@string/content_description"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/me_info" />
+
+    <TextView
+        android:id="@+id/tv_chat_receive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_chat_receive_time"
+        android:layout_marginTop="8dp"
+        android:layout_toEndOf="@id/iv_chat_receive_photo"
+        android:layout_toRightOf="@id/iv_chat_receive_photo"
+        android:background="@drawable/selector_receive"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:maxWidth="200dp"
+        android:textColor="@color/font_dark_gray"
+        android:textSize="14sp" />
 
 </RelativeLayout>
