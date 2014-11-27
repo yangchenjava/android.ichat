@@ -17,7 +17,13 @@ public class Constants {
 
 	public static boolean IS_REFRESH_ADDRESSBOOK;
 
-	/** 请求地址 */
+	/** TCP地址 */
+	public static final String IP = "10.23.6.12";
+	public static final int PORT = 8811;
+	public static final int TIMEOUT = 80;
+	public static final String CHARSET_NAME = "UTF-8";
+
+	/** HTTP地址 */
 	public static final String SERVER_URL = "http://10.23.6.12:81/com.yangc.bridge/";
 	public static final String LOGIN = SERVER_URL + "resource/interface/login";
 	public static final String REGISTER = SERVER_URL + "resource/interface/register";
