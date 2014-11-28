@@ -57,8 +57,6 @@ public class RegisterFragment extends Fragment {
 	private static final String PNG_TEMP = "temp.png";
 	private static final String PNG_DEST = "me.png";
 
-	private AuthActivity authActivity;
-
 	private TextView tvRegisterBackspace;
 	private LinearLayout llRegister_1;
 	private LinearLayout llRegister_2;
@@ -80,7 +78,6 @@ public class RegisterFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		this.authActivity = (AuthActivity) this.getActivity();
 		View view = inflater.inflate(R.layout.fragment_auth_register, container, false);
 		((ImageView) view.findViewById(R.id.iv_register_backspace)).setOnClickListener(this.backspaceListener);
 		this.tvRegisterBackspace = (TextView) view.findViewById(R.id.tv_register_backspace);
@@ -136,7 +133,7 @@ public class RegisterFragment extends Fragment {
 	}
 
 	private void initPhotoFile(String fileName) {
-		this.photoFile = new File(AndroidUtils.getCacheDir(this.authActivity, Constants.CACHE_PORTRAIT), fileName);
+		this.photoFile = new File(AndroidUtils.getCacheDir(this.getActivity(), Constants.CACHE_PORTRAIT), fileName);
 		try {
 			this.photoFile.createNewFile();
 		} catch (IOException e) {
@@ -178,15 +175,15 @@ public class RegisterFragment extends Fragment {
 	}
 
 	public void clickBackspace() {
-		View currentFocus = this.authActivity.getCurrentFocus();
+		View currentFocus = this.getActivity().getCurrentFocus();
 		if (currentFocus != null) {
-			InputMethodManager imm = (InputMethodManager) this.authActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+			InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 		}
 		int visibility = this.llRegister_1.getVisibility();
 		if (visibility == View.VISIBLE) {
 			this.destoryPhotoFile();
-			this.authActivity.getSupportFragmentManager().popBackStack();
+			this.getActivity().getSupportFragmentManager().popBackStack();
 		} else if (visibility == View.GONE) {
 			this.llRegister_1.setVisibility(View.VISIBLE);
 			this.llRegister_2.setVisibility(View.GONE);
@@ -209,7 +206,7 @@ public class RegisterFragment extends Fragment {
 			// 验证用户名
 			username = etRegisterUsername.getText().toString().trim();
 			if (!username.matches("^[\\w\\-\\/\\.]{8,15}$")) {
-				AndroidUtils.alertToast(authActivity, R.string.error_username_validate);
+				AndroidUtils.alertToast(getActivity(), R.string.error_username_validate);
 				return;
 			}
 
@@ -217,10 +214,10 @@ public class RegisterFragment extends Fragment {
 			password = etRegisterPassword_1.getText().toString().trim();
 			String pwd = etRegisterPassword_2.getText().toString().trim();
 			if (!password.matches("^[\\w\\-]{6,15}$") || !pwd.matches("^[\\w\\-]{6,15}$")) {
-				AndroidUtils.alertToast(authActivity, R.string.error_password_validate);
+				AndroidUtils.alertToast(getActivity(), R.string.error_password_validate);
 				return;
 			} else if (!TextUtils.equals(password, pwd)) {
-				AndroidUtils.alertToast(authActivity, R.string.error_password_twice_validate);
+				AndroidUtils.alertToast(getActivity(), R.string.error_password_twice_validate);
 				return;
 			}
 			password = Md5Utils.getMD5(password);
@@ -235,7 +232,7 @@ public class RegisterFragment extends Fragment {
 	private View.OnClickListener photoListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			final AlertDialog alertDialog = new AlertDialog.Builder(authActivity).show();
+			final AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).show();
 			alertDialog.setCanceledOnTouchOutside(true);
 			Window window = alertDialog.getWindow();
 			window.setContentView(R.layout.dialog_select);
@@ -275,18 +272,18 @@ public class RegisterFragment extends Fragment {
 			// 验证昵称
 			String nickname = etRegisterNickname.getText().toString().trim();
 			if (TextUtils.isEmpty(nickname)) {
-				AndroidUtils.alertToast(authActivity, R.string.error_nickname_null);
+				AndroidUtils.alertToast(getActivity(), R.string.error_nickname_null);
 				return;
 			}
 
 			// 验证手机
 			String phone = etRegisterPhone.getText().toString().trim();
 			if (!TextUtils.isEmpty(phone) && !phone.matches("^1[3-8]{1}\\d{9}$")) {
-				AndroidUtils.alertToast(authActivity, R.string.error_phone_validate);
+				AndroidUtils.alertToast(getActivity(), R.string.error_phone_validate);
 				return;
 			}
 
-			progressDialog = AndroidUtils.showProgressDialog(authActivity, getResources().getString(R.string.text_load), true, true);
+			progressDialog = AndroidUtils.showProgressDialog(getActivity(), getResources().getString(R.string.text_load), true, true);
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("username", username);
 			params.put("password", password);
@@ -309,15 +306,15 @@ public class RegisterFragment extends Fragment {
 			if (result.isSuccess()) {
 				destoryPhotoFile();
 				TIchatMe me = JsonUtils.fromJson(result.getMessage(), TIchatMe.class);
-				DatabaseUtils.saveMe(authActivity, me, username, password);
-				Constants.saveConstants(authActivity, "" + me.getUserId(), username, password);
+				DatabaseUtils.saveMe(getActivity(), me, username, password);
+				Constants.saveConstants(getActivity(), "" + me.getUserId(), username, password);
 
 				cancelProgressDialog();
-				authActivity.startActivity(new Intent(authActivity, MainActivity.class));
-				authActivity.finish();
+				getActivity().startActivity(new Intent(getActivity(), MainActivity.class));
+				getActivity().finish();
 			} else {
 				cancelProgressDialog();
-				AndroidUtils.alertToast(authActivity, result.getMessage());
+				AndroidUtils.alertToast(getActivity(), result.getMessage());
 			}
 		}
 	};
@@ -326,7 +323,7 @@ public class RegisterFragment extends Fragment {
 		@Override
 		public void onErrorResponse(VolleyError error) {
 			cancelProgressDialog();
-			AndroidUtils.alertToast(authActivity, VolleyErrorHelper.getResId(error));
+			AndroidUtils.alertToast(getActivity(), VolleyErrorHelper.getResId(error));
 			Log.e(AuthActivity.TAG, error.getMessage(), error.getCause());
 		}
 	};

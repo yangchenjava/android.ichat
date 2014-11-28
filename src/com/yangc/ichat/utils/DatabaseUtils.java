@@ -94,6 +94,18 @@ public class DatabaseUtils {
 
 	/** ----------------------------------------- TIchatHistory ------------------------------------------- */
 
+	public static void saveHistory(Context context, TIchatHistory history) {
+		getDaoSession(context).getTIchatHistoryDao().insert(history);
+	}
+
+	public static void updateHistory(Context context, String uuid, Long transmitStatus) {
+		TIchatHistory history = getDaoSession(context).getTIchatHistoryDao().queryBuilder().where(TIchatHistoryDao.Properties.Uuid.eq(uuid)).unique();
+		if (history != null) {
+			history.setTransmitStatus(transmitStatus);
+			getDaoSession(context).getTIchatHistoryDao().update(history);
+		}
+	}
+
 	public static void deleteHistory(Context context, String username) {
 		getDaoSession(context).getTIchatHistoryDao().queryBuilder().where(TIchatHistoryDao.Properties.Username.eq(username)).buildDelete().executeDeleteWithoutDetachingEntities();
 	}
@@ -101,6 +113,15 @@ public class DatabaseUtils {
 	public static List<TIchatHistory> getHistoryList(Context context) {
 		String where = "JOIN (SELECT MAX(_ID) _ID FROM T_ICHAT_HISTORY GROUP BY USERNAME) C ON C._ID = T._ID ORDER BY C._ID DESC";
 		return getDaoSession(context).getTIchatHistoryDao().queryRawCreate(where).list();
+	}
+
+	public static List<TIchatHistory> getHistoryListByUsername_page(Context context, String username, int pageNum) {
+		if (pageNum > 0) {
+			int pageSize = 20;
+			return getDaoSession(context).getTIchatHistoryDao().queryBuilder().where(TIchatHistoryDao.Properties.Username.eq(username)).orderDesc(TIchatHistoryDao.Properties.Id).limit(pageSize)
+					.offset((pageNum - 1) * pageSize).list();
+		}
+		return null;
 	}
 
 }

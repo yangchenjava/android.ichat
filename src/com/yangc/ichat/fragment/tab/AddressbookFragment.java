@@ -44,8 +44,6 @@ import com.yangc.ichat.widget.IndexScroller;
 
 public class AddressbookFragment extends Fragment {
 
-	private MainActivity mainActivity;
-
 	private ListView lvAddressbook;
 	private TextView tvIndexWord;
 	private TextView tvAddressbookItemTotal;
@@ -59,7 +57,6 @@ public class AddressbookFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		this.mainActivity = (MainActivity) this.getActivity();
 		View view = inflater.inflate(R.layout.fragment_tab_addressbook, container, false);
 		this.lvAddressbook = (ListView) view.findViewById(R.id.lv_addressbook);
 		this.lvAddressbook.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true));
@@ -78,15 +75,15 @@ public class AddressbookFragment extends Fragment {
 		super.onResume();
 		this.list = new ArrayList<TIchatAddressbook>();
 		this.map = new HashMap<String, Integer>();
-		List<TIchatAddressbook> addressbookList = DatabaseUtils.getAddressbookList(this.mainActivity);
-		if (AndroidUtils.checkNetwork(this.mainActivity) && addressbookList.isEmpty()) {
+		List<TIchatAddressbook> addressbookList = DatabaseUtils.getAddressbookList(this.getActivity());
+		if (AndroidUtils.checkNetwork(this.getActivity()) && addressbookList.isEmpty()) {
 			this.syncNetworkData();
 		} else {
 			this.loadData(addressbookList);
 			this.syncNetworkData();
 		}
 
-		this.adapter = new AddressbookFragmentAdapter(this.mainActivity, this.lvAddressbook, list, this.itemListener, AndroidUtils.getScreenWidth(this.mainActivity));
+		this.adapter = new AddressbookFragmentAdapter(this.getActivity(), this.lvAddressbook, list, this.itemListener, AndroidUtils.getScreenWidth(this.getActivity()));
 		this.lvAddressbook.setAdapter(this.adapter);
 	}
 
@@ -95,7 +92,7 @@ public class AddressbookFragment extends Fragment {
 		public void onItemClick(int position) {
 			TIchatAddressbook addressbook = list.get(position);
 			if (addressbook.getId() != null) {
-				Intent intent = new Intent(mainActivity, FriendActivity.class);
+				Intent intent = new Intent(getActivity(), FriendActivity.class);
 				Bundle bundle = new Bundle(6);
 				bundle.putString("nickname", addressbook.getNickname());
 				bundle.putLong("sex", addressbook.getSex());
@@ -104,13 +101,13 @@ public class AddressbookFragment extends Fragment {
 				bundle.putString("signature", addressbook.getSignature());
 				bundle.putString("username", addressbook.getUsername());
 				intent.putExtra("addressbook", bundle);
-				mainActivity.startActivity(intent);
+				getActivity().startActivity(intent);
 			}
 		}
 
 		@Override
 		public void onItemLongClick(final int position) {
-			final AlertDialog alertDialog = new AlertDialog.Builder(mainActivity).show();
+			final AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).show();
 			alertDialog.setCanceledOnTouchOutside(true);
 			Window window = alertDialog.getWindow();
 			window.setContentView(R.layout.dialog_select);
@@ -134,11 +131,11 @@ public class AddressbookFragment extends Fragment {
 	};
 
 	private void removeData(int position) {
-		Dialog progressDialog = AndroidUtils.showProgressDialog(this.mainActivity, this.getResources().getString(R.string.text_load), true, true);
+		Dialog progressDialog = AndroidUtils.showProgressDialog(this.getActivity(), this.getResources().getString(R.string.text_load), true, true);
 
 		Long friendId = this.list.get(position).getUserId();
-		DatabaseUtils.deleteAddressbook_logic(this.mainActivity, friendId);
-		this.loadData(DatabaseUtils.getAddressbookList(this.mainActivity));
+		DatabaseUtils.deleteAddressbook_logic(this.getActivity(), friendId);
+		this.loadData(DatabaseUtils.getAddressbookList(this.getActivity()));
 		this.adapter.notifyDataSetChanged();
 
 		Map<String, String> params = new HashMap<String, String>();
@@ -198,7 +195,7 @@ public class AddressbookFragment extends Fragment {
 	private void syncNetworkData() {
 		if (!Constants.IS_REFRESH_ADDRESSBOOK) {
 			StringBuilder friendIds = new StringBuilder();
-			for (TIchatAddressbook addressbook : DatabaseUtils.getAddressbookListByDelete(this.mainActivity)) {
+			for (TIchatAddressbook addressbook : DatabaseUtils.getAddressbookListByDelete(this.getActivity())) {
 				friendIds.append(addressbook.getId()).append(",");
 			}
 
@@ -216,7 +213,7 @@ public class AddressbookFragment extends Fragment {
 		public void onResponse(List<TIchatAddressbook> addressbookList) {
 			loadData(addressbookList);
 			adapter.notifyDataSetChanged();
-			DatabaseUtils.saveOrUpdateAddressbook(mainActivity, addressbookList);
+			DatabaseUtils.saveOrUpdateAddressbook(getActivity(), addressbookList);
 			Constants.IS_REFRESH_ADDRESSBOOK = true;
 		}
 	};
@@ -225,9 +222,9 @@ public class AddressbookFragment extends Fragment {
 		@Override
 		public void onErrorResponse(VolleyError error) {
 			if (error instanceof AuthFailureError) {
-				VolleyErrorHelper.sessionTimeout(mainActivity, syncNetworkData, MainActivity.TAG);
+				VolleyErrorHelper.sessionTimeout(getActivity(), syncNetworkData, MainActivity.TAG);
 			} else {
-				AndroidUtils.alertToast(mainActivity, VolleyErrorHelper.getResId(error));
+				AndroidUtils.alertToast(getActivity(), VolleyErrorHelper.getResId(error));
 				Log.e(MainActivity.TAG, error.getMessage(), error.getCause());
 			}
 		}
@@ -237,11 +234,11 @@ public class AddressbookFragment extends Fragment {
 		@Override
 		public void onResponse(ResultBean result) {
 			if (result.isSuccess()) {
-				DatabaseUtils.deleteAddressbook_physical(mainActivity, Long.parseLong(result.getMessage()));
-				loadData(DatabaseUtils.getAddressbookList(mainActivity));
+				DatabaseUtils.deleteAddressbook_physical(getActivity(), Long.parseLong(result.getMessage()));
+				loadData(DatabaseUtils.getAddressbookList(getActivity()));
 				adapter.notifyDataSetChanged();
 			} else {
-				AndroidUtils.alertToast(mainActivity, result.getMessage());
+				AndroidUtils.alertToast(getActivity(), result.getMessage());
 			}
 		}
 	};
@@ -250,9 +247,9 @@ public class AddressbookFragment extends Fragment {
 		@Override
 		public void onErrorResponse(VolleyError error) {
 			if (error instanceof AuthFailureError) {
-				VolleyErrorHelper.sessionTimeout(mainActivity, removeData, MainActivity.TAG);
+				VolleyErrorHelper.sessionTimeout(getActivity(), removeData, MainActivity.TAG);
 			} else {
-				AndroidUtils.alertToast(mainActivity, VolleyErrorHelper.getResId(error));
+				AndroidUtils.alertToast(getActivity(), VolleyErrorHelper.getResId(error));
 				Log.e(MainActivity.TAG, error.getMessage(), error.getCause());
 			}
 		}

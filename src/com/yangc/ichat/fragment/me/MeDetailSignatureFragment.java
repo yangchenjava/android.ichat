@@ -13,20 +13,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.yangc.ichat.R;
-import com.yangc.ichat.activity.MeActivity;
 import com.yangc.ichat.database.bean.TIchatMe;
 import com.yangc.ichat.utils.DatabaseUtils;
 
 public class MeDetailSignatureFragment extends Fragment {
-
-	private MeActivity meActivity;
 
 	private EditText etMeDetailSignature;
 	private String signature;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		this.meActivity = (MeActivity) this.getActivity();
 		View view = inflater.inflate(R.layout.fragment_me_detail_signature, container, false);
 		((ImageView) view.findViewById(R.id.iv_me_detail_signature_backspace)).setOnClickListener(this.backspaceListener);
 		((Button) view.findViewById(R.id.btn_me_detail_signature)).setOnClickListener(this.signatureListener);
@@ -44,12 +40,12 @@ public class MeDetailSignatureFragment extends Fragment {
 	}
 
 	private void clickBackspace() {
-		View currentFocus = this.meActivity.getCurrentFocus();
+		View currentFocus = this.getActivity().getCurrentFocus();
 		if (currentFocus != null) {
-			InputMethodManager imm = (InputMethodManager) this.meActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+			InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 		}
-		this.meActivity.onBackPressed();
+		this.getActivity().onBackPressed();
 	}
 
 	// 后退监听
@@ -66,9 +62,9 @@ public class MeDetailSignatureFragment extends Fragment {
 		public void onClick(View v) {
 			String newSignature = etMeDetailSignature.getText().toString().trim();
 			if (!TextUtils.equals(newSignature, signature)) {
-				TIchatMe me = DatabaseUtils.getMe(meActivity);
+				TIchatMe me = DatabaseUtils.getMe(getActivity());
 				me.setSignature(newSignature);
-				DatabaseUtils.updateMe(meActivity, me);
+				DatabaseUtils.updateMe(getActivity(), me);
 			}
 			clickBackspace();
 		}

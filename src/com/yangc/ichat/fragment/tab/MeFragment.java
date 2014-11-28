@@ -37,7 +37,6 @@ import com.yangc.ichat.volley.VolleyErrorHelper;
 
 public class MeFragment extends Fragment {
 
-	private MainActivity mainActivity;
 	private DisplayImageOptions options;
 
 	private ImageView ivMeInfoPhoto;
@@ -48,7 +47,6 @@ public class MeFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		this.mainActivity = (MainActivity) this.getActivity();
 		this.options = UILUtils.getDisplayImageOptions();
 		View view = inflater.inflate(R.layout.fragment_tab_me, container, false);
 		((RelativeLayout) view.findViewById(R.id.rl_me_info)).setOnClickListener(this.meInfoListener);
@@ -61,7 +59,7 @@ public class MeFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		TIchatMe me = DatabaseUtils.getMe(this.mainActivity);
+		TIchatMe me = DatabaseUtils.getMe(this.getActivity());
 		// 如果数据库没有数据,则请求,如果有数据但是文件不存在,则请求
 		if (me == null) {
 			this.ivMeInfoPhoto.setImageResource(R.drawable.me_info);
@@ -94,14 +92,14 @@ public class MeFragment extends Fragment {
 	private View.OnClickListener meInfoListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			mainActivity.startActivity(new Intent(mainActivity, MeActivity.class));
+			getActivity().startActivity(new Intent(getActivity(), MeActivity.class));
 		}
 	};
 
 	private Response.Listener<TIchatMe> listener = new Response.Listener<TIchatMe>() {
 		@Override
 		public void onResponse(TIchatMe me) {
-			DatabaseUtils.saveMe(mainActivity, me, Constants.USERNAME, Constants.PASSWORD);
+			DatabaseUtils.saveMe(getActivity(), me, Constants.USERNAME, Constants.PASSWORD);
 			initMeInfo(me);
 		}
 	};
@@ -110,9 +108,9 @@ public class MeFragment extends Fragment {
 		@Override
 		public void onErrorResponse(VolleyError error) {
 			if (error instanceof AuthFailureError) {
-				VolleyErrorHelper.sessionTimeout(mainActivity, request, MainActivity.TAG);
+				VolleyErrorHelper.sessionTimeout(getActivity(), request, MainActivity.TAG);
 			} else {
-				AndroidUtils.alertToast(mainActivity, VolleyErrorHelper.getResId(error));
+				AndroidUtils.alertToast(getActivity(), VolleyErrorHelper.getResId(error));
 				Log.e(MainActivity.TAG, error.getMessage(), error.getCause());
 			}
 		}

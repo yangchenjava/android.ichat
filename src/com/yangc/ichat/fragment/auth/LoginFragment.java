@@ -38,8 +38,6 @@ import com.yangc.ichat.volley.VolleyErrorHelper;
 
 public class LoginFragment extends Fragment {
 
-	private AuthActivity authActivity;
-
 	private EditText etLoginUsername;
 	private EditText etLoginPassword;
 
@@ -50,7 +48,6 @@ public class LoginFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		this.authActivity = (AuthActivity) this.getActivity();
 		View view = inflater.inflate(R.layout.fragment_auth_login, container, false);
 		((ImageView) view.findViewById(R.id.iv_login_backspace)).setOnClickListener(this.backspaceListener);
 		this.etLoginUsername = (EditText) view.findViewById(R.id.et_login_username);
@@ -63,12 +60,12 @@ public class LoginFragment extends Fragment {
 	private View.OnClickListener backspaceListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			View currentFocus = authActivity.getCurrentFocus();
+			View currentFocus = getActivity().getCurrentFocus();
 			if (currentFocus != null) {
-				InputMethodManager imm = (InputMethodManager) authActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+				InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 			}
-			authActivity.getSupportFragmentManager().popBackStack();
+			getActivity().getSupportFragmentManager().popBackStack();
 		}
 	};
 
@@ -76,13 +73,13 @@ public class LoginFragment extends Fragment {
 	private View.OnClickListener loginListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			if (authActivity != null) {
+			if (getActivity() != null) {
 				username = etLoginUsername.getText().toString().trim();
 				password = Md5Utils.getMD5(etLoginPassword.getText().toString().trim());
 				if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
-					AndroidUtils.alertToast(authActivity, R.string.error_username_password_null);
+					AndroidUtils.alertToast(getActivity(), R.string.error_username_password_null);
 				} else {
-					progressDialog = AndroidUtils.showProgressDialog(authActivity, getResources().getString(R.string.text_load), true, true);
+					progressDialog = AndroidUtils.showProgressDialog(getActivity(), getResources().getString(R.string.text_load), true, true);
 					Map<String, String> params = new HashMap<String, String>();
 					params.put("username", username);
 					params.put("password", password);
@@ -99,15 +96,15 @@ public class LoginFragment extends Fragment {
 		public void onResponse(ResultBean result) {
 			if (result.isSuccess()) {
 				TIchatMe me = JsonUtils.fromJson(result.getMessage(), TIchatMe.class);
-				DatabaseUtils.saveMe(authActivity, me, username, password);
-				Constants.saveConstants(authActivity, "" + me.getUserId(), username, password);
+				DatabaseUtils.saveMe(getActivity(), me, username, password);
+				Constants.saveConstants(getActivity(), "" + me.getUserId(), username, password);
 
 				cancelProgressDialog();
-				authActivity.startActivity(new Intent(authActivity, MainActivity.class));
-				authActivity.finish();
+				getActivity().startActivity(new Intent(getActivity(), MainActivity.class));
+				getActivity().finish();
 			} else {
 				cancelProgressDialog();
-				AndroidUtils.alertToast(authActivity, result.getMessage());
+				AndroidUtils.alertToast(getActivity(), result.getMessage());
 			}
 		}
 	};
@@ -116,7 +113,7 @@ public class LoginFragment extends Fragment {
 		@Override
 		public void onErrorResponse(VolleyError error) {
 			cancelProgressDialog();
-			AndroidUtils.alertToast(authActivity, VolleyErrorHelper.getResId(error));
+			AndroidUtils.alertToast(getActivity(), VolleyErrorHelper.getResId(error));
 			Log.e(AuthActivity.TAG, error.getMessage(), error.getCause());
 		}
 	};

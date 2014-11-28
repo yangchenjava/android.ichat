@@ -18,7 +18,6 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.yangc.ichat.R;
-import com.yangc.ichat.activity.MainActivity;
 import com.yangc.ichat.database.bean.TIchatAddressbook;
 import com.yangc.ichat.database.bean.TIchatHistory;
 import com.yangc.ichat.fragment.tab.adapter.WechatFragmentAdapter;
@@ -27,8 +26,6 @@ import com.yangc.ichat.utils.DatabaseUtils;
 
 public class WechatFragment extends Fragment {
 
-	private MainActivity mainActivity;
-
 	private ListView lvWechat;
 	private WechatFragmentAdapter adapter;
 
@@ -36,7 +33,6 @@ public class WechatFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		this.mainActivity = (MainActivity) this.getActivity();
 		View view = inflater.inflate(R.layout.fragment_tab_wechat, container, false);
 		this.lvWechat = (ListView) view.findViewById(R.id.lv_wechat);
 		this.lvWechat.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true));
@@ -46,8 +42,8 @@ public class WechatFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		this.list = DatabaseUtils.getHistoryList(this.mainActivity);
-		this.adapter = new WechatFragmentAdapter(this.mainActivity, this.lvWechat, this.list, this.itemListener, AndroidUtils.getScreenWidth(this.mainActivity));
+		this.list = DatabaseUtils.getHistoryList(this.getActivity());
+		this.adapter = new WechatFragmentAdapter(this.getActivity(), this.lvWechat, this.list, this.itemListener, AndroidUtils.getScreenWidth(this.getActivity()));
 		this.lvWechat.setAdapter(this.adapter);
 	}
 
@@ -59,8 +55,8 @@ public class WechatFragment extends Fragment {
 
 		@Override
 		public void onItemLongClick(final int position) {
-			TIchatAddressbook addressbook = DatabaseUtils.getAddressbookByUsername(mainActivity, list.get(position).getUsername());
-			final AlertDialog alertDialog = new AlertDialog.Builder(mainActivity).show();
+			TIchatAddressbook addressbook = DatabaseUtils.getAddressbookByUsername(getActivity(), list.get(position).getUsername());
+			final AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).show();
 			alertDialog.setCanceledOnTouchOutside(true);
 			Window window = alertDialog.getWindow();
 			window.setContentView(R.layout.dialog_select);
@@ -85,8 +81,8 @@ public class WechatFragment extends Fragment {
 	};
 
 	private void removeData(int position) {
-		Dialog progressDialog = AndroidUtils.showProgressDialog(this.mainActivity, this.getResources().getString(R.string.text_load), true, true);
-		DatabaseUtils.deleteHistory(this.mainActivity, this.list.get(position).getUsername());
+		Dialog progressDialog = AndroidUtils.showProgressDialog(this.getActivity(), this.getResources().getString(R.string.text_load), true, true);
+		DatabaseUtils.deleteHistory(this.getActivity(), this.list.get(position).getUsername());
 		progressDialog.dismiss();
 	}
 
