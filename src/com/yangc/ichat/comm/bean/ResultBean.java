@@ -1,6 +1,10 @@
 package com.yangc.ichat.comm.bean;
 
-public class ResultBean {
+import java.io.Serializable;
+
+public class ResultBean implements Serializable {
+
+	private static final long serialVersionUID = 6489707464322017507L;
 
 	private String uuid;
 	private boolean success;

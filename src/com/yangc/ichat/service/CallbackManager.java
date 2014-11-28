@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.yangc.ichat.comm.bean.ResultBean;
-import com.yangc.ichat.comm.bean.TextBean;
+import com.yangc.ichat.comm.bean.ChatBean;
 
 public class CallbackManager {
 
 	private static final List<OnChatListener> LISTENERS = new ArrayList<OnChatListener>();
 
 	public interface OnChatListener {
-		public void onChatReceived(TextBean text);
+		public void onChatReceived(ChatBean text);
 
 		public void onResultReceived(ResultBean result);
 

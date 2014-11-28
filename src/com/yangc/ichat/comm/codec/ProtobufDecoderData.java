@@ -5,9 +5,9 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 
+import com.yangc.ichat.comm.bean.ChatBean;
 import com.yangc.ichat.comm.bean.FileBean;
 import com.yangc.ichat.comm.bean.ResultBean;
-import com.yangc.ichat.comm.bean.TextBean;
 import com.yangc.ichat.comm.bean.UserBean;
 import com.yangc.ichat.comm.protocol.ContentType;
 import com.yangc.ichat.comm.protocol.ProtobufMessage;
@@ -158,12 +158,12 @@ public class ProtobufDecoderData extends CumulativeProtocolDecoder {
 				crc += b[i];
 			}
 			if (in.get() == crc && in.get() == Tag.FINAL) {
-				TextBean text = new TextBean();
-				text.setUuid(message.getUuid());
-				text.setFrom(message.getFrom());
-				text.setTo(message.getTo());
-				text.setData(message.getData());
-				out.write(text);
+				ChatBean chat = new ChatBean();
+				chat.setUuid(message.getUuid());
+				chat.setFrom(message.getFrom());
+				chat.setTo(message.getTo());
+				chat.setData(message.getData());
+				out.write(chat);
 			}
 		} else {
 			return false;

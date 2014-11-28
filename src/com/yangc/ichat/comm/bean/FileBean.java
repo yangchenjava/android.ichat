@@ -1,6 +1,8 @@
 package com.yangc.ichat.comm.bean;
 
-public class FileBean extends ChatBean {
+public class FileBean extends CommonBean {
+
+	private static final long serialVersionUID = 1669097673361812917L;
 
 	private String fileName;
 	private Long fileSize;

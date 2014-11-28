@@ -1,33 +1,17 @@
 package com.yangc.ichat.comm.bean;
 
-public class ChatBean {
+public class ChatBean extends CommonBean {
 
-	private String uuid;
-	private String from;
-	private String to;
+	private static final long serialVersionUID = -5748047930496803102L;
 
-	public String getUuid() {
-		return uuid;
+	private String data;
+
+	public String getData() {
+		return data;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
-
-	public String getFrom() {
-		return from;
-	}
-
-	public void setFrom(String from) {
-		this.from = from;
-	}
-
-	public String getTo() {
-		return to;
-	}
-
-	public void setTo(String to) {
-		this.to = to;
+	public void setData(String data) {
+		this.data = data;
 	}
 
 }

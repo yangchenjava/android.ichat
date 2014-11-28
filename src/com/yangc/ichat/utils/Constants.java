@@ -17,6 +17,17 @@ public class Constants {
 
 	public static boolean IS_REFRESH_ADDRESSBOOK;
 
+	public static final String EXTRA_ACTION = "action";
+	public static final String EXTRA_CHAT = "chat";
+	public static final String EXTRA_FILE = "file";
+	public static final String EXTRA_RESULT = "result";
+	public static final int ACTION_DESTROY = 0;
+	public static final int ACTION_RECONNECT = 1;
+	public static final int ACTION_LOGIN = 2;
+	public static final int ACTION_CHAT = 3;
+	public static final int ACTION_FILE = 4;
+	public static final int ACTION_RESULT = 5;
+
 	/** TCP地址 */
 	public static final String IP = "10.23.6.12";
 	public static final int PORT = 8811;

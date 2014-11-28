@@ -10,8 +10,8 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
+import com.yangc.ichat.comm.bean.ChatBean;
 import com.yangc.ichat.comm.bean.ResultBean;
-import com.yangc.ichat.comm.bean.TextBean;
 import com.yangc.ichat.comm.bean.UserBean;
 import com.yangc.ichat.comm.factory.DataCodecFactory;
 import com.yangc.ichat.comm.handler.ClientHandler;
@@ -57,7 +57,7 @@ public class Client {
 		}, 5, 60, TimeUnit.SECONDS);
 	}
 
-	private void destroy() {
+	public void destroy() {
 		if (scheduledExecutorService != null) {
 			scheduledExecutorService.shutdownNow();
 		}
@@ -86,13 +86,13 @@ public class Client {
 		}
 	}
 
-	public void sendChat(TextBean text) {
+	public void sendChat(ChatBean chat) {
 		if (session != null && session.isConnected()) {
 			ProtobufMessage.Chat.Builder builder = ProtobufMessage.Chat.newBuilder();
-			builder.setUuid(text.getUuid());
-			builder.setFrom(text.getFrom());
-			builder.setTo(text.getTo());
-			builder.setData(text.getData());
+			builder.setUuid(chat.getUuid());
+			builder.setFrom(chat.getFrom());
+			builder.setTo(chat.getTo());
+			builder.setData(chat.getData());
 			session.write(builder.build());
 		}
 	}
