@@ -86,6 +86,9 @@
     <string name="tab_find">发现</string>
     <string name="tab_me">我</string>
 
+    <!-- wechat -->
+    <string name="wechat_send_button">发送</string>
+
     <!-- addressbook -->
     <string name="addressbook_total">位联系人</string>
 

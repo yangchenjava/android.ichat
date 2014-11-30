@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -42,6 +43,18 @@ public class AndroidUtils {
 			e.printStackTrace();
 		}
 		return 1;
+	}
+
+	/**
+	 * @功能: 获取当前显示的activity的名称(权限)
+	 * @作者: yangc
+	 * @创建日期: 2014年11月29日 下午8:27:40
+	 * @param context
+	 * @return
+	 */
+	public static String getRunningActivityName(Context context) {
+		ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+		return activityManager.getRunningTasks(1).get(0).topActivity.getClassName();
 	}
 
 	/**
@@ -121,7 +134,7 @@ public class AndroidUtils {
 	 */
 	public static boolean checkNetwork(Context context) {
 		NetworkInfo info = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
-		return info != null && info.isConnectedOrConnecting();
+		return info != null && info.isAvailable();
 	}
 
 	/**

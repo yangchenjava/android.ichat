@@ -1,5 +1,6 @@
 package com.yangc.ichat.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -20,6 +21,9 @@ import com.yangc.ichat.fragment.tab.AddressbookFragment;
 import com.yangc.ichat.fragment.tab.FindFragment;
 import com.yangc.ichat.fragment.tab.MeFragment;
 import com.yangc.ichat.fragment.tab.WechatFragment;
+import com.yangc.ichat.service.PushService;
+import com.yangc.ichat.utils.Constants;
+import com.yangc.ichat.utils.DatabaseUtils;
 import com.yangc.ichat.utils.VolleyUtils;
 
 public class MainActivity extends FragmentActivity {
@@ -45,6 +49,10 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_main);
+
+		Intent intent = new Intent(this, PushService.class);
+		intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_LOGIN);
+		this.startService(intent);
 
 		this.colorTabNormal = this.getResources().getColor(R.color.tab_normal);
 		this.colorTabSelect = this.getResources().getColor(R.color.tab_select);
@@ -80,7 +88,7 @@ public class MainActivity extends FragmentActivity {
 	protected void onResume() {
 		super.onResume();
 		this.resetView();
-		this.initView(CURRENT_TAB_ID == 0 ? R.id.ll_tab_wechat : CURRENT_TAB_ID);
+		this.initView(CURRENT_TAB_ID == 0 ? DatabaseUtils.getAddressbookCount(this) == 0 ? R.id.ll_tab_addressbook : R.id.ll_tab_wechat : CURRENT_TAB_ID);
 	}
 
 	@Override

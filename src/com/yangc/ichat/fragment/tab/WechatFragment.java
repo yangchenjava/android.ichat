@@ -4,7 +4,9 @@ import java.util.List;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -18,13 +20,16 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.yangc.ichat.R;
+import com.yangc.ichat.activity.ChatActivity;
+import com.yangc.ichat.comm.bean.ResultBean;
 import com.yangc.ichat.database.bean.TIchatAddressbook;
 import com.yangc.ichat.database.bean.TIchatHistory;
 import com.yangc.ichat.fragment.tab.adapter.WechatFragmentAdapter;
+import com.yangc.ichat.service.CallbackManager;
 import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.DatabaseUtils;
 
-public class WechatFragment extends Fragment {
+public class WechatFragment extends Fragment implements CallbackManager.OnChatListener {
 
 	private ListView lvWechat;
 	private WechatFragmentAdapter adapter;
@@ -47,10 +52,34 @@ public class WechatFragment extends Fragment {
 		this.lvWechat.setAdapter(this.adapter);
 	}
 
+	@Override
+	public void onChatReceived(TIchatHistory history) {
+		new Handler().post(new Runnable() {
+			@Override
+			public void run() {
+				list = DatabaseUtils.getHistoryList(getActivity());
+				adapter.notifyDataSetChanged();
+			}
+		});
+	}
+
+	@Override
+	public void onResultReceived(ResultBean result) {
+		// TODO
+	}
+
+	@Override
+	public void onNetworkError() {
+		AndroidUtils.alertToast(this.getActivity(), R.string.error_network);
+	}
+
 	private WechatFragmentAdapter.OnItemListener itemListener = new WechatFragmentAdapter.OnItemListener() {
 		@Override
 		public void onItemClick(int position) {
 			TIchatHistory history = list.get(position);
+			Intent intent = new Intent(getActivity(), ChatActivity.class);
+			intent.putExtra("username", history.getUsername());
+			getActivity().startActivity(intent);
 		}
 
 		@Override

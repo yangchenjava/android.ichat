@@ -1,24 +1,48 @@
 package com.yangc.ichat.service;
 
+import java.util.Date;
 import java.util.UUID;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.os.Handler;
 import android.os.IBinder;
 
+import com.yangc.ichat.R;
+import com.yangc.ichat.activity.ChatActivity;
 import com.yangc.ichat.comm.Client;
 import com.yangc.ichat.comm.bean.ChatBean;
 import com.yangc.ichat.comm.bean.ResultBean;
 import com.yangc.ichat.comm.bean.UserBean;
+import com.yangc.ichat.database.bean.TIchatHistory;
+import com.yangc.ichat.service.CallbackManager.OnChatListener;
+import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
+import com.yangc.ichat.utils.DatabaseUtils;
 
 public class PushService extends Service {
 
 	private Client client;
 
+	private NotificationManager notificationManager;
+
+	@Override
+	public IBinder onBind(Intent intent) {
+		return null;
+	}
+
 	@Override
 	public void onCreate() {
-		this.client = Client.getInstance();
+		this.client = Client.getInstance(this);
+		this.registerReceiver(this.broadcastReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+		this.notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 	}
 
 	@Override
@@ -26,30 +50,87 @@ public class PushService extends Service {
 		if (intent != null) {
 			int action = intent.getIntExtra(Constants.EXTRA_ACTION, -1);
 			switch (action) {
-			case Constants.ACTION_DESTROY:
+			case Constants.ACTION_DESTROY: {
 				this.stopSelf();
 				android.os.Process.killProcess(android.os.Process.myPid());
 				break;
-			case Constants.ACTION_RECONNECT:
-				this.client.reconnect();
+			}
+			case Constants.ACTION_CONNECT: {
+				this.client.connect();
 				break;
-			case Constants.ACTION_LOGIN:
-				UserBean user = new UserBean();
-				user.setUuid(UUID.randomUUID().toString());
-				user.setUsername(Constants.USERNAME);
-				user.setPassword(Constants.PASSWORD);
-				this.client.login(user);
+			}
+			case Constants.ACTION_RECONNECT: {
+				new Handler().postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						client.reconnect();
+						client.login(getUser());
+					}
+				}, 5000);
 				break;
-			case Constants.ACTION_CHAT:
+			}
+			case Constants.ACTION_NETWORK_ERROR: {
+				for (OnChatListener listener : CallbackManager.getChatListeners()) {
+					listener.onNetworkError();
+				}
+				break;
+			}
+			case Constants.ACTION_CANCEL_NOTIFICATION: {
+				this.cancelNotification();
+				break;
+			}
+			case Constants.ACTION_LOGIN: {
+				this.client.login(this.getUser());
+				break;
+			}
+			case Constants.ACTION_SEND_CHAT: {
 				this.client.sendChat((ChatBean) intent.getSerializableExtra(Constants.EXTRA_CHAT));
 				break;
-			case Constants.ACTION_FILE:
+			}
+			case Constants.ACTION_SEND_FILE: {
 				break;
-			case Constants.ACTION_RESULT:
-				this.client.sendResult((ResultBean) intent.getSerializableExtra(Constants.EXTRA_RESULT));
+			}
+			case Constants.ACTION_RECEIVE_CHAT: {
+				ChatBean chat = (ChatBean) intent.getSerializableExtra(Constants.EXTRA_CHAT);
+
+				ResultBean result = new ResultBean();
+				result.setUuid(chat.getUuid());
+				result.setSuccess(true);
+				result.setData("success");
+				this.client.sendResult(result);
+
+				boolean isChatActivity = AndroidUtils.getRunningActivityName(this).equals(ChatActivity.class.getSimpleName());
+
+				TIchatHistory history = new TIchatHistory();
+				history.setUuid(chat.getUuid());
+				history.setUsername(chat.getFrom());
+				history.setChat(chat.getData());
+				history.setChatStatus(0L);
+				history.setTransmitStatus(isChatActivity ? 4L : 3L);
+				history.setDate(new Date());
+				DatabaseUtils.saveHistory(this, history);
+
+				for (OnChatListener listener : CallbackManager.getChatListeners()) {
+					listener.onChatReceived(history);
+				}
+
+				if (!isChatActivity) this.showNotification(DatabaseUtils.getAddressbookByUsername(this, chat.getFrom()).getNickname(), chat.getData());
 				break;
-			default:
+			}
+			case Constants.ACTION_RECEIVE_FILE: {
 				break;
+			}
+			case Constants.ACTION_RECEIVE_RESULT: {
+				ResultBean result = (ResultBean) intent.getSerializableExtra(Constants.EXTRA_RESULT);
+				DatabaseUtils.updateHistoryByUuid(this, result.getUuid(), result.isSuccess() ? 2L : 1L);
+				for (OnChatListener listener : CallbackManager.getChatListeners()) {
+					listener.onResultReceived(result);
+				}
+				break;
+			}
+			default: {
+				break;
+			}
 			}
 		}
 		return super.onStartCommand(intent, flags, startId);
@@ -61,11 +142,50 @@ public class PushService extends Service {
 			this.client.destroy();
 			this.client = null;
 		}
+		this.unregisterReceiver(broadcastReceiver);
+		if (this.notificationManager != null) {
+			this.notificationManager.cancelAll();
+			this.notificationManager = null;
+		}
 	}
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		return null;
+	private UserBean getUser() {
+		UserBean user = new UserBean();
+		user.setUuid(UUID.randomUUID().toString());
+		user.setUsername(Constants.USERNAME);
+		user.setPassword(Constants.PASSWORD);
+		return user;
 	}
+
+	@SuppressWarnings("deprecation")
+	private void showNotification(String contentTitle, String contentText) {
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, ChatActivity.class), 0);
+
+		Notification notification = new Notification(R.drawable.notification, contentTitle, System.currentTimeMillis());
+		notification.defaults = Notification.DEFAULT_ALL;
+		notification.flags |= Notification.FLAG_AUTO_CANCEL;
+		notification.flags |= Notification.FLAG_SHOW_LIGHTS;
+		notification.setLatestEventInfo(this, contentTitle, contentText, pendingIntent);
+
+		this.notificationManager.notify(0, notification);
+	}
+
+	private void cancelNotification() {
+		this.notificationManager.cancel(0);
+	}
+
+	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+				if (AndroidUtils.checkNetwork(context)) {
+					client.reconnect();
+					client.login(getUser());
+				} else {
+					client.destroy();
+				}
+			}
+		}
+	};
 
 }

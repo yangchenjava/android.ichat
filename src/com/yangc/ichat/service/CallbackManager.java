@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.yangc.ichat.comm.bean.ResultBean;
-import com.yangc.ichat.comm.bean.ChatBean;
+import com.yangc.ichat.database.bean.TIchatHistory;
 
 public class CallbackManager {
 
 	private static final List<OnChatListener> LISTENERS = new ArrayList<OnChatListener>();
 
 	public interface OnChatListener {
-		public void onChatReceived(ChatBean text);
+		public void onChatReceived(TIchatHistory history);
 
 		public void onResultReceived(ResultBean result);
 
-		public void networkError();
+		public void onNetworkError();
 	}
 
 	public static void registerChatListener(OnChatListener listener) {

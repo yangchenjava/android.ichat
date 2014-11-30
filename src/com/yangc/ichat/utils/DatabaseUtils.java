@@ -1,5 +1,6 @@
 package com.yangc.ichat.utils;
 
+import java.util.Collections;
 import java.util.List;
 
 import android.content.Context;
@@ -11,6 +12,8 @@ import com.yangc.ichat.database.bean.TIchatHistory;
 import com.yangc.ichat.database.bean.TIchatMe;
 import com.yangc.ichat.database.dao.TIchatAddressbookDao;
 import com.yangc.ichat.database.dao.TIchatHistoryDao;
+
+import de.greenrobot.dao.query.WhereCondition;
 
 public class DatabaseUtils {
 
@@ -84,6 +87,10 @@ public class DatabaseUtils {
 		return getDaoSession(context).getTIchatAddressbookDao().queryBuilder().where(TIchatAddressbookDao.Properties.Username.eq(username)).unique();
 	}
 
+	public static long getAddressbookCount(Context context) {
+		return getDaoSession(context).getTIchatAddressbookDao().queryBuilder().where(TIchatAddressbookDao.Properties.Deleted.eq(0L)).count();
+	}
+
 	public static List<TIchatAddressbook> getAddressbookList(Context context) {
 		return getDaoSession(context).getTIchatAddressbookDao().queryBuilder().where(TIchatAddressbookDao.Properties.Deleted.eq(0L)).orderAsc(TIchatAddressbookDao.Properties.Spell).list();
 	}
@@ -98,11 +105,21 @@ public class DatabaseUtils {
 		getDaoSession(context).getTIchatHistoryDao().insert(history);
 	}
 
-	public static void updateHistory(Context context, String uuid, Long transmitStatus) {
+	public static void updateHistoryByUuid(Context context, String uuid, Long transmitStatus) {
 		TIchatHistory history = getDaoSession(context).getTIchatHistoryDao().queryBuilder().where(TIchatHistoryDao.Properties.Uuid.eq(uuid)).unique();
 		if (history != null) {
 			history.setTransmitStatus(transmitStatus);
 			getDaoSession(context).getTIchatHistoryDao().update(history);
+		}
+	}
+
+	public static void updateHistoryByUsername(Context context, String username) {
+		List<TIchatHistory> historyList = getDaoSession(context).getTIchatHistoryDao().queryBuilder().where(TIchatHistoryDao.Properties.Username.eq(username)).list();
+		if (historyList != null && !historyList.isEmpty()) {
+			for (TIchatHistory history : historyList) {
+				history.setTransmitStatus(4L);
+			}
+			getDaoSession(context).getTIchatHistoryDao().updateInTx(historyList);
 		}
 	}
 
@@ -115,13 +132,15 @@ public class DatabaseUtils {
 		return getDaoSession(context).getTIchatHistoryDao().queryRawCreate(where).list();
 	}
 
-	public static List<TIchatHistory> getHistoryListByUsername_page(Context context, String username, int pageNum) {
-		if (pageNum > 0) {
-			int pageSize = 20;
-			return getDaoSession(context).getTIchatHistoryDao().queryBuilder().where(TIchatHistoryDao.Properties.Username.eq(username)).orderDesc(TIchatHistoryDao.Properties.Id).limit(pageSize)
-					.offset((pageNum - 1) * pageSize).list();
+	public static List<TIchatHistory> getHistoryListByUsername_page(Context context, String username, Long id) {
+		WhereCondition[] condMore = {};
+		if (id != 0) {
+			condMore = new WhereCondition[] { TIchatHistoryDao.Properties.Id.gt(id) };
 		}
-		return null;
+		List<TIchatHistory> list = getDaoSession(context).getTIchatHistoryDao().queryBuilder().where(TIchatHistoryDao.Properties.Username.eq(username), condMore)
+				.orderDesc(TIchatHistoryDao.Properties.Id).limit(20).list();
+		Collections.reverse(list);
+		return list;
 	}
 
 }
