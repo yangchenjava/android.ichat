@@ -1,6 +1,5 @@
 package com.yangc.ichat.activity;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -21,8 +20,6 @@ import com.yangc.ichat.fragment.tab.AddressbookFragment;
 import com.yangc.ichat.fragment.tab.FindFragment;
 import com.yangc.ichat.fragment.tab.MeFragment;
 import com.yangc.ichat.fragment.tab.WechatFragment;
-import com.yangc.ichat.service.PushService;
-import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.DatabaseUtils;
 import com.yangc.ichat.utils.VolleyUtils;
 
@@ -30,7 +27,7 @@ public class MainActivity extends FragmentActivity {
 
 	public static final String TAG = MainActivity.class.getName();
 
-	private static int CURRENT_TAB_ID;
+	public static int CURRENT_TAB_ID;
 
 	private int colorTabNormal;
 	private int colorTabSelect;
@@ -49,11 +46,6 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_main);
-
-		// 启动TCP服务
-		Intent intent = new Intent(this, PushService.class);
-		intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_LOGIN);
-		this.startService(intent);
 
 		this.colorTabNormal = this.getResources().getColor(R.color.tab_normal);
 		this.colorTabSelect = this.getResources().getColor(R.color.tab_select);

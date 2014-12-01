@@ -15,6 +15,7 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.yangc.ichat.R;
 import com.yangc.ichat.activity.ChatActivity;
@@ -30,6 +31,8 @@ import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.DatabaseUtils;
 
 public class PushService extends Service {
+
+	private static final String TAG = PushService.class.getName();
 
 	private Client client;
 
@@ -195,6 +198,7 @@ public class PushService extends Service {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+				Log.i(TAG, "networkChangedReceiver");
 				if (AndroidUtils.checkNetwork(context)) {
 					client.reconnect();
 					client.login(getUser());

@@ -12,6 +12,7 @@ import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.yangc.ichat.comm.bean.ChatBean;
 import com.yangc.ichat.comm.bean.ResultBean;
@@ -24,6 +25,8 @@ import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
 
 public class Client {
+
+	private static final String TAG = Client.class.getName();
 
 	private static Client client;
 
@@ -50,6 +53,7 @@ public class Client {
 	}
 
 	private void init() {
+		Log.i(TAG, "init");
 		this.connector = new NioSocketConnector();
 		this.connector.setConnectTimeoutMillis(30000);
 		this.connector.getSessionConfig().setIdleTime(IdleStatus.READER_IDLE, Constants.TIMEOUT);
@@ -58,6 +62,7 @@ public class Client {
 	}
 
 	public synchronized void connect() {
+		Log.i(TAG, "connect");
 		try {
 			if (!AndroidUtils.checkNetwork(this.context)) {
 				throw new RuntimeException();
@@ -78,6 +83,7 @@ public class Client {
 	}
 
 	public void destroy() {
+		Log.i(TAG, "destroy");
 		if (this.session != null) {
 			this.session.close(true).awaitUninterruptibly();
 			this.session = null;
@@ -89,12 +95,14 @@ public class Client {
 	}
 
 	public void reconnect() {
+		Log.i(TAG, "reconnect");
 		this.destroy();
 		this.init();
 		this.connect();
 	}
 
 	public void login(final UserBean user) {
+		Log.i(TAG, "login");
 		this.executorService.execute(new Runnable() {
 			@Override
 			public void run() {
@@ -110,6 +118,7 @@ public class Client {
 	}
 
 	public void sendChat(final ChatBean chat) {
+		Log.i(TAG, "sendChat");
 		this.executorService.execute(new Runnable() {
 			@Override
 			public void run() {
@@ -126,6 +135,7 @@ public class Client {
 	}
 
 	public void sendResult(final ResultBean result) {
+		Log.i(TAG, "sendResult");
 		this.executorService.execute(new Runnable() {
 			@Override
 			public void run() {
@@ -141,6 +151,7 @@ public class Client {
 	}
 
 	public void sendHeart() {
+		Log.i(TAG, "sendHeart");
 		this.executorService.execute(new Runnable() {
 			@Override
 			public void run() {

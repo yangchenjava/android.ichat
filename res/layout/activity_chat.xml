@@ -49,9 +49,11 @@
     <RelativeLayout
         android:id="@+id/rl_chat_bottom"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@android:color/white" >
+        android:background="@android:color/white"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp" >
 
         <TextView
             android:id="@+id/tv_chat_mode"
@@ -67,48 +69,50 @@
             android:background="@drawable/selector_voice"
             android:clickable="true" />
 
-        <TextView
-            android:id="@+id/tv_chat_plus"
-            android:layout_width="35dp"
+        <RelativeLayout
+            android:id="@+id/rl_chat_action"
+            android:layout_width="55dp"
             android:layout_height="35dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginStart="10dp"
-            android:background="@drawable/selector_plus"
-            android:clickable="true" />
+            android:gravity="center" >
 
-        <Button
-            android:id="@+id/btn_chat_send"
-            android:layout_width="45dp"
-            android:layout_height="35dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginStart="5dp"
-            android:background="@drawable/selector_button_green"
-            android:text="@string/wechat_send_button"
-            android:textColor="@android:color/white"
-            android:textSize="14sp"
-            android:visibility="gone" />
+            <TextView
+                android:id="@+id/tv_chat_plus"
+                android:layout_width="35dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/selector_plus"
+                android:clickable="true" />
+
+            <Button
+                android:id="@+id/btn_chat_send"
+                android:layout_width="45dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/selector_button_green"
+                android:text="@string/wechat_send_button"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:visibility="gone" />
+        </RelativeLayout>
 
         <EditText
             android:id="@+id/et_chat_content"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toEndOf="@id/tv_chat_mode"
-            android:layout_toLeftOf="@id/tv_chat_plus"
+            android:layout_toLeftOf="@id/rl_chat_action"
             android:layout_toRightOf="@id/tv_chat_mode"
-            android:layout_toStartOf="@id/tv_chat_plus"
+            android:layout_toStartOf="@id/rl_chat_action"
             android:background="@drawable/selector_input"
-            android:inputType="text"
+            android:inputType="textMultiLine"
+            android:maxHeight="75dp"
+            android:minHeight="40dp"
+            android:paddingEnd="40dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="40dp"
+            android:paddingStart="5dp"
             android:textSize="15sp" />
 
         <TextView

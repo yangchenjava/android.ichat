@@ -1,5 +1,6 @@
 package com.yangc.ichat.fragment.friend;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -18,8 +19,8 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.yangc.ichat.R;
+import com.yangc.ichat.activity.ChatActivity;
 import com.yangc.ichat.activity.FriendActivity;
-import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.UILUtils;
 
@@ -148,7 +149,9 @@ public class FriendInfoFragment extends Fragment {
 	private View.OnClickListener sendClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			AndroidUtils.showProgressDialog(friendActivity, getResources().getString(R.string.text_load), true, true);
+			Intent intent = new Intent(getActivity(), ChatActivity.class);
+			intent.putExtra("username", getArguments().getString("username"));
+			getActivity().startActivity(intent);
 		}
 	};
 

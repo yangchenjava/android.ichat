@@ -75,6 +75,11 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 	}
 
 	@Override
+	public void onBackPressed() {
+		this.goToMain();
+	}
+
+	@Override
 	public void onChatReceived(final TIchatHistory history) {
 		if (this.list != null) {
 			new Handler().post(new Runnable() {
@@ -99,13 +104,18 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		AndroidUtils.alertToast(this, R.string.error_network);
 	}
 
+	private void goToMain() {
+		MainActivity.CURRENT_TAB_ID = R.id.ll_tab_wechat;
+		Intent intent = new Intent(this, MainActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		this.startActivity(intent);
+	}
+
 	// 后退监听
 	private View.OnClickListener backspaceListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			Intent intent = new Intent(ChatActivity.this, MainActivity.class);
-			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			ChatActivity.this.startActivity(intent);
+			goToMain();
 		}
 	};
 
