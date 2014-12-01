@@ -3,6 +3,7 @@ package com.yangc.ichat.service;
 import java.util.Date;
 import java.util.UUID;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -22,6 +23,7 @@ import com.yangc.ichat.comm.bean.ChatBean;
 import com.yangc.ichat.comm.bean.ResultBean;
 import com.yangc.ichat.comm.bean.UserBean;
 import com.yangc.ichat.database.bean.TIchatHistory;
+import com.yangc.ichat.receiver.KeepAliveReceiver;
 import com.yangc.ichat.service.CallbackManager.OnChatListener;
 import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
@@ -31,6 +33,8 @@ public class PushService extends Service {
 
 	private Client client;
 
+	private PendingIntent pendingIntent;
+	private AlarmManager alarmManager;
 	private NotificationManager notificationManager;
 
 	@Override
@@ -41,7 +45,11 @@ public class PushService extends Service {
 	@Override
 	public void onCreate() {
 		this.client = Client.getInstance(this);
-		this.registerReceiver(this.broadcastReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+		this.registerReceiver(this.networkChangedReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
+		this.pendingIntent = PendingIntent.getBroadcast(this, 0, new Intent(this, KeepAliveReceiver.class), PendingIntent.FLAG_CANCEL_CURRENT);
+		this.alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+		this.alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 30000 + System.currentTimeMillis(), 30000, this.pendingIntent);
 		this.notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 	}
 
@@ -88,6 +96,10 @@ public class PushService extends Service {
 				break;
 			}
 			case Constants.ACTION_SEND_FILE: {
+				break;
+			}
+			case Constants.ACTION_SEND_HEART: {
+				this.client.sendHeart();
 				break;
 			}
 			case Constants.ACTION_RECEIVE_CHAT: {
@@ -142,7 +154,12 @@ public class PushService extends Service {
 			this.client.destroy();
 			this.client = null;
 		}
-		this.unregisterReceiver(broadcastReceiver);
+		this.unregisterReceiver(this.networkChangedReceiver);
+		if (this.alarmManager != null) {
+			this.alarmManager.cancel(this.pendingIntent);
+			this.alarmManager = null;
+			this.pendingIntent.cancel();
+		}
 		if (this.notificationManager != null) {
 			this.notificationManager.cancelAll();
 			this.notificationManager = null;
@@ -174,7 +191,7 @@ public class PushService extends Service {
 		this.notificationManager.cancel(0);
 	}
 
-	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+	private BroadcastReceiver networkChangedReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {

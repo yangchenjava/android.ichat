@@ -50,6 +50,7 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_main);
 
+		// 启动TCP服务
 		Intent intent = new Intent(this, PushService.class);
 		intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_LOGIN);
 		this.startService(intent);

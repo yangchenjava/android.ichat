@@ -17,7 +17,6 @@ import com.android.volley.VolleyError;
 import com.yangc.ichat.R;
 import com.yangc.ichat.bean.ResultBean;
 import com.yangc.ichat.database.bean.TIchatMe;
-import com.yangc.ichat.service.PushService;
 import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.DatabaseUtils;
@@ -55,10 +54,6 @@ public class BootloaderActivity extends Activity {
 			this.startActivity(new Intent(this, AuthActivity.class));
 			this.finish();
 		} else {
-			// 启动TCP服务
-			Intent intent = new Intent(this, PushService.class);
-			intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_CONNECT);
-			this.startService(intent);
 			// 同步用户信息
 			TIchatMe me = DatabaseUtils.getMe(this);
 			if (AndroidUtils.checkNetwork(this) && me != null) {
