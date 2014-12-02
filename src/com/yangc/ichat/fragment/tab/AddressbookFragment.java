@@ -10,7 +10,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -132,25 +131,20 @@ public class AddressbookFragment extends Fragment {
 	};
 
 	private void removeData(final int position) {
-		new Handler().post(new Runnable() {
-			@Override
-			public void run() {
-				Dialog progressDialog = AndroidUtils.showProgressDialog(getActivity(), getResources().getString(R.string.text_load), true, true);
+		Dialog progressDialog = AndroidUtils.showProgressDialog(this.getActivity(), this.getResources().getString(R.string.text_load), true, true);
 
-				Long friendId = list.get(position).getUserId();
-				DatabaseUtils.deleteAddressbook_logic(getActivity(), friendId);
-				loadData(DatabaseUtils.getAddressbookList(getActivity()));
-				adapter.notifyDataSetChanged();
+		Long friendId = this.list.get(position).getUserId();
+		DatabaseUtils.deleteAddressbook_logic(this.getActivity(), friendId);
+		this.loadData(DatabaseUtils.getAddressbookList(this.getActivity()));
+		this.adapter.notifyDataSetChanged();
 
-				Map<String, String> params = new HashMap<String, String>();
-				params.put("userId", Constants.USER_ID);
-				params.put("friendId", "" + friendId);
-				removeData = new GsonObjectRequest<ResultBean>(Request.Method.POST, Constants.DELETE_FRIEND, params, ResultBean.class, removeDataListener, removeDataErrorListener);
-				VolleyUtils.addNormalRequest(removeData, MainActivity.TAG);
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("userId", Constants.USER_ID);
+		params.put("friendId", "" + friendId);
+		this.removeData = new GsonObjectRequest<ResultBean>(Request.Method.POST, Constants.DELETE_FRIEND, params, ResultBean.class, removeDataListener, removeDataErrorListener);
+		VolleyUtils.addNormalRequest(this.removeData, MainActivity.TAG);
 
-				progressDialog.dismiss();
-			}
-		});
+		progressDialog.dismiss();
 	}
 
 	private IndexScroller.OnTouchWordChangedListener touchWordChangedListener = new IndexScroller.OnTouchWordChangedListener() {
@@ -217,15 +211,10 @@ public class AddressbookFragment extends Fragment {
 	private Response.Listener<List<TIchatAddressbook>> requestNetworkDataListener = new Response.Listener<List<TIchatAddressbook>>() {
 		@Override
 		public void onResponse(final List<TIchatAddressbook> addressbookList) {
-			new Handler().post(new Runnable() {
-				@Override
-				public void run() {
-					loadData(addressbookList);
-					adapter.notifyDataSetChanged();
-					DatabaseUtils.saveOrUpdateAddressbook(getActivity(), addressbookList);
-					Constants.IS_REFRESH_ADDRESSBOOK = true;
-				}
-			});
+			loadData(addressbookList);
+			adapter.notifyDataSetChanged();
+			DatabaseUtils.saveOrUpdateAddressbook(getActivity(), addressbookList);
+			Constants.IS_REFRESH_ADDRESSBOOK = true;
 		}
 	};
 
@@ -244,18 +233,13 @@ public class AddressbookFragment extends Fragment {
 	private Response.Listener<ResultBean> removeDataListener = new Response.Listener<ResultBean>() {
 		@Override
 		public void onResponse(final ResultBean result) {
-			new Handler().post(new Runnable() {
-				@Override
-				public void run() {
-					if (result.isSuccess()) {
-						DatabaseUtils.deleteAddressbook_physical(getActivity(), Long.parseLong(result.getMessage()));
-						loadData(DatabaseUtils.getAddressbookList(getActivity()));
-						adapter.notifyDataSetChanged();
-					} else {
-						AndroidUtils.alertToast(getActivity(), result.getMessage());
-					}
-				}
-			});
+			if (result.isSuccess()) {
+				DatabaseUtils.deleteAddressbook_physical(getActivity(), Long.parseLong(result.getMessage()));
+				loadData(DatabaseUtils.getAddressbookList(getActivity()));
+				adapter.notifyDataSetChanged();
+			} else {
+				AndroidUtils.alertToast(getActivity(), result.getMessage());
+			}
 		}
 	};
 

@@ -82,7 +82,7 @@ public class WechatFragmentAdapter extends BaseAdapter {
 			viewHolder.tvWechatItemNickname = (TextView) convertView.findViewById(R.id.tv_wechat_item_nickname);
 			viewHolder.tvWechatItemChat = (TextView) convertView.findViewById(R.id.tv_wechat_item_chat);
 			viewHolder.tvWechatItemTime = (TextView) convertView.findViewById(R.id.tv_wechat_item_time);
-			viewHolder.llWechatItemRight = (LinearLayout) convertView.findViewById(R.id.ll_addressbook_item_right);
+			viewHolder.llWechatItemRight = (LinearLayout) convertView.findViewById(R.id.ll_wechat_item_right);
 			convertView.setTag(viewHolder);
 		} else {
 			viewHolder = (ViewHolder) convertView.getTag();

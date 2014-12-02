@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -38,6 +37,7 @@ public class WechatFragment extends Fragment implements CallbackManager.OnChatLi
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		CallbackManager.registerChatListener(this);
 		View view = inflater.inflate(R.layout.fragment_tab_wechat, container, false);
 		this.lvWechat = (ListView) view.findViewById(R.id.lv_wechat);
 		this.lvWechat.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true));
@@ -54,13 +54,9 @@ public class WechatFragment extends Fragment implements CallbackManager.OnChatLi
 
 	@Override
 	public void onChatReceived(TIchatHistory history) {
-		new Handler().post(new Runnable() {
-			@Override
-			public void run() {
-				list = DatabaseUtils.getHistoryList(getActivity());
-				adapter.notifyDataSetChanged();
-			}
-		});
+		this.list.clear();
+		this.list.addAll(DatabaseUtils.getHistoryList(this.getActivity()));
+		this.adapter.notifyDataSetChanged();
 	}
 
 	@Override
@@ -112,6 +108,9 @@ public class WechatFragment extends Fragment implements CallbackManager.OnChatLi
 	private void removeData(int position) {
 		Dialog progressDialog = AndroidUtils.showProgressDialog(this.getActivity(), this.getResources().getString(R.string.text_load), true, true);
 		DatabaseUtils.deleteHistory(this.getActivity(), this.list.get(position).getUsername());
+		this.list.clear();
+		this.list.addAll(DatabaseUtils.getHistoryList(this.getActivity()));
+		this.adapter.notifyDataSetChanged();
 		progressDialog.dismiss();
 	}
 

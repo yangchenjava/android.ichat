@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -51,6 +50,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_chat);
+		CallbackManager.registerChatListener(this);
 		((ImageView) this.findViewById(R.id.iv_chat_backspace)).setOnClickListener(this.backspaceListener);
 		this.tvChatNickname = (TextView) this.findViewById(R.id.tv_chat_nickname);
 		((ImageView) this.findViewById(R.id.iv_title_bar_friend)).setOnClickListener(this.friendInfoListener);
@@ -82,15 +82,10 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 	@Override
 	public void onChatReceived(final TIchatHistory history) {
 		if (this.list != null) {
-			new Handler().post(new Runnable() {
-				@Override
-				public void run() {
-					synchronized (list) {
-						list.add(history);
-						adapter.notifyDataSetChanged();
-					}
-				}
-			});
+			synchronized (this.list) {
+				this.list.add(history);
+				this.adapter.notifyDataSetChanged();
+			}
 		}
 	}
 
@@ -177,6 +172,11 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 			history.setDate(new Date());
 			DatabaseUtils.saveHistory(ChatActivity.this, history);
 
+			synchronized (list) {
+				list.add(history);
+				adapter.notifyDataSetChanged();
+			}
+
 			Intent intent = new Intent(ChatActivity.this, PushService.class);
 			intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_SEND_CHAT);
 			intent.putExtra(Constants.EXTRA_CHAT, chat);
@@ -191,19 +191,17 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		@Override
 		public void onScrollStateChanged(AbsListView view, int scrollState) {
 			if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && lvChat.getFirstVisiblePosition() == 0) {
-				new Handler().post(new Runnable() {
-					@Override
-					public void run() {
-						Dialog progressDialog = AndroidUtils.showProgressDialog(ChatActivity.this, getResources().getString(R.string.text_load), true, true);
-						synchronized (list) {
-							List<TIchatHistory> historyList = DatabaseUtils.getHistoryListByUsername_page(ChatActivity.this, username, list.get(0).getId());
-							historyList.addAll(list);
-							list = historyList;
+				if (list != null && !list.isEmpty()) {
+					Dialog progressDialog = AndroidUtils.showProgressDialog(ChatActivity.this, getResources().getString(R.string.text_load), true, true);
+					synchronized (list) {
+						List<TIchatHistory> historyList = DatabaseUtils.getHistoryListByUsername_page(ChatActivity.this, username, list.get(0).getId());
+						if (historyList != null && !historyList.isEmpty()) {
+							list.addAll(0, historyList);
 							adapter.notifyDataSetChanged();
 						}
-						progressDialog.dismiss();
 					}
-				});
+					progressDialog.dismiss();
+				}
 			}
 		}
 

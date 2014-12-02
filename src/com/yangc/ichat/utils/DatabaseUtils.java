@@ -135,11 +135,13 @@ public class DatabaseUtils {
 	public static List<TIchatHistory> getHistoryListByUsername_page(Context context, String username, Long id) {
 		WhereCondition[] condMore = {};
 		if (id != 0) {
-			condMore = new WhereCondition[] { TIchatHistoryDao.Properties.Id.gt(id) };
+			condMore = new WhereCondition[] { TIchatHistoryDao.Properties.Id.lt(id) };
 		}
 		List<TIchatHistory> list = getDaoSession(context).getTIchatHistoryDao().queryBuilder().where(TIchatHistoryDao.Properties.Username.eq(username), condMore)
 				.orderDesc(TIchatHistoryDao.Properties.Id).limit(20).list();
-		Collections.reverse(list);
+		if (list != null && !list.isEmpty()) {
+			Collections.reverse(list);
+		}
 		return list;
 	}
 

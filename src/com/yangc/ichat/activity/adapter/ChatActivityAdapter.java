@@ -99,7 +99,7 @@ public class ChatActivityAdapter extends BaseAdapter {
 		case SEND: {
 			SendViewHolder viewHolder;
 			if (convertView == null) {
-				convertView = View.inflate(this.context, R.layout.activity_chat_receive, null);
+				convertView = View.inflate(this.context, R.layout.activity_chat_send, null);
 				viewHolder = new SendViewHolder();
 				viewHolder.tvChatSendTime = (TextView) convertView.findViewById(R.id.tv_chat_send_time);
 				viewHolder.ivChatSendPhoto = (ImageView) convertView.findViewById(R.id.iv_chat_send_photo);

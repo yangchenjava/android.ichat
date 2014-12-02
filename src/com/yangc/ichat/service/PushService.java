@@ -52,7 +52,7 @@ public class PushService extends Service {
 
 		this.pendingIntent = PendingIntent.getBroadcast(this, 0, new Intent(this, KeepAliveReceiver.class), PendingIntent.FLAG_CANCEL_CURRENT);
 		this.alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-		this.alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 30000 + System.currentTimeMillis(), 30000, this.pendingIntent);
+		this.alarmManager.setRepeating(AlarmManager.RTC, 30000 + System.currentTimeMillis(), 30000, this.pendingIntent);
 		this.notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 	}
 
@@ -129,7 +129,7 @@ public class PushService extends Service {
 					listener.onChatReceived(history);
 				}
 
-				if (!isChatActivity) this.showNotification(DatabaseUtils.getAddressbookByUsername(this, chat.getFrom()).getNickname(), chat.getData());
+				if (!isChatActivity) this.showNotification(chat.getFrom(), DatabaseUtils.getAddressbookByUsername(this, chat.getFrom()).getNickname(), chat.getData());
 				break;
 			}
 			case Constants.ACTION_RECEIVE_FILE: {
@@ -178,14 +178,16 @@ public class PushService extends Service {
 	}
 
 	@SuppressWarnings("deprecation")
-	private void showNotification(String contentTitle, String contentText) {
-		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, ChatActivity.class), 0);
+	private void showNotification(String username, String nickname, String content) {
+		Intent intent = new Intent(this, ChatActivity.class);
+		intent.putExtra("username", username);
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
-		Notification notification = new Notification(R.drawable.notification, contentTitle, System.currentTimeMillis());
+		Notification notification = new Notification(R.drawable.notification, nickname, System.currentTimeMillis());
 		notification.defaults = Notification.DEFAULT_ALL;
 		notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		notification.flags |= Notification.FLAG_SHOW_LIGHTS;
-		notification.setLatestEventInfo(this, contentTitle, contentText, pendingIntent);
+		notification.setLatestEventInfo(this, nickname, content, pendingIntent);
 
 		this.notificationManager.notify(0, notification);
 	}
