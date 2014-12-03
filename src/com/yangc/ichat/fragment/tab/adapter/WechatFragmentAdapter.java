@@ -1,11 +1,12 @@
 package com.yangc.ichat.fragment.tab.adapter;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ public class WechatFragmentAdapter extends BaseAdapter {
 	private List<TIchatHistory> list;
 	private OnItemListener onItemListener;
 	private int screenWidth;
+	private SimpleDateFormat sdf = new SimpleDateFormat("aHH:mm", Locale.getDefault());
 	private DisplayImageOptions options = UILUtils.getDisplayImageOptions();
 
 	public interface OnItemListener {
@@ -158,7 +160,7 @@ public class WechatFragmentAdapter extends BaseAdapter {
 			viewHolder.tvWechatItemNickname.setText(addressbook.getNickname());
 		}
 		viewHolder.tvWechatItemChat.setText(history.getChat());
-		viewHolder.tvWechatItemTime.setText(DateFormat.format("aHH:mm", history.getDate()));
+		viewHolder.tvWechatItemTime.setText(sdf.format(history.getDate()));
 		viewHolder.llWechatItemRight.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

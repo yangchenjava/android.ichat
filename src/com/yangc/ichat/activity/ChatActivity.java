@@ -4,14 +4,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -51,6 +55,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_chat);
 		CallbackManager.registerChatListener(this);
+
 		((ImageView) this.findViewById(R.id.iv_chat_backspace)).setOnClickListener(this.backspaceListener);
 		this.tvChatNickname = (TextView) this.findViewById(R.id.tv_chat_nickname);
 		((ImageView) this.findViewById(R.id.iv_title_bar_friend)).setOnClickListener(this.friendInfoListener);
@@ -61,6 +66,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		this.etChatContent.addTextChangedListener(this.textChangedListener);
 		this.lvChat = (ListView) this.findViewById(R.id.lv_chat);
 		this.lvChat.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true, this.scrollListener));
+		this.lvChat.setOnTouchListener(this.touchListener);
 	}
 
 	@Override
@@ -72,6 +78,11 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		this.list = DatabaseUtils.getHistoryListByUsername_page(this, this.username, 0L);
 		this.adapter = new ChatActivityAdapter(this, list, DatabaseUtils.getMe(this).getPhoto(), this.addressbook.getPhoto());
 		this.lvChat.setAdapter(this.adapter);
+		this.lvChat.setSelection(this.list.size() - 1);
+
+		Intent intent = new Intent(this, PushService.class);
+		intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_CANCEL_NOTIFICATION);
+		this.startService(intent);
 	}
 
 	@Override
@@ -99,12 +110,32 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		AndroidUtils.alertToast(this, R.string.error_network);
 	}
 
+	private void hideSoftInput() {
+		View currentFocus = getCurrentFocus();
+		if (currentFocus != null) {
+			InputMethodManager inputMethodManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+			inputMethodManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+		}
+	}
+
 	private void goToMain() {
+		this.hideSoftInput();
 		MainActivity.CURRENT_TAB_ID = R.id.ll_tab_wechat;
 		Intent intent = new Intent(this, MainActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		this.startActivity(intent);
 	}
+
+	@SuppressLint("ClickableViewAccessibility")
+	private View.OnTouchListener touchListener = new View.OnTouchListener() {
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			if (event.getAction() == MotionEvent.ACTION_DOWN) {
+				hideSoftInput();
+			}
+			return false;
+		}
+	};
 
 	// 后退监听
 	private View.OnClickListener backspaceListener = new View.OnClickListener() {

@@ -4,6 +4,8 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
@@ -35,6 +37,7 @@ public class Client {
 
 	private NioSocketConnector connector;
 	private IoSession session;
+	private ScheduledExecutorService scheduledExecutorService;
 
 	private Client() {
 	}
@@ -74,6 +77,18 @@ public class Client {
 				}
 			});
 			future.get();
+
+			// 心跳
+			this.scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+			this.scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
+				@Override
+				public void run() {
+					if (session != null && session.isConnected()) {
+						Log.i(TAG, "KeepAliveReceiver");
+						session.write(ProtobufMessage.Heart.newBuilder().build());
+					}
+				}
+			}, 5, 30, TimeUnit.SECONDS);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Intent intent = new Intent(this.context, PushService.class);
@@ -84,6 +99,9 @@ public class Client {
 
 	public void destroy() {
 		Log.i(TAG, "destroy");
+		if (scheduledExecutorService != null) {
+			scheduledExecutorService.shutdownNow();
+		}
 		if (this.session != null) {
 			this.session.close(true).awaitUninterruptibly();
 			this.session = null;
@@ -102,11 +120,11 @@ public class Client {
 	}
 
 	public void login(final UserBean user) {
-		Log.i(TAG, "login");
 		this.executorService.execute(new Runnable() {
 			@Override
 			public void run() {
 				if (session != null && session.isConnected()) {
+					Log.i(TAG, "login");
 					ProtobufMessage.Login.Builder builder = ProtobufMessage.Login.newBuilder();
 					builder.setUuid(user.getUuid());
 					builder.setUsername(user.getUsername());
@@ -118,11 +136,11 @@ public class Client {
 	}
 
 	public void sendChat(final ChatBean chat) {
-		Log.i(TAG, "sendChat");
 		this.executorService.execute(new Runnable() {
 			@Override
 			public void run() {
 				if (session != null && session.isConnected()) {
+					Log.i(TAG, "sendChat");
 					ProtobufMessage.Chat.Builder builder = ProtobufMessage.Chat.newBuilder();
 					builder.setUuid(chat.getUuid());
 					builder.setFrom(chat.getFrom());
@@ -135,28 +153,16 @@ public class Client {
 	}
 
 	public void sendResult(final ResultBean result) {
-		Log.i(TAG, "sendResult");
 		this.executorService.execute(new Runnable() {
 			@Override
 			public void run() {
 				if (session != null && session.isConnected()) {
+					Log.i(TAG, "sendResult");
 					ProtobufMessage.Result.Builder builder = ProtobufMessage.Result.newBuilder();
 					builder.setUuid(result.getUuid());
 					builder.setSuccess(result.isSuccess());
 					builder.setData(result.getData());
 					session.write(builder.build());
-				}
-			}
-		});
-	}
-
-	public void sendHeart() {
-		Log.i(TAG, "sendHeart");
-		this.executorService.execute(new Runnable() {
-			@Override
-			public void run() {
-				if (session != null && session.isConnected()) {
-					session.write(ProtobufMessage.Heart.newBuilder().build());
 				}
 			}
 		});

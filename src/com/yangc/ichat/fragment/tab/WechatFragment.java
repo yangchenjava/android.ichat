@@ -2,6 +2,7 @@ package com.yangc.ichat.fragment.tab;
 
 import java.util.List;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
@@ -38,6 +39,7 @@ public class WechatFragment extends Fragment implements CallbackManager.OnChatLi
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		CallbackManager.registerChatListener(this);
+
 		View view = inflater.inflate(R.layout.fragment_tab_wechat, container, false);
 		this.lvWechat = (ListView) view.findViewById(R.id.lv_wechat);
 		this.lvWechat.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true));
@@ -66,7 +68,10 @@ public class WechatFragment extends Fragment implements CallbackManager.OnChatLi
 
 	@Override
 	public void onNetworkError() {
-		AndroidUtils.alertToast(this.getActivity(), R.string.error_network);
+		Activity activity = this.getActivity();
+		if (activity != null) {
+			AndroidUtils.alertToast(activity, R.string.error_network);
+		}
 	}
 
 	private WechatFragmentAdapter.OnItemListener itemListener = new WechatFragmentAdapter.OnItemListener() {

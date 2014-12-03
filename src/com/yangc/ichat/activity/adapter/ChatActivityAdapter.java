@@ -1,10 +1,11 @@
 package com.yangc.ichat.activity.adapter;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -27,6 +28,7 @@ public class ChatActivityAdapter extends BaseAdapter {
 	private List<TIchatHistory> list;
 	private String mePhoto;
 	private String friendPhoto;
+	private SimpleDateFormat sdf = new SimpleDateFormat("aHH:mm", Locale.getDefault());
 	private DisplayImageOptions options = UILUtils.getDisplayImageOptions();
 
 	public ChatActivityAdapter(Context context, List<TIchatHistory> list, String mePhoto, String friendPhoto) {
@@ -84,7 +86,7 @@ public class ChatActivityAdapter extends BaseAdapter {
 
 			if (position == 0 || history.getDate().getTime() - this.list.get(position - 1).getDate().getTime() > 120000) {
 				viewHolder.tvChatReceiveTime.setVisibility(View.VISIBLE);
-				viewHolder.tvChatReceiveTime.setText(DateFormat.format("aHH:mm", history.getDate()));
+				viewHolder.tvChatReceiveTime.setText(sdf.format(history.getDate()));
 			} else {
 				viewHolder.tvChatReceiveTime.setVisibility(View.GONE);
 			}
@@ -111,7 +113,7 @@ public class ChatActivityAdapter extends BaseAdapter {
 
 			if (position == 0 || history.getDate().getTime() - this.list.get(position - 1).getDate().getTime() > 120000) {
 				viewHolder.tvChatSendTime.setVisibility(View.VISIBLE);
-				viewHolder.tvChatSendTime.setText(DateFormat.format("aHH:mm", history.getDate()));
+				viewHolder.tvChatSendTime.setText(sdf.format(history.getDate()));
 			} else {
 				viewHolder.tvChatSendTime.setVisibility(View.GONE);
 			}
