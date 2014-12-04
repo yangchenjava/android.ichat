@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -111,12 +112,17 @@ public class WechatFragment extends Fragment implements CallbackManager.OnChatLi
 	};
 
 	private void removeData(int position) {
-		Dialog progressDialog = AndroidUtils.showProgressDialog(this.getActivity(), this.getResources().getString(R.string.text_load), true, true);
+		final Dialog progressDialog = AndroidUtils.showProgressDialog(this.getActivity(), this.getResources().getString(R.string.text_load), true, true);
 		DatabaseUtils.deleteHistory(this.getActivity(), this.list.get(position).getUsername());
 		this.list.clear();
 		this.list.addAll(DatabaseUtils.getHistoryList(this.getActivity()));
 		this.adapter.notifyDataSetChanged();
-		progressDialog.dismiss();
+		new Handler().postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				progressDialog.dismiss();
+			}
+		}, 200);
 	}
 
 }

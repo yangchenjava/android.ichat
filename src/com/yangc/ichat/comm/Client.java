@@ -7,6 +7,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
@@ -58,7 +59,7 @@ public class Client {
 	private void init() {
 		Log.i(TAG, "init");
 		this.connector = new NioSocketConnector();
-		this.connector.setConnectTimeoutMillis(30000);
+		this.connector.setConnectTimeoutMillis(8000);
 		this.connector.getSessionConfig().setIdleTime(IdleStatus.READER_IDLE, Constants.TIMEOUT);
 		this.connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new DataCodecFactory()));
 		this.connector.setHandler(new ClientHandler(this.context));
@@ -68,12 +69,17 @@ public class Client {
 		Log.i(TAG, "connect");
 		try {
 			if (!AndroidUtils.checkNetwork(this.context)) {
-				throw new RuntimeException();
+				throw new RuntimeException("No networks are available");
 			}
 			Future<?> future = this.executorService.submit(new Runnable() {
 				@Override
 				public void run() {
-					session = connector.connect(new InetSocketAddress(Constants.IP, Constants.PORT)).awaitUninterruptibly().getSession();
+					ConnectFuture connectFuture = connector.connect(new InetSocketAddress(Constants.IP, Constants.PORT)).awaitUninterruptibly();
+					if (connectFuture.isConnected()) {
+						session = connectFuture.getSession();
+					} else {
+						throw new RuntimeException("The server does not startup");
+					}
 				}
 			});
 			future.get();

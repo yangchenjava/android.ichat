@@ -10,6 +10,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -36,6 +37,7 @@ import com.yangc.ichat.service.PushService;
 import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.DatabaseUtils;
+import com.yangc.ichat.widget.ResizeLayout;
 
 public class ChatActivity extends Activity implements CallbackManager.OnChatListener {
 
@@ -56,6 +58,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		this.setContentView(R.layout.activity_chat);
 		CallbackManager.registerChatListener(this);
 
+		((ResizeLayout) this.findViewById(R.id.rl_chat)).setOnResizeListener(this.layoutResizeListener);
 		((ImageView) this.findViewById(R.id.iv_chat_backspace)).setOnClickListener(this.backspaceListener);
 		this.tvChatNickname = (TextView) this.findViewById(R.id.tv_chat_nickname);
 		((ImageView) this.findViewById(R.id.iv_title_bar_friend)).setOnClickListener(this.friendInfoListener);
@@ -66,7 +69,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		this.etChatContent.addTextChangedListener(this.textChangedListener);
 		this.lvChat = (ListView) this.findViewById(R.id.lv_chat);
 		this.lvChat.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true, this.scrollListener));
-		this.lvChat.setOnTouchListener(this.touchListener);
+		this.lvChat.setOnTouchListener(this.listViewTouchListener);
 	}
 
 	@Override
@@ -78,7 +81,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		this.list = DatabaseUtils.getHistoryListByUsername_page(this, this.username, 0L);
 		this.adapter = new ChatActivityAdapter(this, list, DatabaseUtils.getMe(this).getPhoto(), this.addressbook.getPhoto());
 		this.lvChat.setAdapter(this.adapter);
-		this.lvChat.setSelection(this.list.size() - 1);
+		this.lvChat.setSelection(this.list.size() == 0 ? 0 : this.list.size() - 1);
 
 		Intent intent = new Intent(this, PushService.class);
 		intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_CANCEL_NOTIFICATION);
@@ -96,6 +99,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 			synchronized (this.list) {
 				this.list.add(history);
 				this.adapter.notifyDataSetChanged();
+				this.lvChat.setSelection(this.list.size() - 1);
 			}
 		}
 	}
@@ -126,14 +130,18 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		this.startActivity(intent);
 	}
 
-	@SuppressLint("ClickableViewAccessibility")
-	private View.OnTouchListener touchListener = new View.OnTouchListener() {
+	// 布局大小变化监听
+	private ResizeLayout.OnResizeListener layoutResizeListener = new ResizeLayout.OnResizeListener() {
 		@Override
-		public boolean onTouch(View v, MotionEvent event) {
-			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				hideSoftInput();
+		public void onResize(int w, int h, int oldw, int oldh) {
+			if (h < oldh) {
+				new Handler().postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						lvChat.setSelection(list.size() == 0 ? 0 : list.size() - 1);
+					}
+				}, 200);
 			}
-			return false;
 		}
 	};
 
@@ -206,6 +214,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 			synchronized (list) {
 				list.add(history);
 				adapter.notifyDataSetChanged();
+				lvChat.setSelection(list.size() - 1);
 			}
 
 			Intent intent = new Intent(ChatActivity.this, PushService.class);
@@ -219,25 +228,49 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 
 	// listview滚动监听
 	private AbsListView.OnScrollListener scrollListener = new AbsListView.OnScrollListener() {
+		private Dialog progressDialog;
+		private int firstVisibleItem;
+
 		@Override
 		public void onScrollStateChanged(AbsListView view, int scrollState) {
-			if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && lvChat.getFirstVisiblePosition() == 0) {
+			if (this.firstVisibleItem == 0) {
 				if (list != null && !list.isEmpty()) {
-					Dialog progressDialog = AndroidUtils.showProgressDialog(ChatActivity.this, getResources().getString(R.string.text_load), true, true);
 					synchronized (list) {
 						List<TIchatHistory> historyList = DatabaseUtils.getHistoryListByUsername_page(ChatActivity.this, username, list.get(0).getId());
 						if (historyList != null && !historyList.isEmpty()) {
+							this.progressDialog = AndroidUtils.showProgressDialog(ChatActivity.this, getResources().getString(R.string.text_load), true, true);
 							list.addAll(0, historyList);
 							adapter.notifyDataSetChanged();
+							lvChat.setSelection(historyList.size());
 						}
 					}
-					progressDialog.dismiss();
+					if (this.progressDialog != null) {
+						new Handler().postDelayed(new Runnable() {
+							@Override
+							public void run() {
+								progressDialog.dismiss();
+								progressDialog = null;
+							}
+						}, 200);
+					}
 				}
 			}
 		}
 
 		@Override
 		public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+			this.firstVisibleItem = firstVisibleItem;
+		}
+	};
+
+	@SuppressLint("ClickableViewAccessibility")
+	private View.OnTouchListener listViewTouchListener = new View.OnTouchListener() {
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			if (event.getAction() == MotionEvent.ACTION_DOWN) {
+				hideSoftInput();
+			}
+			return false;
 		}
 	};
 
