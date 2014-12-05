@@ -10,25 +10,32 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.yangc.ichat.R;
 import com.yangc.ichat.activity.adapter.ChatActivityChatAdapter;
+import com.yangc.ichat.activity.adapter.ChatActivityEmojiAdapter;
+import com.yangc.ichat.bean.EmojiBean;
 import com.yangc.ichat.comm.bean.ChatBean;
 import com.yangc.ichat.comm.bean.ResultBean;
 import com.yangc.ichat.database.bean.TIchatAddressbook;
@@ -38,6 +45,7 @@ import com.yangc.ichat.service.PushService;
 import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.DatabaseUtils;
+import com.yangc.ichat.utils.EmojiUtils;
 import com.yangc.ichat.widget.ResizeLayout;
 
 public class ChatActivity extends Activity implements CallbackManager.OnChatListener {
@@ -46,14 +54,14 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 	private TextView tvChatNickname;
 	// center
 	private ListView lvChat;
-	private ChatActivityChatAdapter adapter;
+	private ChatActivityChatAdapter chatAdapter;
 	// bottom
 	private TextView tvChatPlus;
 	private Button btnChatSend;
 	private EditText etChatContent;
 	private TextView tvChatFace;
 	// emoji
-	private LinearLayout llChatEmoji;
+	private RelativeLayout rlChatEmoji;
 	private ViewPager vpChatEmoji;
 	private LinearLayout llChatEmojiNavi;
 
@@ -85,11 +93,13 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		this.tvChatFace = (TextView) this.findViewById(R.id.tv_chat_face);
 		this.tvChatFace.setOnClickListener(this.faceListener);
 		// emoji
-		this.llChatEmoji = (LinearLayout) this.findViewById(R.id.ll_chat_emoji);
+		this.rlChatEmoji = (RelativeLayout) this.findViewById(R.id.rl_chat_emoji);
 		this.vpChatEmoji = (ViewPager) this.findViewById(R.id.vp_chat_emoji);
 		this.vpChatEmoji.setOffscreenPageLimit(2);
 		this.vpChatEmoji.setOnPageChangeListener(this.pageChangeListener);
+		this.vpChatEmoji.setAdapter(this.pagerAdapter);
 		this.llChatEmojiNavi = (LinearLayout) this.findViewById(R.id.ll_chat_emoji_navi);
+		this.setEmojiNavi(0);
 	}
 
 	@Override
@@ -100,10 +110,9 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 
 		this.tvChatNickname.setText(this.addressbook.getNickname());
 		this.list = DatabaseUtils.getHistoryListByUsername_page(this, this.username, 0L);
-		this.adapter = new ChatActivityChatAdapter(this, this.list, DatabaseUtils.getMe(this).getPhoto(), this.addressbook.getPhoto());
-		this.lvChat.setAdapter(this.adapter);
+		this.chatAdapter = new ChatActivityChatAdapter(this, this.list, DatabaseUtils.getMe(this).getPhoto(), this.addressbook.getPhoto());
+		this.lvChat.setAdapter(this.chatAdapter);
 		this.lvChat.setSelection(this.list.size() == 0 ? 0 : this.list.size() - 1);
-		this.setEmojiNavi(0);
 
 		Intent intent = new Intent(this, PushService.class);
 		intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_CANCEL_NOTIFICATION);
@@ -112,7 +121,11 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 
 	@Override
 	public void onBackPressed() {
-		this.goToMain();
+		if (this.rlChatEmoji.getVisibility() == View.VISIBLE) {
+			this.rlChatEmoji.setVisibility(View.GONE);
+		} else {
+			this.goToMain();
+		}
 	}
 
 	@Override
@@ -120,7 +133,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		if (this.list != null) {
 			synchronized (this.list) {
 				this.list.add(history);
-				this.adapter.notifyDataSetChanged();
+				this.chatAdapter.notifyDataSetChanged();
 				this.lvChat.setSelection(this.list.size() - 1);
 			}
 		}
@@ -146,8 +159,9 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 
 	private void setEmojiNavi(int position) {
 		this.llChatEmojiNavi.removeAllViews();
-		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-		for (int i = 0; i < 7; i++) {
+		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+		layoutParams.setMargins(5, 0, 5, 0);
+		for (int i = 0; i < EmojiUtils.PAGE_COUNT; i++) {
 			ImageView imageView = new ImageView(this);
 			imageView.setScaleType(ScaleType.FIT_CENTER);
 			if (i == position) {
@@ -155,7 +169,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 			} else {
 				imageView.setImageResource(R.drawable.emoji_page_normal);
 			}
-			this.llChatEmojiNavi.addView(imageView, params);
+			this.llChatEmojiNavi.addView(imageView, layoutParams);
 		}
 	}
 
@@ -217,7 +231,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 						if (historyList != null && !historyList.isEmpty()) {
 							this.progressDialog = AndroidUtils.showProgressDialog(ChatActivity.this, getResources().getString(R.string.text_load), true, true);
 							list.addAll(0, historyList);
-							adapter.notifyDataSetChanged();
+							chatAdapter.notifyDataSetChanged();
 							lvChat.setSelection(historyList.size() - 1);
 						}
 					}
@@ -246,6 +260,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		public boolean onTouch(View v, MotionEvent event) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
 				AndroidUtils.hideSoftInput(ChatActivity.this);
+				rlChatEmoji.setVisibility(View.GONE);
 			}
 			return false;
 		}
@@ -274,7 +289,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 
 			synchronized (list) {
 				list.add(history);
-				adapter.notifyDataSetChanged();
+				chatAdapter.notifyDataSetChanged();
 				lvChat.setSelection(list.size() - 1);
 			}
 
@@ -293,8 +308,8 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				if (llChatEmoji.getVisibility() == View.VISIBLE) {
-					llChatEmoji.setVisibility(View.GONE);
+				if (rlChatEmoji.getVisibility() == View.VISIBLE) {
+					rlChatEmoji.setVisibility(View.GONE);
 				}
 			}
 			return false;
@@ -327,9 +342,14 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 	private View.OnClickListener faceListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			if (llChatEmoji.getVisibility() == View.GONE) {
+			if (rlChatEmoji.getVisibility() == View.GONE) {
 				AndroidUtils.hideSoftInput(ChatActivity.this);
-				llChatEmoji.setVisibility(View.VISIBLE);
+				new Handler().postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						rlChatEmoji.setVisibility(View.VISIBLE);
+					}
+				}, 100);
 			}
 		}
 	};
@@ -350,6 +370,47 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		public void onPageSelected(int position) {
 			setEmojiNavi(position);
 		}
+	};
+
+	private PagerAdapter pagerAdapter = new PagerAdapter() {
+		@Override
+		public int getCount() {
+			return EmojiUtils.PAGE_COUNT;
+		}
+
+		@Override
+		public boolean isViewFromObject(View view, Object object) {
+			return view == object;
+		}
+
+		@Override
+		public int getItemPosition(Object object) {
+			return PagerAdapter.POSITION_NONE;
+		}
+
+		@Override
+		public Object instantiateItem(ViewGroup container, int position) {
+			View view = getLayoutInflater().inflate(R.layout.activity_chat_emoji, container, false);
+			GridView gvChatEmoji = (GridView) view.findViewById(R.id.gv_chat_emoji);
+			List<EmojiBean> list = EmojiUtils.getEmojiList(position);
+			list.add(new EmojiBean(R.drawable.selector_emoji_remove, null, null));
+			gvChatEmoji.setAdapter(new ChatActivityEmojiAdapter(ChatActivity.this, list));
+			gvChatEmoji.setOnItemClickListener(this.gridViewItemClickListener);
+			container.addView(view);
+			return view;
+		}
+
+		@Override
+		public void destroyItem(ViewGroup container, int position, Object object) {
+			container.removeView((View) object);
+		}
+
+		private AdapterView.OnItemClickListener gridViewItemClickListener = new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+			}
+		};
 	};
 
 }

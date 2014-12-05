@@ -31,6 +31,7 @@
 
     <!-- chat -->
     <color name="chat_bkg">#EBEBEB</color>
+    <color name="chat_emoji_bkg">#DFDFDF</color>
 
     <!-- right -->
     <color name="right_normal">#5F5F5F</color>

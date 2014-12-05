@@ -20,6 +20,7 @@ import com.yangc.ichat.database.bean.TIchatMe;
 import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.DatabaseUtils;
+import com.yangc.ichat.utils.EmojiUtils;
 import com.yangc.ichat.utils.VolleyUtils;
 import com.yangc.ichat.volley.GsonObjectRequest;
 import com.yangc.ichat.volley.VolleyErrorHelper;
@@ -50,6 +51,7 @@ public class BootloaderActivity extends Activity {
 	}
 
 	private void startup() {
+		EmojiUtils.loadEmoji(this);
 		if (TextUtils.isEmpty(Constants.USERNAME) || TextUtils.isEmpty(Constants.PASSWORD)) {
 			this.startActivity(new Intent(this, AuthActivity.class));
 			this.finish();

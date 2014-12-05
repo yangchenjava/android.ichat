@@ -1,5 +1,7 @@
 package com.yangc.ichat.activity.adapter;
 
+import java.util.List;
+
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,23 +9,26 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.yangc.ichat.R;
+import com.yangc.ichat.bean.EmojiBean;
 
 public class ChatActivityEmojiAdapter extends BaseAdapter {
 
 	private Context context;
+	private List<EmojiBean> list;
 
-	public ChatActivityEmojiAdapter(Context context) {
+	public ChatActivityEmojiAdapter(Context context, List<EmojiBean> list) {
 		this.context = context;
+		this.list = list;
 	}
 
 	@Override
 	public int getCount() {
-		return 0;
+		return this.list.size();
 	}
 
 	@Override
 	public Object getItem(int position) {
-		return 0;
+		return this.list.get(position);
 	}
 
 	@Override
@@ -43,6 +48,7 @@ public class ChatActivityEmojiAdapter extends BaseAdapter {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
 
+		viewHolder.ivChatEmoji.setImageResource(this.list.get(position).getResId());
 		return convertView;
 	}
 

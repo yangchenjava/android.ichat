@@ -11,6 +11,9 @@ public class JsonUtils {
 		gson = new Gson();
 	}
 
+	private JsonUtils() {
+	}
+
 	public static <T> T fromJson(String json, Class<T> clazz) {
 		if (json == null || json.equals("") || json.equals("null")) {
 			return null;

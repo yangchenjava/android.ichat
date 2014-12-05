@@ -138,28 +138,31 @@
             android:clickable="true" />
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/ll_chat_emoji"
+    <RelativeLayout
+        android:id="@+id/rl_chat_emoji"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:background="@drawable/emoji_panel_bkg"
-        android:orientation="vertical"
+        android:background="@color/chat_emoji_bkg"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
         android:visibility="gone" >
 
         <android.support.v4.view.ViewPager
             android:id="@+id/vp_chat_emoji"
             android:layout_width="match_parent"
-            android:layout_height="170dp"
+            android:layout_height="match_parent"
             android:flipInterval="30"
             android:persistentDrawingCache="animation" />
 
         <LinearLayout
             android:id="@+id/ll_chat_emoji_navi"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="10dp"
             android:gravity="center"
             android:orientation="horizontal" >
         </LinearLayout>
-    </LinearLayout>
+    </RelativeLayout>
 
 </com.yangc.ichat.widget.ResizeLayout>
