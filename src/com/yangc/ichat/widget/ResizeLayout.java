@@ -2,9 +2,9 @@ package com.yangc.ichat.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 
-public class ResizeLayout extends RelativeLayout {
+public class ResizeLayout extends LinearLayout {
 
 	private OnResizeListener onResizeListener;
 
@@ -22,10 +22,6 @@ public class ResizeLayout extends RelativeLayout {
 
 	public ResizeLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
-	}
-
-	public ResizeLayout(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
 	}
 
 	@Override

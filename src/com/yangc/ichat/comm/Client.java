@@ -78,7 +78,7 @@ public class Client {
 					if (connectFuture.isConnected()) {
 						session = connectFuture.getSession();
 					} else {
-						throw new RuntimeException("The server does not startup");
+						Log.i(TAG, "The server does not startup");
 					}
 				}
 			});

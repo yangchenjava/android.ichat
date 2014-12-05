@@ -3,13 +3,12 @@
     android:id="@+id/rl_chat"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/chat_bkg" >
+    android:background="@color/chat_bkg"
+    android:orientation="vertical" >
 
     <RelativeLayout
-        android:id="@+id/rl_chat_top"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_alignParentTop="true"
         android:background="@drawable/title_bar" >
 
         <ImageView
@@ -47,11 +46,21 @@
             android:src="@drawable/title_bar_friend" />
     </RelativeLayout>
 
+    <ListView
+        android:id="@+id/lv_chat"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:cacheColorHint="@android:color/transparent"
+        android:divider="@null"
+        android:drawSelectorOnTop="false"
+        android:fadingEdge="none"
+        android:listSelector="@android:color/transparent"
+        android:scrollbars="none" />
+
     <RelativeLayout
-        android:id="@+id/rl_chat_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:background="@android:color/white"
         android:paddingBottom="5dp"
         android:paddingTop="5dp" >
@@ -129,17 +138,28 @@
             android:clickable="true" />
     </RelativeLayout>
 
-    <ListView
-        android:id="@+id/lv_chat"
+    <LinearLayout
+        android:id="@+id/ll_chat_emoji"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/rl_chat_bottom"
-        android:layout_below="@id/rl_chat_top"
-        android:cacheColorHint="@android:color/transparent"
-        android:divider="@null"
-        android:drawSelectorOnTop="false"
-        android:fadingEdge="none"
-        android:listSelector="@android:color/transparent"
-        android:scrollbars="none" />
+        android:layout_height="200dp"
+        android:background="@drawable/emoji_panel_bkg"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/vp_chat_emoji"
+            android:layout_width="match_parent"
+            android:layout_height="170dp"
+            android:flipInterval="30"
+            android:persistentDrawingCache="animation" />
+
+        <LinearLayout
+            android:id="@+id/ll_chat_emoji_navi"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:gravity="center"
+            android:orientation="horizontal" >
+        </LinearLayout>
+    </LinearLayout>
 
 </com.yangc.ichat.widget.ResizeLayout>

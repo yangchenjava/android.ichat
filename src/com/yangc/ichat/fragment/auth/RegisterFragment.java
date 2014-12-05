@@ -7,7 +7,6 @@ import java.util.Map;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,7 +20,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -175,11 +173,7 @@ public class RegisterFragment extends Fragment {
 	}
 
 	public void clickBackspace() {
-		View currentFocus = this.getActivity().getCurrentFocus();
-		if (currentFocus != null) {
-			InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-		}
+		AndroidUtils.hideSoftInput(this.getActivity());
 		int visibility = this.llRegister_1.getVisibility();
 		if (visibility == View.VISIBLE) {
 			this.destoryPhotoFile();

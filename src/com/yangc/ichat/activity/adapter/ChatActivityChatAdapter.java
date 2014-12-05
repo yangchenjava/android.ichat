@@ -18,7 +18,7 @@ import com.yangc.ichat.database.bean.TIchatHistory;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.UILUtils;
 
-public class ChatActivityAdapter extends BaseAdapter {
+public class ChatActivityChatAdapter extends BaseAdapter {
 
 	private static final int RECEIVE = 0;
 	private static final int SEND = 1;
@@ -29,7 +29,7 @@ public class ChatActivityAdapter extends BaseAdapter {
 	private String friendPhoto;
 	private DisplayImageOptions options = UILUtils.getDisplayImageOptions();
 
-	public ChatActivityAdapter(Context context, List<TIchatHistory> list, String mePhoto, String friendPhoto) {
+	public ChatActivityChatAdapter(Context context, List<TIchatHistory> list, String mePhoto, String friendPhoto) {
 		this.context = context;
 		this.list = list;
 		this.mePhoto = mePhoto;

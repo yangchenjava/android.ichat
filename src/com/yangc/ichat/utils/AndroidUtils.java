@@ -16,6 +16,7 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -219,6 +220,20 @@ public class AndroidUtils {
 		progressDialog.setContentView(llDialogProgress, new LinearLayout.LayoutParams(350, 80));
 		progressDialog.show();
 		return progressDialog;
+	}
+
+	/**
+	 * @功能: 隐藏软键盘
+	 * @作者: yangc
+	 * @创建日期: 2014年12月5日 下午1:31:29
+	 * @param activity
+	 */
+	public static void hideSoftInput(Activity activity) {
+		View currentFocus = activity.getCurrentFocus();
+		if (currentFocus != null) {
+			InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+			inputMethodManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+		}
 	}
 
 }

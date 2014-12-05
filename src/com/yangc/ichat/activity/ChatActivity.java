@@ -7,27 +7,28 @@ import java.util.UUID;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.yangc.ichat.R;
-import com.yangc.ichat.activity.adapter.ChatActivityAdapter;
+import com.yangc.ichat.activity.adapter.ChatActivityChatAdapter;
 import com.yangc.ichat.comm.bean.ChatBean;
 import com.yangc.ichat.comm.bean.ResultBean;
 import com.yangc.ichat.database.bean.TIchatAddressbook;
@@ -41,12 +42,20 @@ import com.yangc.ichat.widget.ResizeLayout;
 
 public class ChatActivity extends Activity implements CallbackManager.OnChatListener {
 
+	// top
 	private TextView tvChatNickname;
+	// center
+	private ListView lvChat;
+	private ChatActivityChatAdapter adapter;
+	// bottom
 	private TextView tvChatPlus;
 	private Button btnChatSend;
 	private EditText etChatContent;
-	private ListView lvChat;
-	private ChatActivityAdapter adapter;
+	private TextView tvChatFace;
+	// emoji
+	private LinearLayout llChatEmoji;
+	private ViewPager vpChatEmoji;
+	private LinearLayout llChatEmojiNavi;
 
 	private String username;
 	private TIchatAddressbook addressbook;
@@ -57,19 +66,30 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_chat);
 		CallbackManager.registerChatListener(this);
-
+		// top
 		((ResizeLayout) this.findViewById(R.id.rl_chat)).setOnResizeListener(this.layoutResizeListener);
 		((ImageView) this.findViewById(R.id.iv_chat_backspace)).setOnClickListener(this.backspaceListener);
 		this.tvChatNickname = (TextView) this.findViewById(R.id.tv_chat_nickname);
 		((ImageView) this.findViewById(R.id.iv_title_bar_friend)).setOnClickListener(this.friendInfoListener);
+		// center
+		this.lvChat = (ListView) this.findViewById(R.id.lv_chat);
+		this.lvChat.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true, this.scrollListener));
+		this.lvChat.setOnTouchListener(this.listViewTouchListener);
+		// bottom
 		this.tvChatPlus = (TextView) this.findViewById(R.id.tv_chat_plus);
 		this.btnChatSend = (Button) this.findViewById(R.id.btn_chat_send);
 		this.btnChatSend.setOnClickListener(this.sendListener);
 		this.etChatContent = (EditText) this.findViewById(R.id.et_chat_content);
+		this.etChatContent.setOnTouchListener(this.editTextTouchListener);
 		this.etChatContent.addTextChangedListener(this.textChangedListener);
-		this.lvChat = (ListView) this.findViewById(R.id.lv_chat);
-		this.lvChat.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true, this.scrollListener));
-		this.lvChat.setOnTouchListener(this.listViewTouchListener);
+		this.tvChatFace = (TextView) this.findViewById(R.id.tv_chat_face);
+		this.tvChatFace.setOnClickListener(this.faceListener);
+		// emoji
+		this.llChatEmoji = (LinearLayout) this.findViewById(R.id.ll_chat_emoji);
+		this.vpChatEmoji = (ViewPager) this.findViewById(R.id.vp_chat_emoji);
+		this.vpChatEmoji.setOffscreenPageLimit(2);
+		this.vpChatEmoji.setOnPageChangeListener(this.pageChangeListener);
+		this.llChatEmojiNavi = (LinearLayout) this.findViewById(R.id.ll_chat_emoji_navi);
 	}
 
 	@Override
@@ -77,11 +97,13 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		super.onResume();
 		this.username = this.getIntent().getStringExtra("username");
 		this.addressbook = DatabaseUtils.getAddressbookByUsername(this, this.username);
+
 		this.tvChatNickname.setText(this.addressbook.getNickname());
 		this.list = DatabaseUtils.getHistoryListByUsername_page(this, this.username, 0L);
-		this.adapter = new ChatActivityAdapter(this, list, DatabaseUtils.getMe(this).getPhoto(), this.addressbook.getPhoto());
+		this.adapter = new ChatActivityChatAdapter(this, this.list, DatabaseUtils.getMe(this).getPhoto(), this.addressbook.getPhoto());
 		this.lvChat.setAdapter(this.adapter);
 		this.lvChat.setSelection(this.list.size() == 0 ? 0 : this.list.size() - 1);
+		this.setEmojiNavi(0);
 
 		Intent intent = new Intent(this, PushService.class);
 		intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_CANCEL_NOTIFICATION);
@@ -114,21 +136,30 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		AndroidUtils.alertToast(this, R.string.error_network);
 	}
 
-	private void hideSoftInput() {
-		View currentFocus = getCurrentFocus();
-		if (currentFocus != null) {
-			InputMethodManager inputMethodManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
-			inputMethodManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-		}
-	}
-
 	private void goToMain() {
-		this.hideSoftInput();
+		AndroidUtils.hideSoftInput(this);
 		MainActivity.CURRENT_TAB_ID = R.id.ll_tab_wechat;
 		Intent intent = new Intent(this, MainActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		this.startActivity(intent);
 	}
+
+	private void setEmojiNavi(int position) {
+		this.llChatEmojiNavi.removeAllViews();
+		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+		for (int i = 0; i < 7; i++) {
+			ImageView imageView = new ImageView(this);
+			imageView.setScaleType(ScaleType.FIT_CENTER);
+			if (i == position) {
+				imageView.setImageResource(R.drawable.emoji_page_select);
+			} else {
+				imageView.setImageResource(R.drawable.emoji_page_normal);
+			}
+			this.llChatEmojiNavi.addView(imageView, params);
+		}
+	}
+
+	/** -----------------------------------------top------------------------------------------- */
 
 	// 布局大小变化监听
 	private ResizeLayout.OnResizeListener layoutResizeListener = new ResizeLayout.OnResizeListener() {
@@ -170,27 +201,57 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		}
 	};
 
-	// 编辑内容监听
-	private TextWatcher textChangedListener = new TextWatcher() {
+	/** -----------------------------------------center------------------------------------------- */
+
+	// listview滚动监听
+	private AbsListView.OnScrollListener scrollListener = new AbsListView.OnScrollListener() {
+		private Dialog progressDialog;
+		private int firstVisibleItem;
+
 		@Override
-		public void onTextChanged(CharSequence s, int start, int before, int count) {
-			if (TextUtils.isEmpty(s)) {
-				tvChatPlus.setVisibility(View.VISIBLE);
-				btnChatSend.setVisibility(View.GONE);
-			} else {
-				tvChatPlus.setVisibility(View.GONE);
-				btnChatSend.setVisibility(View.VISIBLE);
+		public void onScrollStateChanged(AbsListView view, int scrollState) {
+			if (this.firstVisibleItem == 0) {
+				if (list != null && !list.isEmpty()) {
+					synchronized (list) {
+						List<TIchatHistory> historyList = DatabaseUtils.getHistoryListByUsername_page(ChatActivity.this, username, list.get(0).getId());
+						if (historyList != null && !historyList.isEmpty()) {
+							this.progressDialog = AndroidUtils.showProgressDialog(ChatActivity.this, getResources().getString(R.string.text_load), true, true);
+							list.addAll(0, historyList);
+							adapter.notifyDataSetChanged();
+							lvChat.setSelection(historyList.size() - 1);
+						}
+					}
+					if (this.progressDialog != null) {
+						new Handler().postDelayed(new Runnable() {
+							@Override
+							public void run() {
+								progressDialog.dismiss();
+								progressDialog = null;
+							}
+						}, 200);
+					}
+				}
 			}
 		}
 
 		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-		}
-
-		@Override
-		public void afterTextChanged(Editable s) {
+		public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+			this.firstVisibleItem = firstVisibleItem;
 		}
 	};
+
+	@SuppressLint("ClickableViewAccessibility")
+	private View.OnTouchListener listViewTouchListener = new View.OnTouchListener() {
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			if (event.getAction() == MotionEvent.ACTION_DOWN) {
+				AndroidUtils.hideSoftInput(ChatActivity.this);
+			}
+			return false;
+		}
+	};
+
+	/** -----------------------------------------bottom------------------------------------------- */
 
 	//  发送监听
 	private View.OnClickListener sendListener = new View.OnClickListener() {
@@ -226,51 +287,68 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		}
 	};
 
-	// listview滚动监听
-	private AbsListView.OnScrollListener scrollListener = new AbsListView.OnScrollListener() {
-		private Dialog progressDialog;
-		private int firstVisibleItem;
-
-		@Override
-		public void onScrollStateChanged(AbsListView view, int scrollState) {
-			if (this.firstVisibleItem == 0) {
-				if (list != null && !list.isEmpty()) {
-					synchronized (list) {
-						List<TIchatHistory> historyList = DatabaseUtils.getHistoryListByUsername_page(ChatActivity.this, username, list.get(0).getId());
-						if (historyList != null && !historyList.isEmpty()) {
-							this.progressDialog = AndroidUtils.showProgressDialog(ChatActivity.this, getResources().getString(R.string.text_load), true, true);
-							list.addAll(0, historyList);
-							adapter.notifyDataSetChanged();
-							lvChat.setSelection(historyList.size());
-						}
-					}
-					if (this.progressDialog != null) {
-						new Handler().postDelayed(new Runnable() {
-							@Override
-							public void run() {
-								progressDialog.dismiss();
-								progressDialog = null;
-							}
-						}, 200);
-					}
-				}
-			}
-		}
-
-		@Override
-		public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-			this.firstVisibleItem = firstVisibleItem;
-		}
-	};
-
+	//  编辑框触碰监听
 	@SuppressLint("ClickableViewAccessibility")
-	private View.OnTouchListener listViewTouchListener = new View.OnTouchListener() {
+	private View.OnTouchListener editTextTouchListener = new View.OnTouchListener() {
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				hideSoftInput();
+				if (llChatEmoji.getVisibility() == View.VISIBLE) {
+					llChatEmoji.setVisibility(View.GONE);
+				}
 			}
 			return false;
+		}
+	};
+
+	// 编辑内容监听
+	private TextWatcher textChangedListener = new TextWatcher() {
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
+			if (TextUtils.isEmpty(s)) {
+				tvChatPlus.setVisibility(View.VISIBLE);
+				btnChatSend.setVisibility(View.GONE);
+			} else {
+				tvChatPlus.setVisibility(View.GONE);
+				btnChatSend.setVisibility(View.VISIBLE);
+			}
+		}
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+		}
+
+		@Override
+		public void afterTextChanged(Editable s) {
+		}
+	};
+
+	//  表情按钮监听
+	private View.OnClickListener faceListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			if (llChatEmoji.getVisibility() == View.GONE) {
+				AndroidUtils.hideSoftInput(ChatActivity.this);
+				llChatEmoji.setVisibility(View.VISIBLE);
+			}
+		}
+	};
+
+	/** -----------------------------------------emoji------------------------------------------- */
+
+	private ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
+		@Override
+		public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+		}
+
+		// 状态有三个: 0空闲, 1正在滑行中, 2目标加载完毕
+		@Override
+		public void onPageScrollStateChanged(int state) {
+		}
+
+		@Override
+		public void onPageSelected(int position) {
+			setEmojiNavi(position);
 		}
 	};
 
