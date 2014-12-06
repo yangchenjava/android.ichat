@@ -16,6 +16,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.yangc.ichat.R;
 import com.yangc.ichat.database.bean.TIchatHistory;
 import com.yangc.ichat.utils.Constants;
+import com.yangc.ichat.utils.EmojiUtils;
 import com.yangc.ichat.utils.UILUtils;
 
 public class ChatActivityChatAdapter extends BaseAdapter {
@@ -93,7 +94,7 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 			} else {
 				ImageLoader.getInstance().displayImage(Constants.SERVER_URL + this.friendPhoto, viewHolder.ivChatReceivePhoto, this.options);
 			}
-			viewHolder.tvChatReceive.setText(history.getChat());
+			viewHolder.tvChatReceive.setText(EmojiUtils.escapeEmoji(this.context, history.getChat()));
 			break;
 		}
 		case SEND: {
@@ -120,7 +121,7 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 			} else {
 				ImageLoader.getInstance().displayImage(Constants.SERVER_URL + this.mePhoto, viewHolder.ivChatSendPhoto, this.options);
 			}
-			viewHolder.tvChatSend.setText(history.getChat());
+			viewHolder.tvChatSend.setText(EmojiUtils.escapeEmoji(this.context, history.getChat()));
 			break;
 		}
 		}

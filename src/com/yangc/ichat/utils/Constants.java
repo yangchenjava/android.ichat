@@ -16,6 +16,7 @@ public class Constants {
 	public static String PASSWORD;
 
 	public static boolean IS_REFRESH_ADDRESSBOOK;
+	public static String CHATTING_USERNAME = "";
 
 	public static final String EXTRA_ACTION = "action";
 	public static final String EXTRA_CHAT = "chat";

@@ -8,13 +8,17 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
+import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.style.ImageSpan;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +28,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -67,13 +70,12 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 
 	private String username;
 	private TIchatAddressbook addressbook;
-	private List<TIchatHistory> list;
+	private List<TIchatHistory> chatList;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_chat);
-		CallbackManager.registerChatListener(this);
 		// top
 		((ResizeLayout) this.findViewById(R.id.rl_chat)).setOnResizeListener(this.layoutResizeListener);
 		((ImageView) this.findViewById(R.id.iv_chat_backspace)).setOnClickListener(this.backspaceListener);
@@ -88,6 +90,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		this.btnChatSend = (Button) this.findViewById(R.id.btn_chat_send);
 		this.btnChatSend.setOnClickListener(this.sendListener);
 		this.etChatContent = (EditText) this.findViewById(R.id.et_chat_content);
+		this.etChatContent.setOnKeyListener(this.delKeyListener);
 		this.etChatContent.setOnTouchListener(this.editTextTouchListener);
 		this.etChatContent.addTextChangedListener(this.textChangedListener);
 		this.tvChatFace = (TextView) this.findViewById(R.id.tv_chat_face);
@@ -105,18 +108,27 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 	@Override
 	protected void onResume() {
 		super.onResume();
+		CallbackManager.registerChatListener(this);
+
 		this.username = this.getIntent().getStringExtra("username");
+		Constants.CHATTING_USERNAME = this.username;
 		this.addressbook = DatabaseUtils.getAddressbookByUsername(this, this.username);
 
 		this.tvChatNickname.setText(this.addressbook.getNickname());
-		this.list = DatabaseUtils.getHistoryListByUsername_page(this, this.username, 0L);
-		this.chatAdapter = new ChatActivityChatAdapter(this, this.list, DatabaseUtils.getMe(this).getPhoto(), this.addressbook.getPhoto());
+		this.chatList = DatabaseUtils.getHistoryListByUsername_page(this, this.username, 0L);
+		this.chatAdapter = new ChatActivityChatAdapter(this, this.chatList, DatabaseUtils.getMe(this).getPhoto(), this.addressbook.getPhoto());
 		this.lvChat.setAdapter(this.chatAdapter);
-		this.lvChat.setSelection(this.list.size() == 0 ? 0 : this.list.size() - 1);
+		this.lvChat.setSelection(this.chatList.size() == 0 ? 0 : this.chatList.size() - 1);
 
 		Intent intent = new Intent(this, PushService.class);
 		intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_CANCEL_NOTIFICATION);
 		this.startService(intent);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		CallbackManager.unregisterChatListener(this);
 	}
 
 	@Override
@@ -130,11 +142,11 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 
 	@Override
 	public void onChatReceived(final TIchatHistory history) {
-		if (this.list != null) {
-			synchronized (this.list) {
-				this.list.add(history);
+		if (this.chatList != null && history.getUsername().equals(username)) {
+			synchronized (this.chatList) {
+				this.chatList.add(history);
 				this.chatAdapter.notifyDataSetChanged();
-				this.lvChat.setSelection(this.list.size() - 1);
+				this.lvChat.setSelection(this.chatList.size() - 1);
 			}
 		}
 	}
@@ -163,7 +175,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		layoutParams.setMargins(5, 0, 5, 0);
 		for (int i = 0; i < EmojiUtils.PAGE_COUNT; i++) {
 			ImageView imageView = new ImageView(this);
-			imageView.setScaleType(ScaleType.FIT_CENTER);
+			imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 			if (i == position) {
 				imageView.setImageResource(R.drawable.emoji_page_select);
 			} else {
@@ -183,7 +195,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 				new Handler().postDelayed(new Runnable() {
 					@Override
 					public void run() {
-						lvChat.setSelection(list.size() == 0 ? 0 : list.size() - 1);
+						lvChat.setSelection(chatList.size() == 0 ? 0 : chatList.size() - 1);
 					}
 				}, 200);
 			}
@@ -225,12 +237,12 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		@Override
 		public void onScrollStateChanged(AbsListView view, int scrollState) {
 			if (this.firstVisibleItem == 0) {
-				if (list != null && !list.isEmpty()) {
-					synchronized (list) {
-						List<TIchatHistory> historyList = DatabaseUtils.getHistoryListByUsername_page(ChatActivity.this, username, list.get(0).getId());
+				if (chatList != null && !chatList.isEmpty()) {
+					synchronized (chatList) {
+						List<TIchatHistory> historyList = DatabaseUtils.getHistoryListByUsername_page(ChatActivity.this, username, chatList.get(0).getId());
 						if (historyList != null && !historyList.isEmpty()) {
 							this.progressDialog = AndroidUtils.showProgressDialog(ChatActivity.this, getResources().getString(R.string.text_load), true, true);
-							list.addAll(0, historyList);
+							chatList.addAll(0, historyList);
 							chatAdapter.notifyDataSetChanged();
 							lvChat.setSelection(historyList.size() - 1);
 						}
@@ -240,7 +252,6 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 							@Override
 							public void run() {
 								progressDialog.dismiss();
-								progressDialog = null;
 							}
 						}, 200);
 					}
@@ -272,11 +283,13 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 	private View.OnClickListener sendListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
+			Editable editable = etChatContent.getText();
+
 			ChatBean chat = new ChatBean();
 			chat.setUuid(UUID.randomUUID().toString());
 			chat.setFrom(Constants.USERNAME);
 			chat.setTo(username);
-			chat.setData(etChatContent.getText().toString());
+			chat.setData(editable.toString());
 
 			TIchatHistory history = new TIchatHistory();
 			history.setUuid(chat.getUuid());
@@ -287,10 +300,10 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 			history.setDate(new Date());
 			DatabaseUtils.saveHistory(ChatActivity.this, history);
 
-			synchronized (list) {
-				list.add(history);
+			synchronized (chatList) {
+				chatList.add(history);
 				chatAdapter.notifyDataSetChanged();
-				lvChat.setSelection(list.size() - 1);
+				lvChat.setSelection(chatList.size() - 1);
 			}
 
 			Intent intent = new Intent(ChatActivity.this, PushService.class);
@@ -298,7 +311,35 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 			intent.putExtra(Constants.EXTRA_CHAT, chat);
 			ChatActivity.this.startService(intent);
 
-			etChatContent.setText("");
+			// 清空EditText
+			ImageSpan[] imageSpans = editable.getSpans(0, editable.length(), ImageSpan.class);
+			for (ImageSpan imageSpan : imageSpans) {
+				editable.removeSpan(imageSpan);
+			}
+			editable.clear();
+		}
+	};
+
+	// 软键盘退格键监听
+	private View.OnKeyListener delKeyListener = new View.OnKeyListener() {
+		@Override
+		public boolean onKey(View v, int keyCode, KeyEvent event) {
+			if (keyCode == KeyEvent.KEYCODE_DEL && event.getAction() == KeyEvent.ACTION_DOWN) {
+				int selection = etChatContent.getSelectionStart();
+				if (selection > 0) {
+					Editable editable = etChatContent.getText();
+					String content = editable.toString();
+					if (content.substring(selection - 1, selection).equals("]")) {
+						int start = content.substring(0, selection).lastIndexOf("[");
+						editable.removeSpan(editable.getSpans(start, selection, ImageSpan.class)[0]);
+						editable.delete(start, selection);
+					} else {
+						editable.delete(selection - 1, selection);
+					}
+					return true;
+				}
+			}
+			return false;
 		}
 	};
 
@@ -350,6 +391,12 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 						rlChatEmoji.setVisibility(View.VISIBLE);
 					}
 				}, 100);
+				new Handler().postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						lvChat.setSelection(chatList.size() == 0 ? 0 : chatList.size() - 1);
+					}
+				}, 200);
 			}
 		}
 	};
@@ -392,9 +439,9 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		public Object instantiateItem(ViewGroup container, int position) {
 			View view = getLayoutInflater().inflate(R.layout.activity_chat_emoji, container, false);
 			GridView gvChatEmoji = (GridView) view.findViewById(R.id.gv_chat_emoji);
-			List<EmojiBean> list = EmojiUtils.getEmojiList(position);
-			list.add(new EmojiBean(R.drawable.selector_emoji_remove, null, null));
-			gvChatEmoji.setAdapter(new ChatActivityEmojiAdapter(ChatActivity.this, list));
+			List<EmojiBean> emojiList = EmojiUtils.getEmojiList(position);
+			emojiList.add(new EmojiBean(R.drawable.selector_emoji_remove, null, null));
+			gvChatEmoji.setAdapter(new ChatActivityEmojiAdapter(ChatActivity.this, emojiList));
 			gvChatEmoji.setOnItemClickListener(this.gridViewItemClickListener);
 			container.addView(view);
 			return view;
@@ -408,7 +455,27 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		private AdapterView.OnItemClickListener gridViewItemClickListener = new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+				Editable editable = etChatContent.getText();
+				int selection = etChatContent.getSelectionStart();
+				EmojiBean emoji = (EmojiBean) parent.getItemAtPosition(position);
+				if (emoji.getResId() == R.drawable.selector_emoji_remove) {
+					if (selection > 0) {
+						String content = editable.toString();
+						if (content.substring(selection - 1, selection).equals("]")) {
+							int start = content.substring(0, selection).lastIndexOf("[");
+							editable.removeSpan(editable.getSpans(start, selection, ImageSpan.class)[0]);
+							editable.delete(start, selection);
+						} else {
+							editable.delete(selection - 1, selection);
+						}
+					}
+				} else {
+					Drawable drawable = ChatActivity.this.getResources().getDrawable(emoji.getResId());
+					drawable.setBounds(0, 0, 34, 34);
+					SpannableString spannableString = new SpannableString(emoji.getContent());
+					spannableString.setSpan(new ImageSpan(drawable), 0, spannableString.length(), SpannableString.SPAN_INCLUSIVE_EXCLUSIVE);
+					editable.insert(selection, spannableString);
+				}
 			}
 		};
 	};

@@ -39,8 +39,6 @@ public class WechatFragment extends Fragment implements CallbackManager.OnChatLi
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		CallbackManager.registerChatListener(this);
-
 		View view = inflater.inflate(R.layout.fragment_tab_wechat, container, false);
 		this.lvWechat = (ListView) view.findViewById(R.id.lv_wechat);
 		this.lvWechat.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true));
@@ -50,9 +48,17 @@ public class WechatFragment extends Fragment implements CallbackManager.OnChatLi
 	@Override
 	public void onResume() {
 		super.onResume();
+		CallbackManager.registerChatListener(this);
+
 		this.list = DatabaseUtils.getHistoryList(this.getActivity());
 		this.adapter = new WechatFragmentAdapter(this.getActivity(), this.lvWechat, this.list, this.itemListener, AndroidUtils.getScreenWidth(this.getActivity()));
 		this.lvWechat.setAdapter(this.adapter);
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		CallbackManager.unregisterChatListener(this);
 	}
 
 	@Override

@@ -117,7 +117,7 @@ public class PushService extends Service {
 					listener.onChatReceived(history);
 				}
 
-				if (!isChatActivity) {
+				if (!isChatActivity || !chat.getFrom().equals(Constants.CHATTING_USERNAME)) {
 					this.showNotification(chat.getFrom(), DatabaseUtils.getAddressbookByUsername(this, chat.getFrom()).getNickname(), chat.getData());
 				}
 				break;
