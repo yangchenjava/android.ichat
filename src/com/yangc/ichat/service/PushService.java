@@ -102,13 +102,16 @@ public class PushService extends Service {
 				result.setData("success");
 				this.client.sendResult(result);
 
+				// 判断当前activity是否为聊天页面
 				boolean isChatActivity = AndroidUtils.getRunningActivityName(this).equals(ChatActivity.class.getName());
 
 				TIchatHistory history = new TIchatHistory();
 				history.setUuid(chat.getUuid());
 				history.setUsername(chat.getFrom());
 				history.setChat(chat.getData());
+				// 0:我接收的,1:我发送的
 				history.setChatStatus(0L);
+				// 0:发送中,1:发送失败,2:发送成功,3:未读,4:已读
 				history.setTransmitStatus(isChatActivity ? 4L : 3L);
 				history.setDate(new Date());
 				DatabaseUtils.saveHistory(this, history);
@@ -162,6 +165,14 @@ public class PushService extends Service {
 		return user;
 	}
 
+	/**
+	 * @功能: 显示通知
+	 * @作者: yangc
+	 * @创建日期: 2014年12月7日 下午7:06:44
+	 * @param username
+	 * @param nickname
+	 * @param content
+	 */
 	@SuppressWarnings("deprecation")
 	private void showNotification(String username, String nickname, String content) {
 		Intent intent = new Intent(this, ChatActivity.class);
@@ -177,10 +188,18 @@ public class PushService extends Service {
 		this.notificationManager.notify(0, notification);
 	}
 
+	/**
+	 * @功能: 取消通知
+	 * @作者: yangc
+	 * @创建日期: 2014年12月7日 下午7:06:59
+	 */
 	private void cancelNotification() {
 		this.notificationManager.cancel(0);
 	}
 
+	/**
+	 * 监听网络变化
+	 */
 	private BroadcastReceiver networkChangedReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {

@@ -29,6 +29,12 @@ public class EmojiUtils {
 	private EmojiUtils() {
 	}
 
+	/**
+	 * @功能: 加载表情到内存
+	 * @作者: yangc
+	 * @创建日期: 2014年12月7日 下午7:09:06
+	 * @param context
+	 */
 	public static void loadEmoji(Context context) {
 		BufferedReader br = null;
 		try {
@@ -52,10 +58,36 @@ public class EmojiUtils {
 		}
 	}
 
+	/**
+	 * @功能: 根据分页获取表情集合
+	 * @作者: yangc
+	 * @创建日期: 2014年12月7日 下午7:09:29
+	 * @param pageNum
+	 * @return
+	 */
 	public static List<EmojiBean> getEmojiList(int pageNum) {
 		return new ArrayList<EmojiBean>(EMOJI_LIST.subList(pageNum * PAGE_SIZE, (pageNum + 1) * PAGE_SIZE));
 	}
 
+	/**
+	 * @功能: 根据内容获取表情资源id
+	 * @作者: yangc
+	 * @创建日期: 2014年12月7日 下午8:15:03
+	 * @param content
+	 * @return
+	 */
+	public static Integer getEmojiResId(String content) {
+		return EMOJI_MAP.get(content);
+	}
+
+	/**
+	 * @功能: 转义带表情的内容
+	 * @作者: yangc
+	 * @创建日期: 2014年12月7日 下午7:10:09
+	 * @param context
+	 * @param source
+	 * @return
+	 */
 	public static SpannableString escapeEmoji(Context context, String source) {
 		SpannableString spannableString = new SpannableString(source);
 		Matcher matcher = Pattern.compile("\\[[\u4e00-\u9fa5]+?\\]").matcher(spannableString);

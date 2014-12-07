@@ -51,12 +51,14 @@ public class BootloaderActivity extends Activity {
 	}
 
 	private void startup() {
+		// 加载表情数据到内存
 		EmojiUtils.loadEmoji(this);
+		// 如果未登录,进入登录或注册页面,否则进入主页面
 		if (TextUtils.isEmpty(Constants.USERNAME) || TextUtils.isEmpty(Constants.PASSWORD)) {
 			this.startActivity(new Intent(this, AuthActivity.class));
 			this.finish();
 		} else {
-			// 同步用户信息
+			// 如果网络可用则同步用户信息
 			TIchatMe me = DatabaseUtils.getMe(this);
 			if (AndroidUtils.checkNetwork(this) && me != null) {
 				Map<String, String> params = new HashMap<String, String>();

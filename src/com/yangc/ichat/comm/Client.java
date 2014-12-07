@@ -56,6 +56,11 @@ public class Client {
 		return client;
 	}
 
+	/**
+	 * @功能: 初始化连接
+	 * @作者: yangc
+	 * @创建日期: 2014年12月7日 下午6:19:01
+	 */
 	private void init() {
 		Log.i(TAG, "init");
 		this.connector = new NioSocketConnector();
@@ -65,6 +70,11 @@ public class Client {
 		this.connector.setHandler(new ClientHandler(this.context));
 	}
 
+	/**
+	 * @功能: 连接服务器
+	 * @作者: yangc
+	 * @创建日期: 2014年12月7日 下午6:24:06
+	 */
 	public synchronized void connect() {
 		Log.i(TAG, "connect");
 		try {
@@ -78,13 +88,13 @@ public class Client {
 					if (connectFuture.isConnected()) {
 						session = connectFuture.getSession();
 					} else {
-						Log.i(TAG, "The server does not startup");
+						throw new RuntimeException("The server does not startup");
 					}
 				}
 			});
 			future.get();
 
-			// 心跳
+			// 心跳,第一次5秒后发送,以后每隔45秒发送
 			this.scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 			this.scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
 				@Override
@@ -94,7 +104,7 @@ public class Client {
 						session.write(ProtobufMessage.Heart.newBuilder().build());
 					}
 				}
-			}, 5, 30, TimeUnit.SECONDS);
+			}, 5, 45, TimeUnit.SECONDS);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Intent intent = new Intent(this.context, PushService.class);
@@ -103,6 +113,11 @@ public class Client {
 		}
 	}
 
+	/**
+	 * @功能: 销毁心跳服务,会话,连接
+	 * @作者: yangc
+	 * @创建日期: 2014年12月7日 下午6:25:12
+	 */
 	public void destroy() {
 		Log.i(TAG, "destroy");
 		if (scheduledExecutorService != null) {
@@ -118,6 +133,11 @@ public class Client {
 		}
 	}
 
+	/**
+	 * @功能: 重新连接服务器
+	 * @作者: yangc
+	 * @创建日期: 2014年12月7日 下午6:26:36
+	 */
 	public void reconnect() {
 		Log.i(TAG, "reconnect");
 		this.destroy();
@@ -125,6 +145,12 @@ public class Client {
 		this.connect();
 	}
 
+	/**
+	 * @功能: TCP登录
+	 * @作者: yangc
+	 * @创建日期: 2014年12月7日 下午6:29:16
+	 * @param user
+	 */
 	public void login(final UserBean user) {
 		this.executorService.execute(new Runnable() {
 			@Override
@@ -141,6 +167,12 @@ public class Client {
 		});
 	}
 
+	/**
+	 * @功能: 发送文本
+	 * @作者: yangc
+	 * @创建日期: 2014年12月7日 下午6:29:43
+	 * @param chat
+	 */
 	public void sendChat(final ChatBean chat) {
 		this.executorService.execute(new Runnable() {
 			@Override
@@ -153,11 +185,27 @@ public class Client {
 					builder.setTo(chat.getTo());
 					builder.setData(chat.getData());
 					session.write(builder.build());
+				} else {
+					ResultBean result = new ResultBean();
+					result.setUuid(chat.getUuid());
+					result.setSuccess(false);
+					result.setData("fail");
+
+					Intent intent = new Intent(context, PushService.class);
+					intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_NETWORK_ERROR);
+					intent.putExtra(Constants.EXTRA_RESULT, result);
+					context.startService(intent);
 				}
 			}
 		});
 	}
 
+	/**
+	 * @功能: 发送结果
+	 * @作者: yangc
+	 * @创建日期: 2014年12月7日 下午6:29:58
+	 * @param result
+	 */
 	public void sendResult(final ResultBean result) {
 		this.executorService.execute(new Runnable() {
 			@Override

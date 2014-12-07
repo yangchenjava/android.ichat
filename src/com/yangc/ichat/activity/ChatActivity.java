@@ -84,7 +84,6 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		// center
 		this.lvChat = (ListView) this.findViewById(R.id.lv_chat);
 		this.lvChat.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true, this.scrollListener));
-		this.lvChat.setOnTouchListener(this.listViewTouchListener);
 		// bottom
 		this.tvChatPlus = (TextView) this.findViewById(R.id.tv_chat_plus);
 		this.btnChatSend = (Button) this.findViewById(R.id.btn_chat_send);
@@ -111,6 +110,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		CallbackManager.registerChatListener(this);
 
 		this.username = this.getIntent().getStringExtra("username");
+		// 当前对话的用户
 		Constants.CHATTING_USERNAME = this.username;
 		this.addressbook = DatabaseUtils.getAddressbookByUsername(this, this.username);
 
@@ -120,6 +120,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		this.lvChat.setAdapter(this.chatAdapter);
 		this.lvChat.setSelection(this.chatList.size() == 0 ? 0 : this.chatList.size() - 1);
 
+		// 取消所有通知
 		Intent intent = new Intent(this, PushService.class);
 		intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_CANCEL_NOTIFICATION);
 		this.startService(intent);
@@ -161,6 +162,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		AndroidUtils.alertToast(this, R.string.error_network);
 	}
 
+	// 回到主页面
 	private void goToMain() {
 		AndroidUtils.hideSoftInput(this);
 		MainActivity.CURRENT_TAB_ID = R.id.ll_tab_wechat;
@@ -169,6 +171,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		this.startActivity(intent);
 	}
 
+	// 填充表情
 	private void setEmojiNavi(int position) {
 		this.llChatEmojiNavi.removeAllViews();
 		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -257,23 +260,13 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 					}
 				}
 			}
+			AndroidUtils.hideSoftInput(ChatActivity.this);
+			rlChatEmoji.setVisibility(View.GONE);
 		}
 
 		@Override
 		public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 			this.firstVisibleItem = firstVisibleItem;
-		}
-	};
-
-	@SuppressLint("ClickableViewAccessibility")
-	private View.OnTouchListener listViewTouchListener = new View.OnTouchListener() {
-		@Override
-		public boolean onTouch(View v, MotionEvent event) {
-			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				AndroidUtils.hideSoftInput(ChatActivity.this);
-				rlChatEmoji.setVisibility(View.GONE);
-			}
-			return false;
 		}
 	};
 
@@ -331,8 +324,12 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 					String content = editable.toString();
 					if (content.substring(selection - 1, selection).equals("]")) {
 						int start = content.substring(0, selection).lastIndexOf("[");
-						editable.removeSpan(editable.getSpans(start, selection, ImageSpan.class)[0]);
-						editable.delete(start, selection);
+						if (EmojiUtils.getEmojiResId(content.substring(start, selection)) != null) {
+							editable.removeSpan(editable.getSpans(start, selection, ImageSpan.class)[0]);
+							editable.delete(start, selection);
+						} else {
+							editable.delete(selection - 1, selection);
+						}
 					} else {
 						editable.delete(selection - 1, selection);
 					}
@@ -403,6 +400,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 
 	/** -----------------------------------------emoji------------------------------------------- */
 
+	// viewpager滑动监听
 	private ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
 		@Override
 		public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -463,8 +461,12 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 						String content = editable.toString();
 						if (content.substring(selection - 1, selection).equals("]")) {
 							int start = content.substring(0, selection).lastIndexOf("[");
-							editable.removeSpan(editable.getSpans(start, selection, ImageSpan.class)[0]);
-							editable.delete(start, selection);
+							if (EmojiUtils.getEmojiResId(content.substring(start, selection)) != null) {
+								editable.removeSpan(editable.getSpans(start, selection, ImageSpan.class)[0]);
+								editable.delete(start, selection);
+							} else {
+								editable.delete(selection - 1, selection);
+							}
 						} else {
 							editable.delete(selection - 1, selection);
 						}

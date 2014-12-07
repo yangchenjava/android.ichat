@@ -27,6 +27,7 @@ public class ClientHandler extends IoHandlerAdapter {
 	@Override
 	public void sessionClosed(IoSession session) throws Exception {
 		Log.i(TAG, "sessionClosed");
+		// 断线重连
 		this.context.startService(this.getIntent(Constants.ACTION_RECONNECT));
 	}
 

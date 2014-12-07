@@ -18,10 +18,22 @@ public class CallbackManager {
 		public void onNetworkError();
 	}
 
+	/**
+	 * @功能: 注册消息监听
+	 * @作者: yangc
+	 * @创建日期: 2014年12月7日 下午6:36:47
+	 * @param listener
+	 */
 	public static void registerChatListener(OnChatListener listener) {
 		LISTENERS.add(listener);
 	}
 
+	/**
+	 * @功能: 注销消息监听
+	 * @作者: yangc
+	 * @创建日期: 2014年12月7日 下午6:37:09
+	 * @param listener
+	 */
 	public static void unregisterChatListener(OnChatListener listener) {
 		String name = listener.getClass().getName();
 		for (int i = 0; i < LISTENERS.size(); i++) {

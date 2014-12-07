@@ -83,6 +83,7 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 				viewHolder = (ReceiveViewHolder) convertView.getTag();
 			}
 
+			// 两条消息间隔时间大于2分钟,则显示时间
 			if (position == 0 || history.getDate().getTime() - this.list.get(position - 1).getDate().getTime() > 120000) {
 				viewHolder.tvChatReceiveTime.setVisibility(View.VISIBLE);
 				viewHolder.tvChatReceiveTime.setText(DateFormat.format("akk:mm", history.getDate()));
@@ -105,11 +106,13 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 				viewHolder.tvChatSendTime = (TextView) convertView.findViewById(R.id.tv_chat_send_time);
 				viewHolder.ivChatSendPhoto = (ImageView) convertView.findViewById(R.id.iv_chat_send_photo);
 				viewHolder.tvChatSend = (TextView) convertView.findViewById(R.id.tv_chat_send);
+				viewHolder.ivChatSendStatus = (ImageView) convertView.findViewById(R.id.iv_chat_send_status);
 				convertView.setTag(viewHolder);
 			} else {
 				viewHolder = (SendViewHolder) convertView.getTag();
 			}
 
+			// 两条消息间隔时间大于2分钟,则显示时间
 			if (position == 0 || history.getDate().getTime() - this.list.get(position - 1).getDate().getTime() > 120000) {
 				viewHolder.tvChatSendTime.setVisibility(View.VISIBLE);
 				viewHolder.tvChatSendTime.setText(DateFormat.format("akk:mm", history.getDate()));
@@ -122,6 +125,16 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 				ImageLoader.getInstance().displayImage(Constants.SERVER_URL + this.mePhoto, viewHolder.ivChatSendPhoto, this.options);
 			}
 			viewHolder.tvChatSend.setText(EmojiUtils.escapeEmoji(this.context, history.getChat()));
+			long current = System.currentTimeMillis();
+			if (history.getTransmitStatus() == 0 && current - history.getDate().getTime() <= 8000) {
+				viewHolder.ivChatSendStatus.setVisibility(View.VISIBLE);
+				viewHolder.ivChatSendStatus.setImageResource(R.drawable.chat_status_sending_2);
+			} else if (history.getTransmitStatus() == 1 || (history.getTransmitStatus() == 0 && current - history.getDate().getTime() > 8000)) {
+				viewHolder.ivChatSendStatus.setVisibility(View.VISIBLE);
+				viewHolder.ivChatSendStatus.setImageResource(R.drawable.chat_status_unsend);
+			} else {
+				viewHolder.ivChatSendStatus.setVisibility(View.GONE);
+			}
 			break;
 		}
 		}
@@ -138,6 +151,7 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 		TextView tvChatSendTime;
 		ImageView ivChatSendPhoto;
 		TextView tvChatSend;
+		ImageView ivChatSendStatus;
 	}
 
 }
