@@ -81,7 +81,7 @@ public class WechatFragmentAdapter extends BaseAdapter {
 			viewHolder.rlWechatItemLeft.getLayoutParams().width = this.screenWidth;
 			viewHolder.ivWechatItemPhoto = (ImageView) convertView.findViewById(R.id.iv_wechat_item_photo);
 			viewHolder.tvWechatItemNickname = (TextView) convertView.findViewById(R.id.tv_wechat_item_nickname);
-			viewHolder.tvWechatItemStatus = (TextView) convertView.findViewById(R.id.tv_wechat_item_status);
+			viewHolder.ivWechatItemStatus = (ImageView) convertView.findViewById(R.id.iv_wechat_item_status);
 			viewHolder.tvWechatItemChat = (TextView) convertView.findViewById(R.id.tv_wechat_item_chat);
 			viewHolder.tvWechatItemTime = (TextView) convertView.findViewById(R.id.tv_wechat_item_time);
 			viewHolder.llWechatItemRight = (LinearLayout) convertView.findViewById(R.id.ll_wechat_item_right);
@@ -161,15 +161,13 @@ public class WechatFragmentAdapter extends BaseAdapter {
 		}
 		long current = System.currentTimeMillis();
 		if (history.getTransmitStatus() == 0 && current - history.getDate().getTime() <= 8000) {
-			viewHolder.tvWechatItemStatus.setVisibility(View.VISIBLE);
-			viewHolder.tvWechatItemStatus.setBackgroundResource(R.drawable.chat_status_sending_1);
-			viewHolder.tvWechatItemStatus.setText("");
+			viewHolder.ivWechatItemStatus.setVisibility(View.VISIBLE);
+			viewHolder.ivWechatItemStatus.setImageResource(R.drawable.chat_status_sending_1);
 		} else if (history.getTransmitStatus() == 1 || (history.getTransmitStatus() == 0 && current - history.getDate().getTime() > 8000)) {
-			viewHolder.tvWechatItemStatus.setVisibility(View.VISIBLE);
-			viewHolder.tvWechatItemStatus.setBackgroundResource(0);
-			viewHolder.tvWechatItemStatus.setText("!");
+			viewHolder.ivWechatItemStatus.setVisibility(View.VISIBLE);
+			viewHolder.ivWechatItemStatus.setImageResource(R.drawable.chat_status_unsend_1);
 		} else {
-			viewHolder.tvWechatItemStatus.setVisibility(View.GONE);
+			viewHolder.ivWechatItemStatus.setVisibility(View.GONE);
 		}
 		viewHolder.tvWechatItemChat.setText(EmojiUtils.escapeEmoji(this.context, history.getChat()));
 		viewHolder.tvWechatItemTime.setText(DateFormat.format("akk:mm", history.getDate()));
@@ -196,7 +194,7 @@ public class WechatFragmentAdapter extends BaseAdapter {
 		RelativeLayout rlWechatItemLeft;
 		ImageView ivWechatItemPhoto;
 		TextView tvWechatItemNickname;
-		TextView tvWechatItemStatus;
+		ImageView ivWechatItemStatus;
 		TextView tvWechatItemChat;
 		TextView tvWechatItemTime;
 		LinearLayout llWechatItemRight;

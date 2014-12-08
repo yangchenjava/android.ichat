@@ -131,7 +131,7 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 				viewHolder.ivChatSendStatus.setImageResource(R.drawable.chat_status_sending_2);
 			} else if (history.getTransmitStatus() == 1 || (history.getTransmitStatus() == 0 && current - history.getDate().getTime() > 8000)) {
 				viewHolder.ivChatSendStatus.setVisibility(View.VISIBLE);
-				viewHolder.ivChatSendStatus.setImageResource(R.drawable.chat_status_unsend);
+				viewHolder.ivChatSendStatus.setImageResource(R.drawable.chat_status_unsend_2);
 			} else {
 				viewHolder.ivChatSendStatus.setVisibility(View.GONE);
 			}
