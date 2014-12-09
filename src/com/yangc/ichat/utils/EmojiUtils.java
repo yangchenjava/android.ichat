@@ -88,12 +88,12 @@ public class EmojiUtils {
 	 * @param source
 	 * @return
 	 */
-	public static SpannableString escapeEmoji(Context context, String source) {
+	public static SpannableString escapeEmoji(Context context, String source, int size) {
 		SpannableString spannableString = new SpannableString(source);
 		Matcher matcher = Pattern.compile("\\[[\u4e00-\u9fa5]+?\\]").matcher(spannableString);
 		while (matcher.find()) {
 			Drawable drawable = context.getResources().getDrawable(EMOJI_MAP.get(matcher.group()));
-			drawable.setBounds(0, 0, 34, 34);
+			drawable.setBounds(0, 0, size, size);
 			spannableString.setSpan(new ImageSpan(drawable), matcher.start(), matcher.end(), SpannableString.SPAN_INCLUSIVE_EXCLUSIVE);
 		}
 		return spannableString;

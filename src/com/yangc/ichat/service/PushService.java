@@ -12,7 +12,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -63,13 +62,18 @@ public class PushService extends Service {
 				break;
 			}
 			case Constants.ACTION_RECONNECT: {
-				new Handler().postDelayed(new Runnable() {
+				new Thread(new Runnable() {
 					@Override
 					public void run() {
+						try {
+							Thread.sleep(5000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 						client.reconnect();
 						client.login(getUser());
 					}
-				}, 5000);
+				}).start();
 				break;
 			}
 			case Constants.ACTION_NETWORK_ERROR: {

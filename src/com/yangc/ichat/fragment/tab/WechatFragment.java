@@ -70,7 +70,9 @@ public class WechatFragment extends Fragment implements CallbackManager.OnChatLi
 
 	@Override
 	public void onResultReceived(ResultBean result) {
-		// TODO
+		this.list.clear();
+		this.list.addAll(DatabaseUtils.getHistoryList(this.getActivity()));
+		this.adapter.notifyDataSetChanged();
 	}
 
 	@Override

@@ -127,10 +127,10 @@ public class Client {
 			this.session.close(true).awaitUninterruptibly();
 			this.session = null;
 		}
-		if (this.connector != null) {
-			this.connector.dispose();
-			this.connector = null;
-		}
+		// if (this.connector != null) {
+		// this.connector.dispose();
+		// this.connector = null;
+		// }
 	}
 
 	/**
@@ -141,7 +141,7 @@ public class Client {
 	public void reconnect() {
 		Log.i(TAG, "reconnect");
 		this.destroy();
-		this.init();
+		// this.init();
 		this.connect();
 	}
 
@@ -192,7 +192,7 @@ public class Client {
 					result.setData("fail");
 
 					Intent intent = new Intent(context, PushService.class);
-					intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_NETWORK_ERROR);
+					intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_RECEIVE_RESULT);
 					intent.putExtra(Constants.EXTRA_RESULT, result);
 					context.startService(intent);
 				}

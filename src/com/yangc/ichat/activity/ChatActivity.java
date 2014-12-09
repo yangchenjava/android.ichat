@@ -142,7 +142,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 	}
 
 	@Override
-	public void onChatReceived(final TIchatHistory history) {
+	public void onChatReceived(TIchatHistory history) {
 		if (this.chatList != null && history.getUsername().equals(username)) {
 			synchronized (this.chatList) {
 				this.chatList.add(history);
@@ -154,7 +154,16 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 
 	@Override
 	public void onResultReceived(ResultBean result) {
-		// TODO
+		synchronized (this.chatList) {
+			for (int i = this.chatList.size() - 1; i >= 0; i--) {
+				TIchatHistory history = this.chatList.get(i);
+				if (history.getChatStatus() == 1 && history.getUuid().equals(result.getUuid())) {
+					history.setTransmitStatus(result.isSuccess() ? 2L : 1L);
+					break;
+				}
+			}
+		}
+		this.chatAdapter.notifyDataSetChanged();
 	}
 
 	@Override

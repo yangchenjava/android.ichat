@@ -1,12 +1,15 @@
 package com.yangc.ichat.activity.adapter;
 
+import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,7 +17,9 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.yangc.ichat.R;
+import com.yangc.ichat.comm.bean.ChatBean;
 import com.yangc.ichat.database.bean.TIchatHistory;
+import com.yangc.ichat.service.PushService;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.EmojiUtils;
 import com.yangc.ichat.utils.UILUtils;
@@ -95,7 +100,7 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 			} else {
 				ImageLoader.getInstance().displayImage(Constants.SERVER_URL + this.friendPhoto, viewHolder.ivChatReceivePhoto, this.options);
 			}
-			viewHolder.tvChatReceive.setText(EmojiUtils.escapeEmoji(this.context, history.getChat()));
+			viewHolder.tvChatReceive.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 34));
 			break;
 		}
 		case SEND: {
@@ -124,22 +129,55 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 			} else {
 				ImageLoader.getInstance().displayImage(Constants.SERVER_URL + this.mePhoto, viewHolder.ivChatSendPhoto, this.options);
 			}
-			viewHolder.tvChatSend.setText(EmojiUtils.escapeEmoji(this.context, history.getChat()));
+			viewHolder.tvChatSend.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 34));
 			long current = System.currentTimeMillis();
 			if (history.getTransmitStatus() == 0 && current - history.getDate().getTime() <= 8000) {
 				viewHolder.ivChatSendStatus.setVisibility(View.VISIBLE);
 				viewHolder.ivChatSendStatus.setImageResource(R.drawable.chat_status_sending_2);
+				viewHolder.ivChatSendStatus.startAnimation(AnimationUtils.loadAnimation(this.context, R.anim.rotate_loading));
+				viewHolder.ivChatSendStatus.setOnClickListener(null);
 			} else if (history.getTransmitStatus() == 1 || (history.getTransmitStatus() == 0 && current - history.getDate().getTime() > 8000)) {
 				viewHolder.ivChatSendStatus.setVisibility(View.VISIBLE);
 				viewHolder.ivChatSendStatus.setImageResource(R.drawable.chat_status_unsend_2);
+				viewHolder.ivChatSendStatus.clearAnimation();
+				viewHolder.ivChatSendStatus.setOnClickListener(new ResendClickListener(history));
 			} else {
 				viewHolder.ivChatSendStatus.setVisibility(View.GONE);
+				viewHolder.ivChatSendStatus.clearAnimation();
+				viewHolder.ivChatSendStatus.setOnClickListener(null);
 			}
 			break;
 		}
 		}
 		return convertView;
 	}
+
+	// 重新发送消息
+	private class ResendClickListener implements View.OnClickListener {
+		private TIchatHistory history;
+
+		public ResendClickListener(TIchatHistory history) {
+			this.history = history;
+		}
+
+		@Override
+		public void onClick(View v) {
+			history.setTransmitStatus(0L);
+			history.setDate(new Date());
+			notifyDataSetChanged();
+
+			ChatBean chat = new ChatBean();
+			chat.setUuid(history.getUuid());
+			chat.setFrom(Constants.USERNAME);
+			chat.setTo(history.getUsername());
+			chat.setData(history.getChat());
+
+			Intent intent = new Intent(context, PushService.class);
+			intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_SEND_CHAT);
+			intent.putExtra(Constants.EXTRA_CHAT, chat);
+			context.startService(intent);
+		}
+	};
 
 	private class ReceiveViewHolder {
 		TextView tvChatReceiveTime;
