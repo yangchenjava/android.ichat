@@ -62,18 +62,7 @@ public class PushService extends Service {
 				break;
 			}
 			case Constants.ACTION_RECONNECT: {
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							Thread.sleep(5000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-						client.reconnect();
-						client.login(getUser());
-					}
-				}).start();
+				new Thread(this.reconnectAndLogin).start();
 				break;
 			}
 			case Constants.ACTION_NETWORK_ERROR: {
@@ -161,6 +150,19 @@ public class PushService extends Service {
 		}
 	}
 
+	private Runnable reconnectAndLogin = new Runnable() {
+		@Override
+		public void run() {
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			client.reconnect();
+			client.login(getUser());
+		}
+	};
+
 	private UserBean getUser() {
 		UserBean user = new UserBean();
 		user.setUuid(UUID.randomUUID().toString());
@@ -210,8 +212,7 @@ public class PushService extends Service {
 			if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
 				Log.i(TAG, "networkChangedReceiver");
 				if (AndroidUtils.checkNetwork(context)) {
-					client.reconnect();
-					client.login(getUser());
+					new Thread(reconnectAndLogin).start();
 				} else {
 					client.destroy();
 				}
