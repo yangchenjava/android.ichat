@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
@@ -59,10 +58,12 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 	private ListView lvChat;
 	private ChatActivityChatAdapter chatAdapter;
 	// bottom
+	private TextView tvChatMode;
 	private TextView tvChatPlus;
 	private Button btnChatSend;
 	private EditText etChatContent;
 	private TextView tvChatFace;
+	private Button btnChatRecord;
 	// emoji
 	private RelativeLayout rlChatEmoji;
 	private ViewPager vpChatEmoji;
@@ -85,6 +86,8 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		this.lvChat = (ListView) this.findViewById(R.id.lv_chat);
 		this.lvChat.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true, this.scrollListener));
 		// bottom
+		this.tvChatMode = (TextView) this.findViewById(R.id.tv_chat_mode);
+		this.tvChatMode.setOnClickListener(this.modeListener);
 		this.tvChatPlus = (TextView) this.findViewById(R.id.tv_chat_plus);
 		this.btnChatSend = (Button) this.findViewById(R.id.btn_chat_send);
 		this.btnChatSend.setOnClickListener(this.sendListener);
@@ -94,6 +97,8 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		this.etChatContent.addTextChangedListener(this.textChangedListener);
 		this.tvChatFace = (TextView) this.findViewById(R.id.tv_chat_face);
 		this.tvChatFace.setOnClickListener(this.faceListener);
+		this.btnChatRecord = (Button) this.findViewById(R.id.btn_chat_record);
+		this.btnChatRecord.setOnTouchListener(this.recordListener);
 		// emoji
 		this.rlChatEmoji = (RelativeLayout) this.findViewById(R.id.rl_chat_emoji);
 		this.vpChatEmoji = (ViewPager) this.findViewById(R.id.vp_chat_emoji);
@@ -281,6 +286,33 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 
 	/** -----------------------------------------bottom------------------------------------------- */
 
+	// 模式切换监听
+	private View.OnClickListener modeListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			if (btnChatRecord.getVisibility() == View.GONE) {
+				tvChatMode.setBackgroundResource(R.drawable.selector_text);
+				tvChatPlus.setVisibility(View.VISIBLE);
+				btnChatSend.setVisibility(View.GONE);
+				etChatContent.setVisibility(View.GONE);
+				tvChatFace.setVisibility(View.GONE);
+				btnChatRecord.setVisibility(View.VISIBLE);
+			} else {
+				tvChatMode.setBackgroundResource(R.drawable.selector_voice);
+				if (etChatContent.length() > 0) {
+					tvChatPlus.setVisibility(View.GONE);
+					btnChatSend.setVisibility(View.VISIBLE);
+				} else {
+					tvChatPlus.setVisibility(View.VISIBLE);
+					btnChatSend.setVisibility(View.GONE);
+				}
+				etChatContent.setVisibility(View.VISIBLE);
+				tvChatFace.setVisibility(View.VISIBLE);
+				btnChatRecord.setVisibility(View.GONE);
+			}
+		}
+	};
+
 	//  发送监听
 	private View.OnClickListener sendListener = new View.OnClickListener() {
 		@Override
@@ -350,7 +382,6 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 	};
 
 	//  编辑框触碰监听
-	@SuppressLint("ClickableViewAccessibility")
 	private View.OnTouchListener editTextTouchListener = new View.OnTouchListener() {
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
@@ -358,6 +389,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 				if (rlChatEmoji.getVisibility() == View.VISIBLE) {
 					rlChatEmoji.setVisibility(View.GONE);
 				}
+				v.performClick();
 			}
 			return false;
 		}
@@ -404,6 +436,34 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 					}
 				}, 200);
 			}
+		}
+	};
+
+	// 录制监听
+	private View.OnTouchListener recordListener = new View.OnTouchListener() {
+		private boolean isInside;
+		private float y;
+
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			switch (event.getAction()) {
+			case MotionEvent.ACTION_DOWN: {
+				break;
+			}
+			case MotionEvent.ACTION_UP: {
+				v.performClick();
+				break;
+			}
+			case MotionEvent.ACTION_MOVE: {
+				if (this.y - event.getY() > 100 || this.y - event.getY() < -10) {
+					this.isInside = false;
+				} else {
+					this.isInside = true;
+				}
+				break;
+			}
+			}
+			return false;
 		}
 	};
 

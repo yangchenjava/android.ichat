@@ -5,7 +5,7 @@
     <stroke android:width="0dp" />
 
     <!-- 中间的背景色 -->
-    <solid android:color="#D0585858" />
+    <solid android:color="#F6F7F6" />
 
     <!-- 设置四个角的角度 -->
     <corners android:radius="5dp" />

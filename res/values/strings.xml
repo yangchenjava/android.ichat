@@ -87,6 +87,7 @@
     <string name="tab_me">我</string>
 
     <!-- wechat -->
+    <string name="wechat_record_button">按住 说话</string>
     <string name="wechat_send_button">发送</string>
 
     <!-- addressbook -->
@@ -130,5 +131,10 @@
     <string name="me_detail_signature">个性签名</string>
     <string name="me_detail_undefined">未设置</string>
     <string name="me_detail_complete_button">完成</string>
+
+    <!-- record -->
+    <string name="record_upglide">手指上滑，取消发送</string>
+    <string name="record_loosen">松开手指，取消发送</string>
+    <string name="record_short">录音时间太短</string>
 
 </resources>
