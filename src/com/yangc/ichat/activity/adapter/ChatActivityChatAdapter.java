@@ -31,13 +31,15 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 
 	private Context context;
 	private List<TIchatHistory> list;
+	private String username;
 	private String mePhoto;
 	private String friendPhoto;
 	private DisplayImageOptions options = UILUtils.getDisplayImageOptions();
 
-	public ChatActivityChatAdapter(Context context, List<TIchatHistory> list, String mePhoto, String friendPhoto) {
+	public ChatActivityChatAdapter(Context context, List<TIchatHistory> list, String username, String mePhoto, String friendPhoto) {
 		this.context = context;
 		this.list = list;
+		this.username = username;
 		this.mePhoto = mePhoto;
 		this.friendPhoto = friendPhoto;
 	}

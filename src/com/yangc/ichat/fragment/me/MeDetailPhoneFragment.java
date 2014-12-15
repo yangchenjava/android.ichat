@@ -1,13 +1,11 @@
 package com.yangc.ichat.fragment.me;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -41,11 +39,7 @@ public class MeDetailPhoneFragment extends Fragment {
 	}
 
 	private void clickBackspace() {
-		View currentFocus = this.getActivity().getCurrentFocus();
-		if (currentFocus != null) {
-			InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-		}
+		AndroidUtils.hideSoftInput(this.getActivity());
 		this.getActivity().onBackPressed();
 	}
 

@@ -1,15 +1,23 @@
 package com.yangc.ichat.activity;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
+import android.os.Vibrator;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
@@ -39,6 +47,7 @@ import com.yangc.ichat.activity.adapter.ChatActivityChatAdapter;
 import com.yangc.ichat.activity.adapter.ChatActivityEmojiAdapter;
 import com.yangc.ichat.bean.EmojiBean;
 import com.yangc.ichat.comm.bean.ChatBean;
+import com.yangc.ichat.comm.bean.FileBean;
 import com.yangc.ichat.comm.bean.ResultBean;
 import com.yangc.ichat.database.bean.TIchatAddressbook;
 import com.yangc.ichat.database.bean.TIchatHistory;
@@ -48,9 +57,14 @@ import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.DatabaseUtils;
 import com.yangc.ichat.utils.EmojiUtils;
+import com.yangc.ichat.utils.VoiceUtils;
 import com.yangc.ichat.widget.ResizeLayout;
 
 public class ChatActivity extends Activity implements CallbackManager.OnChatListener {
+
+	private Vibrator vibrator;
+	private SoundPool soundPool;
+	private int afterUploadVoice;
 
 	// top
 	private TextView tvChatNickname;
@@ -68,15 +82,42 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 	private RelativeLayout rlChatEmoji;
 	private ViewPager vpChatEmoji;
 	private LinearLayout llChatEmojiNavi;
+	// record status
+	private int[] volResIds = { R.drawable.record_vol_1, R.drawable.record_vol_2, R.drawable.record_vol_3, R.drawable.record_vol_4, R.drawable.record_vol_5, R.drawable.record_vol_6,
+			R.drawable.record_vol_7 };
+	private RelativeLayout rlRecordStatus;
+	private ImageView ivRecordSpeaking;
+	private ImageView ivRecordVol;
+	private ImageView ivRecordCancel;
+	private ImageView ivRecordShort;
+	private TextView tvRecordText;
 
 	private String username;
 	private TIchatAddressbook addressbook;
 	private List<TIchatHistory> chatList;
 
+	private VoiceUtils voice;
+	private MyHandler myHandler;
+	private int timing; // 录音计时
+	private String recordUuid;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_chat);
+
+		// 添加震动效果
+		this.vibrator = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
+		// 音效
+		this.soundPool = new SoundPool(3, AudioManager.STREAM_MUSIC, 5);
+		try {
+			this.afterUploadVoice = soundPool.load(this.getAssets().openFd("sound/after_upload_voice.mp3"), 1);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		this.voice = VoiceUtils.getInstance();
+		this.myHandler = new MyHandler(this);
+
 		// top
 		((ResizeLayout) this.findViewById(R.id.rl_chat)).setOnResizeListener(this.layoutResizeListener);
 		((ImageView) this.findViewById(R.id.iv_chat_backspace)).setOnClickListener(this.backspaceListener);
@@ -107,6 +148,13 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		this.vpChatEmoji.setAdapter(this.pagerAdapter);
 		this.llChatEmojiNavi = (LinearLayout) this.findViewById(R.id.ll_chat_emoji_navi);
 		this.setEmojiNavi(0);
+		// record status
+		this.rlRecordStatus = (RelativeLayout) this.findViewById(R.id.rl_record_status);
+		this.ivRecordSpeaking = (ImageView) this.findViewById(R.id.iv_record_speaking);
+		this.ivRecordVol = (ImageView) this.findViewById(R.id.iv_record_vol);
+		this.ivRecordCancel = (ImageView) this.findViewById(R.id.iv_record_cancel);
+		this.ivRecordShort = (ImageView) this.findViewById(R.id.iv_record_short);
+		this.tvRecordText = (TextView) this.findViewById(R.id.tv_record_text);
 	}
 
 	@Override
@@ -121,7 +169,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 
 		this.tvChatNickname.setText(this.addressbook.getNickname());
 		this.chatList = DatabaseUtils.getHistoryListByUsername_page(this, this.username, 0L);
-		this.chatAdapter = new ChatActivityChatAdapter(this, this.chatList, DatabaseUtils.getMe(this).getPhoto(), this.addressbook.getPhoto());
+		this.chatAdapter = new ChatActivityChatAdapter(this, this.chatList, this.username, DatabaseUtils.getMe(this).getPhoto(), this.addressbook.getPhoto());
 		this.lvChat.setAdapter(this.chatAdapter);
 		this.lvChat.setSelection(this.chatList.size() == 0 ? 0 : this.chatList.size() - 1);
 
@@ -135,6 +183,15 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 	protected void onPause() {
 		super.onPause();
 		CallbackManager.unregisterChatListener(this);
+		this.voice.stopRecord();
+		this.voice.stopPlay();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		this.soundPool.release();
+		this.soundPool = null;
 	}
 
 	@Override
@@ -185,24 +242,38 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		this.startActivity(intent);
 	}
 
-	// 填充表情
-	private void setEmojiNavi(int position) {
-		this.llChatEmojiNavi.removeAllViews();
-		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-		layoutParams.setMargins(5, 0, 5, 0);
-		for (int i = 0; i < EmojiUtils.PAGE_COUNT; i++) {
-			ImageView imageView = new ImageView(this);
-			imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-			if (i == position) {
-				imageView.setImageResource(R.drawable.emoji_page_select);
-			} else {
-				imageView.setImageResource(R.drawable.emoji_page_normal);
-			}
-			this.llChatEmojiNavi.addView(imageView, layoutParams);
+	// 发送语音
+	private void sendRecord() {
+		FileBean file = new FileBean();
+		file.setUuid(recordUuid);
+		file.setFrom(Constants.USERNAME);
+		file.setTo(username);
+		file.setFileName(recordUuid);
+
+		TIchatHistory history = new TIchatHistory();
+		history.setUuid(file.getUuid());
+		history.setUsername(username);
+		history.setChat(Constants.VOICE);
+		history.setChatStatus(1L);
+		history.setTransmitStatus(0L);
+		history.setDate(new Date());
+		DatabaseUtils.saveHistory(this, history);
+
+		synchronized (this.chatList) {
+			this.chatList.add(history);
+			this.chatAdapter.notifyDataSetChanged();
+			this.lvChat.setSelection(chatList.size() - 1);
 		}
+
+		Intent intent = new Intent(ChatActivity.this, PushService.class);
+		intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_SEND_FILE);
+		intent.putExtra(Constants.EXTRA_FILE, file);
+		this.startService(intent);
+
+		this.soundPool.play(this.afterUploadVoice, 1, 1, 0, 0, 1);
 	}
 
-	/** -----------------------------------------top------------------------------------------- */
+	/** ----------------------------------------- top ------------------------------------------- */
 
 	// 布局大小变化监听
 	private ResizeLayout.OnResizeListener layoutResizeListener = new ResizeLayout.OnResizeListener() {
@@ -244,7 +315,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		}
 	};
 
-	/** -----------------------------------------center------------------------------------------- */
+	/** ----------------------------------------- center ------------------------------------------- */
 
 	// listview滚动监听
 	private AbsListView.OnScrollListener scrollListener = new AbsListView.OnScrollListener() {
@@ -284,7 +355,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		}
 	};
 
-	/** -----------------------------------------bottom------------------------------------------- */
+	/** ----------------------------------------- bottom ------------------------------------------- */
 
 	// 模式切换监听
 	private View.OnClickListener modeListener = new View.OnClickListener() {
@@ -297,6 +368,8 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 				etChatContent.setVisibility(View.GONE);
 				tvChatFace.setVisibility(View.GONE);
 				btnChatRecord.setVisibility(View.VISIBLE);
+				AndroidUtils.hideSoftInput(ChatActivity.this);
+				rlChatEmoji.setVisibility(View.GONE);
 			} else {
 				tvChatMode.setBackgroundResource(R.drawable.selector_voice);
 				if (etChatContent.length() > 0) {
@@ -448,17 +521,64 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		public boolean onTouch(View v, MotionEvent event) {
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN: {
+				this.isInside = true;
+				this.y = event.getY();
+
+				// [静止时长, 震动时长, 静止时长, 震动时长...] 时长的单位是毫秒, 0重复 -1不重复
+				vibrator.vibrate(new long[] { 10, 30, 10, 30 }, -1);
+
+				Dialog progressDialog = AndroidUtils.showProgressDialog(ChatActivity.this, getResources().getString(R.string.text_load), true, true);
+				File dir = AndroidUtils.getStorageDir(ChatActivity.this, Constants.APP + "/" + Constants.CACHE_VOICE + "/" + username);
+				recordUuid = UUID.randomUUID().toString();
+				voice.startRecord(new File(dir, recordUuid));
+				progressDialog.dismiss();
+
+				rlRecordStatus.setVisibility(View.VISIBLE);
+				recordStatus("speaking");
+				new Thread(timer).start();
+				new Thread(volume).start();
 				break;
 			}
 			case MotionEvent.ACTION_UP: {
+				if (voice.isRecording()) {
+					if (timing < 1) {
+						recordStatus("short");
+						new Handler().postDelayed(new Runnable() {
+							@Override
+							public void run() {
+								rlRecordStatus.setVisibility(View.GONE);
+							}
+						}, 800);
+						isInside = false;
+					} else {
+						rlRecordStatus.setVisibility(View.GONE);
+					}
+					voice.stopRecord();
+					timing = 0;
+					if (isInside) {
+						sendRecord();
+					} else {
+						File dir = AndroidUtils.getStorageDir(ChatActivity.this, Constants.APP + "/" + Constants.CACHE_VOICE + "/" + username);
+						File file = new File(dir, recordUuid);
+						if (file.exists()) file.delete();
+					}
+				}
 				v.performClick();
 				break;
 			}
 			case MotionEvent.ACTION_MOVE: {
-				if (this.y - event.getY() > 100 || this.y - event.getY() < -10) {
-					this.isInside = false;
-				} else {
-					this.isInside = true;
+				if (voice.isRecording()) {
+					if (this.y - event.getY() > 100 || this.y - event.getY() < -10) {
+						this.isInside = false;
+						if (ivRecordCancel.getVisibility() == View.GONE) {
+							recordStatus("cancel");
+						}
+					} else {
+						this.isInside = true;
+						if (ivRecordCancel.getVisibility() == View.VISIBLE) {
+							recordStatus("speaking");
+						}
+					}
 				}
 				break;
 			}
@@ -467,7 +587,83 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		}
 	};
 
-	/** -----------------------------------------emoji------------------------------------------- */
+	private static class MyHandler extends Handler {
+		private WeakReference<ChatActivity> weakReference;
+
+		private MyHandler(ChatActivity activity) {
+			this.weakReference = new WeakReference<ChatActivity>(activity);
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			ChatActivity activity = this.weakReference.get();
+			if (activity != null && activity.voice.isRecording()) {
+				switch (msg.what) {
+				case 1: {
+					if (++activity.timing < 60) {
+						new Thread(activity.timer).start();
+					} else {
+						activity.rlRecordStatus.setVisibility(View.GONE);
+						activity.voice.stopRecord();
+						activity.timing = 0;
+						activity.sendRecord();
+					}
+					break;
+				}
+				case 2: {
+					if (activity.ivRecordVol.getVisibility() == View.VISIBLE) {
+						activity.ivRecordVol.setBackgroundResource(activity.volResIds[activity.voice.getVolume()]);
+					}
+					new Thread(activity.volume).start();
+					break;
+				}
+				}
+			}
+		}
+	}
+
+	private Runnable timer = new Runnable() {
+		@Override
+		public void run() {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			myHandler.sendEmptyMessage(1);
+		}
+	};
+
+	private Runnable volume = new Runnable() {
+		@Override
+		public void run() {
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			myHandler.sendEmptyMessage(2);
+		}
+	};
+
+	/** ----------------------------------------- emoji ------------------------------------------- */
+
+	// 填充表情
+	private void setEmojiNavi(int position) {
+		this.llChatEmojiNavi.removeAllViews();
+		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+		layoutParams.setMargins(5, 0, 5, 0);
+		for (int i = 0; i < EmojiUtils.PAGE_COUNT; i++) {
+			ImageView imageView = new ImageView(this);
+			imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+			if (i == position) {
+				imageView.setImageResource(R.drawable.emoji_page_select);
+			} else {
+				imageView.setImageResource(R.drawable.emoji_page_normal);
+			}
+			this.llChatEmojiNavi.addView(imageView, layoutParams);
+		}
+	}
 
 	// viewpager滑动监听
 	private ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
@@ -550,5 +746,32 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 			}
 		};
 	};
+
+	/** ----------------------------------------- record status ------------------------------------------- */
+
+	private void recordStatus(String status) {
+		if (status.equals("speaking")) {
+			this.ivRecordSpeaking.setVisibility(View.VISIBLE);
+			this.ivRecordVol.setVisibility(View.VISIBLE);
+			this.ivRecordCancel.setVisibility(View.GONE);
+			this.ivRecordShort.setVisibility(View.GONE);
+			this.tvRecordText.setText(R.string.record_upglide);
+			this.tvRecordText.setBackgroundResource(0);
+		} else if (status.equals("cancel")) {
+			this.ivRecordSpeaking.setVisibility(View.GONE);
+			this.ivRecordVol.setVisibility(View.GONE);
+			this.ivRecordCancel.setVisibility(View.VISIBLE);
+			this.ivRecordShort.setVisibility(View.GONE);
+			this.tvRecordText.setText(R.string.record_loosen);
+			this.tvRecordText.setBackgroundResource(R.drawable.shape_bkg_red);
+		} else if (status.equals("short")) {
+			this.ivRecordSpeaking.setVisibility(View.GONE);
+			this.ivRecordVol.setVisibility(View.GONE);
+			this.ivRecordCancel.setVisibility(View.GONE);
+			this.ivRecordShort.setVisibility(View.VISIBLE);
+			this.tvRecordText.setText(R.string.record_short);
+			this.tvRecordText.setBackgroundResource(0);
+		}
+	}
 
 }

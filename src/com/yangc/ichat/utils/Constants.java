@@ -10,6 +10,7 @@ public class Constants {
 	public static final String CACHE_HTTP = "http";
 	public static final String CACHE_PORTRAIT = "portrait";
 	public static final String ORIGINAL_IMAGE = "_original";
+	public static final String CACHE_VOICE = "voice";
 
 	public static String USER_ID;
 	public static String USERNAME;
@@ -17,6 +18,7 @@ public class Constants {
 
 	public static boolean IS_REFRESH_ADDRESSBOOK;
 	public static String CHATTING_USERNAME = "";
+	public static String VOICE = "[语音]";
 
 	public static final String EXTRA_ACTION = "action";
 	public static final String EXTRA_CHAT = "chat";

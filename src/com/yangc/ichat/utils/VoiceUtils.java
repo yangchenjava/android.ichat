@@ -1,5 +1,6 @@
 package com.yangc.ichat.utils;
 
+import java.io.File;
 import java.io.IOException;
 
 import android.media.MediaPlayer;
@@ -27,14 +28,16 @@ public class VoiceUtils {
 		return instance;
 	}
 
-	public void startRecord(String path) {
+	public void startRecord(File file) {
 		try {
+			if (file.exists()) file.delete();
+			file.createNewFile();
 			this.stopRecord();
 			this.mediaRecorder = new MediaRecorder();
 			this.mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
 			this.mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
 			this.mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
-			this.mediaRecorder.setOutputFile(path);
+			this.mediaRecorder.setOutputFile(file.getAbsolutePath());
 			this.mediaRecorder.prepare();
 			this.mediaRecorder.start();
 			Thread.sleep(200);
@@ -47,7 +50,7 @@ public class VoiceUtils {
 	}
 
 	public synchronized void stopRecord() {
-		if (this.isRecording() && this.mediaRecorder != null) {
+		if (this.isRecording && this.mediaRecorder != null) {
 			this.mediaRecorder.stop();
 			this.mediaRecorder.release();
 			this.mediaRecorder = null;
@@ -60,28 +63,31 @@ public class VoiceUtils {
 	}
 
 	public synchronized int getVolume() {
-		if (this.isRecording() && this.mediaRecorder != null) {
-			return MAX_VOLUME * this.mediaRecorder.getMaxAmplitude() / 32768;
+		if (this.isRecording && this.mediaRecorder != null) {
+			int volume = MAX_VOLUME * this.mediaRecorder.getMaxAmplitude() / 32768;
+			return volume < MAX_VOLUME ? volume : MAX_VOLUME - 1;
 		}
 		return 0;
 	}
 
-	public synchronized void startPlay(String path, MediaPlayer.OnCompletionListener completionListener) {
+	public void startPlay(File file, MediaPlayer.OnCompletionListener completionListener) {
 		try {
-			this.stopPlay();
-			this.mediaPlayer = new MediaPlayer();
-			this.mediaPlayer.setOnCompletionListener(completionListener);
-			this.mediaPlayer.setDataSource(path);
-			this.mediaPlayer.prepare();
-			this.mediaPlayer.start();
-			this.isPlaying = true;
+			if (file.exists()) {
+				this.stopPlay();
+				this.mediaPlayer = new MediaPlayer();
+				this.mediaPlayer.setOnCompletionListener(completionListener);
+				this.mediaPlayer.setDataSource(file.getAbsolutePath());
+				this.mediaPlayer.prepare();
+				this.mediaPlayer.start();
+				this.isPlaying = true;
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public synchronized void stopPlay() {
-		if (this.isPlaying() && this.mediaPlayer != null) {
+	public void stopPlay() {
+		if (this.isPlaying && this.mediaPlayer != null) {
 			this.mediaPlayer.stop();
 			this.mediaPlayer.release();
 			this.mediaPlayer = null;

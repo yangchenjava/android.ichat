@@ -144,8 +144,10 @@
             <Button
                 android:id="@+id/btn_chat_record"
                 android:layout_width="match_parent"
-                android:layout_height="35dp"
+                android:layout_height="36dp"
                 android:layout_centerVertical="true"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="4dp"
                 android:layout_toEndOf="@id/tv_chat_mode"
                 android:layout_toLeftOf="@id/rl_chat_action"
                 android:layout_toRightOf="@id/tv_chat_mode"
