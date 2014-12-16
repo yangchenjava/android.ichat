@@ -177,6 +177,9 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		Intent intent = new Intent(this, PushService.class);
 		intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_CANCEL_NOTIFICATION);
 		this.startService(intent);
+
+		// 更新文本消息为已读
+		DatabaseUtils.updateHistoryByUsername(this, this.username);
 	}
 
 	@Override
@@ -254,6 +257,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		history.setUuid(file.getUuid());
 		history.setUsername(username);
 		history.setChat(Constants.VOICE);
+		history.setType(1L);
 		history.setChatStatus(1L);
 		history.setTransmitStatus(0L);
 		history.setDate(new Date());
@@ -402,6 +406,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 			history.setUuid(chat.getUuid());
 			history.setUsername(username);
 			history.setChat(chat.getData());
+			history.setType(0L);
 			history.setChatStatus(1L);
 			history.setTransmitStatus(0L);
 			history.setDate(new Date());

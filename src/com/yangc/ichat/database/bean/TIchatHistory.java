@@ -10,6 +10,7 @@ public class TIchatHistory {
     private String uuid;
     private String username;
     private String chat;
+    private Long type;
     private Long chatStatus;
     private Long transmitStatus;
     private java.util.Date date;
@@ -21,11 +22,12 @@ public class TIchatHistory {
         this.id = id;
     }
 
-    public TIchatHistory(Long id, String uuid, String username, String chat, Long chatStatus, Long transmitStatus, java.util.Date date) {
+    public TIchatHistory(Long id, String uuid, String username, String chat, Long type, Long chatStatus, Long transmitStatus, java.util.Date date) {
         this.id = id;
         this.uuid = uuid;
         this.username = username;
         this.chat = chat;
+        this.type = type;
         this.chatStatus = chatStatus;
         this.transmitStatus = transmitStatus;
         this.date = date;
@@ -61,6 +63,14 @@ public class TIchatHistory {
 
     public void setChat(String chat) {
         this.chat = chat;
+    }
+
+    public Long getType() {
+        return type;
+    }
+
+    public void setType(Long type) {
+        this.type = type;
     }
 
     public Long getChatStatus() {

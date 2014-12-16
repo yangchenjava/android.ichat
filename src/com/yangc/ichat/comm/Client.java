@@ -1,5 +1,10 @@
 package com.yangc.ichat.comm;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,7 +22,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.google.protobuf.ByteString;
 import com.yangc.ichat.comm.bean.ChatBean;
+import com.yangc.ichat.comm.bean.FileBean;
 import com.yangc.ichat.comm.bean.ResultBean;
 import com.yangc.ichat.comm.bean.UserBean;
 import com.yangc.ichat.comm.factory.DataCodecFactory;
@@ -26,6 +33,7 @@ import com.yangc.ichat.comm.protocol.ProtobufMessage;
 import com.yangc.ichat.service.PushService;
 import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
+import com.yangc.ichat.utils.Md5Utils;
 
 public class Client {
 
@@ -188,6 +196,66 @@ public class Client {
 				} else {
 					ResultBean result = new ResultBean();
 					result.setUuid(chat.getUuid());
+					result.setSuccess(false);
+					result.setData("fail");
+
+					Intent intent = new Intent(context, PushService.class);
+					intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_RECEIVE_RESULT);
+					intent.putExtra(Constants.EXTRA_RESULT, result);
+					context.startService(intent);
+				}
+			}
+		});
+	}
+
+	/**
+	 * @功能: 发送文件
+	 * @作者: yangc
+	 * @创建日期: 2014年12月16日 下午1:06:18
+	 * @param file
+	 */
+	public void sendFile(final FileBean file) {
+		this.executorService.execute(new Runnable() {
+			@Override
+			public void run() {
+				if (session != null && session.isConnected()) {
+					Log.i(TAG, "sendFile");
+					File dir = AndroidUtils.getStorageDir(context, Constants.APP + "/" + Constants.CACHE_VOICE + "/" + file.getTo());
+					File targetFile = new File(dir, file.getFileName());
+					if (targetFile.exists()) {
+						ProtobufMessage.File.Builder builder = ProtobufMessage.File.newBuilder();
+						builder.setUuid(file.getUuid());
+						builder.setFrom(file.getFrom());
+						builder.setTo(file.getTo());
+						builder.setFileName(file.getFileName());
+						builder.setFileSize(targetFile.length());
+						builder.setFileMd5(Md5Utils.getMD5String(targetFile));
+
+						int offset = -1;
+						byte[] data = new byte[8192];
+						BufferedInputStream bis = null;
+						try {
+							bis = new BufferedInputStream(new FileInputStream(targetFile));
+							while ((offset = bis.read(data)) != -1) {
+								builder.setOffset(offset);
+								builder.setData(ByteString.copyFrom(data));
+								session.write(builder.build());
+							}
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						} finally {
+							try {
+								if (bis != null) bis.close();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				} else {
+					ResultBean result = new ResultBean();
+					result.setUuid(file.getUuid());
 					result.setSuccess(false);
 					result.setData("fail");
 

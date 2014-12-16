@@ -1,5 +1,8 @@
 package com.yangc.ichat.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.Date;
 import java.util.UUID;
 
@@ -19,6 +22,7 @@ import com.yangc.ichat.R;
 import com.yangc.ichat.activity.ChatActivity;
 import com.yangc.ichat.comm.Client;
 import com.yangc.ichat.comm.bean.ChatBean;
+import com.yangc.ichat.comm.bean.FileBean;
 import com.yangc.ichat.comm.bean.ResultBean;
 import com.yangc.ichat.comm.bean.UserBean;
 import com.yangc.ichat.database.bean.TIchatHistory;
@@ -26,6 +30,7 @@ import com.yangc.ichat.service.CallbackManager.OnChatListener;
 import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.DatabaseUtils;
+import com.yangc.ichat.utils.Md5Utils;
 
 public class PushService extends Service {
 
@@ -84,6 +89,7 @@ public class PushService extends Service {
 				break;
 			}
 			case Constants.ACTION_SEND_FILE: {
+				this.client.sendFile((FileBean) intent.getSerializableExtra(Constants.EXTRA_FILE));
 				break;
 			}
 			case Constants.ACTION_RECEIVE_CHAT: {
@@ -102,6 +108,8 @@ public class PushService extends Service {
 				history.setUuid(chat.getUuid());
 				history.setUsername(chat.getFrom());
 				history.setChat(chat.getData());
+				// 0:文本,1:语音
+				history.setType(0L);
 				// 0:我接收的,1:我发送的
 				history.setChatStatus(0L);
 				// 0:发送中,1:发送失败,2:发送成功,3:未读,4:已读
@@ -119,6 +127,62 @@ public class PushService extends Service {
 				break;
 			}
 			case Constants.ACTION_RECEIVE_FILE: {
+				FileBean file = (FileBean) intent.getSerializableExtra(Constants.EXTRA_FILE);
+
+				File dir = AndroidUtils.getStorageDir(this, Constants.APP + "/" + Constants.CACHE_VOICE + "/" + file.getFrom());
+				File targetFile = new File(dir, file.getUuid());
+
+				RandomAccessFile raf = null;
+				try {
+					if (!targetFile.exists() || !targetFile.isFile()) {
+						targetFile.delete();
+						targetFile.createNewFile();
+					}
+
+					raf = new RandomAccessFile(targetFile, "rw");
+					raf.seek(raf.length());
+					raf.write(file.getData(), 0, file.getOffset());
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					try {
+						if (raf != null) raf.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+
+				if (targetFile.length() == file.getFileSize() && Md5Utils.getMD5String(targetFile).equals(file.getFileMd5())) {
+					ResultBean result = new ResultBean();
+					result.setUuid(file.getUuid());
+					result.setSuccess(true);
+					result.setData("success");
+					this.client.sendResult(result);
+
+					// 判断当前activity是否为聊天页面
+					boolean isChatActivity = AndroidUtils.getRunningActivityName(this).equals(ChatActivity.class.getName());
+
+					TIchatHistory history = new TIchatHistory();
+					history.setUuid(file.getUuid());
+					history.setUsername(file.getFrom());
+					history.setChat(Constants.VOICE);
+					// 0:文本,1:语音
+					history.setType(1L);
+					// 0:我接收的,1:我发送的
+					history.setChatStatus(0L);
+					// 0:发送中,1:发送失败,2:发送成功,3:未读,4:已读
+					history.setTransmitStatus(3L);
+					history.setDate(new Date());
+					DatabaseUtils.saveHistory(this, history);
+
+					for (OnChatListener listener : CallbackManager.getChatListeners()) {
+						listener.onChatReceived(history);
+					}
+
+					if (!isChatActivity || !file.getFrom().equals(Constants.CHATTING_USERNAME)) {
+						this.showNotification(file.getFrom(), DatabaseUtils.getAddressbookByUsername(this, file.getFrom()).getNickname(), Constants.VOICE);
+					}
+				}
 				break;
 			}
 			case Constants.ACTION_RECEIVE_RESULT: {

@@ -29,9 +29,10 @@ public class TIchatHistoryDao extends AbstractDao<TIchatHistory, Long> {
         public final static Property Uuid = new Property(1, String.class, "uuid", false, "UUID");
         public final static Property Username = new Property(2, String.class, "username", false, "USERNAME");
         public final static Property Chat = new Property(3, String.class, "chat", false, "CHAT");
-        public final static Property ChatStatus = new Property(4, Long.class, "chatStatus", false, "CHAT_STATUS");
-        public final static Property TransmitStatus = new Property(5, Long.class, "transmitStatus", false, "TRANSMIT_STATUS");
-        public final static Property Date = new Property(6, java.util.Date.class, "date", false, "DATE");
+        public final static Property Type = new Property(4, Long.class, "type", false, "TYPE");
+        public final static Property ChatStatus = new Property(5, Long.class, "chatStatus", false, "CHAT_STATUS");
+        public final static Property TransmitStatus = new Property(6, Long.class, "transmitStatus", false, "TRANSMIT_STATUS");
+        public final static Property Date = new Property(7, java.util.Date.class, "date", false, "DATE");
     };
 
 
@@ -51,9 +52,10 @@ public class TIchatHistoryDao extends AbstractDao<TIchatHistory, Long> {
                 "'UUID' TEXT," + // 1: uuid
                 "'USERNAME' TEXT," + // 2: username
                 "'CHAT' TEXT," + // 3: chat
-                "'CHAT_STATUS' INTEGER," + // 4: chatStatus
-                "'TRANSMIT_STATUS' INTEGER," + // 5: transmitStatus
-                "'DATE' INTEGER);"); // 6: date
+                "'TYPE' INTEGER," + // 4: type
+                "'CHAT_STATUS' INTEGER," + // 5: chatStatus
+                "'TRANSMIT_STATUS' INTEGER," + // 6: transmitStatus
+                "'DATE' INTEGER);"); // 7: date
         // Add Indexes
         db.execSQL("CREATE INDEX " + constraint + "IDX_T_ICHAT_HISTORY_USERNAME ON T_ICHAT_HISTORY" +
                 " (USERNAME);");
@@ -90,19 +92,24 @@ public class TIchatHistoryDao extends AbstractDao<TIchatHistory, Long> {
             stmt.bindString(4, chat);
         }
  
+        Long type = entity.getType();
+        if (type != null) {
+            stmt.bindLong(5, type);
+        }
+ 
         Long chatStatus = entity.getChatStatus();
         if (chatStatus != null) {
-            stmt.bindLong(5, chatStatus);
+            stmt.bindLong(6, chatStatus);
         }
  
         Long transmitStatus = entity.getTransmitStatus();
         if (transmitStatus != null) {
-            stmt.bindLong(6, transmitStatus);
+            stmt.bindLong(7, transmitStatus);
         }
  
         java.util.Date date = entity.getDate();
         if (date != null) {
-            stmt.bindLong(7, date.getTime());
+            stmt.bindLong(8, date.getTime());
         }
     }
 
@@ -120,9 +127,10 @@ public class TIchatHistoryDao extends AbstractDao<TIchatHistory, Long> {
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // uuid
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // username
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // chat
-            cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4), // chatStatus
-            cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5), // transmitStatus
-            cursor.isNull(offset + 6) ? null : new java.util.Date(cursor.getLong(offset + 6)) // date
+            cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4), // type
+            cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5), // chatStatus
+            cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6), // transmitStatus
+            cursor.isNull(offset + 7) ? null : new java.util.Date(cursor.getLong(offset + 7)) // date
         );
         return entity;
     }
@@ -134,9 +142,10 @@ public class TIchatHistoryDao extends AbstractDao<TIchatHistory, Long> {
         entity.setUuid(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setUsername(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setChat(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setChatStatus(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
-        entity.setTransmitStatus(cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5));
-        entity.setDate(cursor.isNull(offset + 6) ? null : new java.util.Date(cursor.getLong(offset + 6)));
+        entity.setType(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
+        entity.setChatStatus(cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5));
+        entity.setTransmitStatus(cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6));
+        entity.setDate(cursor.isNull(offset + 7) ? null : new java.util.Date(cursor.getLong(offset + 7)));
      }
     
     /** @inheritdoc */

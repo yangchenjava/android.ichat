@@ -114,7 +114,8 @@ public class DatabaseUtils {
 	}
 
 	public static void updateHistoryByUsername(Context context, String username) {
-		List<TIchatHistory> historyList = getDaoSession(context).getTIchatHistoryDao().queryBuilder().where(TIchatHistoryDao.Properties.Username.eq(username)).list();
+		List<TIchatHistory> historyList = getDaoSession(context).getTIchatHistoryDao().queryBuilder()
+				.where(TIchatHistoryDao.Properties.ChatStatus.eq(0L), TIchatHistoryDao.Properties.Username.eq(username), TIchatHistoryDao.Properties.Type.eq(0L)).list();
 		if (historyList != null && !historyList.isEmpty()) {
 			for (TIchatHistory history : historyList) {
 				history.setTransmitStatus(4L);

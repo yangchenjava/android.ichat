@@ -1,5 +1,6 @@
 package com.yangc.ichat.fragment.tab;
 
+import java.io.File;
 import java.util.List;
 
 import android.app.Activity;
@@ -28,6 +29,7 @@ import com.yangc.ichat.database.bean.TIchatHistory;
 import com.yangc.ichat.fragment.tab.adapter.WechatFragmentAdapter;
 import com.yangc.ichat.service.CallbackManager;
 import com.yangc.ichat.utils.AndroidUtils;
+import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.DatabaseUtils;
 
 public class WechatFragment extends Fragment implements CallbackManager.OnChatListener {
@@ -121,7 +123,10 @@ public class WechatFragment extends Fragment implements CallbackManager.OnChatLi
 
 	private void removeData(int position) {
 		final Dialog progressDialog = AndroidUtils.showProgressDialog(this.getActivity(), this.getResources().getString(R.string.text_load), true, true);
-		DatabaseUtils.deleteHistory(this.getActivity(), this.list.get(position).getUsername());
+		String username = this.list.get(position).getUsername();
+		DatabaseUtils.deleteHistory(this.getActivity(), username);
+		// 删除该会话下的语音文件
+		new Thread(new DeleteDirectory(username)).start();
 		this.list.clear();
 		this.list.addAll(DatabaseUtils.getHistoryList(this.getActivity()));
 		this.adapter.notifyDataSetChanged();
@@ -131,6 +136,27 @@ public class WechatFragment extends Fragment implements CallbackManager.OnChatLi
 				progressDialog.dismiss();
 			}
 		}, 200);
+	}
+
+	private class DeleteDirectory implements Runnable {
+		private String username;
+
+		private DeleteDirectory(String username) {
+			this.username = username;
+		}
+
+		@Override
+		public void run() {
+			File dir = AndroidUtils.getStorageDir(getActivity(), Constants.APP + "/" + Constants.CACHE_VOICE + "/" + this.username);
+			if (dir.exists()) {
+				if (dir.isDirectory()) {
+					for (File file : dir.listFiles()) {
+						file.delete();
+					}
+				}
+				dir.delete();
+			}
+		}
 	}
 
 }
