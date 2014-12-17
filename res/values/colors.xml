@@ -7,6 +7,7 @@
     <color name="font_dark_blue">#758298</color>
     <color name="font_green">#38C03F</color>
     <color name="font_red">#D45656</color>
+    <color name="font_blue">#67717A</color>
 
     <!-- button -->
     <color name="button_green_normal">#38C03F</color>

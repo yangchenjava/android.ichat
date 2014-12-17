@@ -24,7 +24,6 @@
         android:layout_width="63dp"
         android:layout_height="63dp"
         android:layout_below="@id/tv_chat_receive_time"
-        android:clickable="true"
         android:contentDescription="@string/content_description"
         android:padding="8dp"
         android:scaleType="fitCenter" />
@@ -43,5 +42,46 @@
         android:maxWidth="200dp"
         android:textColor="@android:color/black"
         android:textSize="15sp" />
+
+    <ImageView
+        android:id="@+id/iv_chat_receive_voice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/tv_chat_receive"
+        android:layout_alignStart="@id/tv_chat_receive"
+        android:layout_below="@id/tv_chat_receive_time"
+        android:layout_margin="20dp"
+        android:contentDescription="@string/content_description"
+        android:scaleType="fitCenter"
+        android:src="@drawable/chat_receive_voice" />
+
+    <TextView
+        android:id="@+id/tv_chat_receive_voice_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_chat_receive_time"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="24dp"
+        android:layout_toEndOf="@id/tv_chat_receive"
+        android:layout_toRightOf="@id/tv_chat_receive"
+        android:textColor="@color/font_blue"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/iv_chat_receive_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_chat_receive_time"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="27dp"
+        android:layout_toEndOf="@id/tv_chat_receive_voice_duration"
+        android:layout_toRightOf="@id/tv_chat_receive_voice_duration"
+        android:contentDescription="@string/content_description"
+        android:scaleType="fitCenter"
+        android:src="@drawable/unread"
+        android:visibility="gone" />
 
 </RelativeLayout>
