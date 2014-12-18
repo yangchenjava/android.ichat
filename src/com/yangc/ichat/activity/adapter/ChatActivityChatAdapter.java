@@ -85,6 +85,9 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 				viewHolder.tvChatReceiveTime = (TextView) convertView.findViewById(R.id.tv_chat_receive_time);
 				viewHolder.ivChatReceivePhoto = (ImageView) convertView.findViewById(R.id.iv_chat_receive_photo);
 				viewHolder.tvChatReceive = (TextView) convertView.findViewById(R.id.tv_chat_receive);
+				viewHolder.ivChatReceiveVoice = (ImageView) convertView.findViewById(R.id.iv_chat_receive_voice);
+				viewHolder.tvChatReceiveVoiceDuration = (TextView) convertView.findViewById(R.id.tv_chat_receive_voice_duration);
+				viewHolder.ivChatReceiveStatus = (ImageView) convertView.findViewById(R.id.iv_chat_receive_status);
 				convertView.setTag(viewHolder);
 			} else {
 				viewHolder = (ReceiveViewHolder) convertView.getTag();
@@ -102,7 +105,21 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 			} else {
 				ImageLoader.getInstance().displayImage(Constants.SERVER_URL + this.friendPhoto, viewHolder.ivChatReceivePhoto, this.options);
 			}
-			viewHolder.tvChatReceive.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 34));
+			if (TextUtils.equals(history.getChat(), Constants.VOICE)) {
+				String[] fileNameAndDuration = history.getUuid().split("_");
+				viewHolder.tvChatReceive.getLayoutParams().width = 100 + 3 * Integer.parseInt(fileNameAndDuration[1]);
+				viewHolder.tvChatReceive.setText("");
+				viewHolder.ivChatReceiveVoice.setVisibility(View.VISIBLE);
+				viewHolder.tvChatReceiveVoiceDuration.setVisibility(View.VISIBLE);
+				viewHolder.tvChatReceiveVoiceDuration.setText(fileNameAndDuration[1] + "″");
+				viewHolder.ivChatReceiveStatus.setVisibility(history.getTransmitStatus().longValue() == 3L ? View.VISIBLE : View.GONE);
+			} else {
+				viewHolder.tvChatReceive.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
+				viewHolder.tvChatReceive.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 34));
+				viewHolder.ivChatReceiveVoice.setVisibility(View.GONE);
+				viewHolder.tvChatReceiveVoiceDuration.setVisibility(View.GONE);
+				viewHolder.ivChatReceiveStatus.setVisibility(View.GONE);
+			}
 			break;
 		}
 		case SEND: {
@@ -113,6 +130,8 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 				viewHolder.tvChatSendTime = (TextView) convertView.findViewById(R.id.tv_chat_send_time);
 				viewHolder.ivChatSendPhoto = (ImageView) convertView.findViewById(R.id.iv_chat_send_photo);
 				viewHolder.tvChatSend = (TextView) convertView.findViewById(R.id.tv_chat_send);
+				viewHolder.ivChatSendVoice = (ImageView) convertView.findViewById(R.id.iv_chat_send_voice);
+				viewHolder.tvChatSendVoiceDuration = (TextView) convertView.findViewById(R.id.tv_chat_send_voice_duration);
 				viewHolder.ivChatSendStatus = (ImageView) convertView.findViewById(R.id.iv_chat_send_status);
 				convertView.setTag(viewHolder);
 			} else {
@@ -131,7 +150,19 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 			} else {
 				ImageLoader.getInstance().displayImage(Constants.SERVER_URL + this.mePhoto, viewHolder.ivChatSendPhoto, this.options);
 			}
-			viewHolder.tvChatSend.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 34));
+			if (TextUtils.equals(history.getChat(), Constants.VOICE)) {
+				String[] fileNameAndDuration = history.getUuid().split("_");
+				viewHolder.tvChatSend.getLayoutParams().width = 100 + 3 * Integer.parseInt(fileNameAndDuration[1]);
+				viewHolder.tvChatSend.setText("");
+				viewHolder.ivChatSendVoice.setVisibility(View.VISIBLE);
+				viewHolder.tvChatSendVoiceDuration.setVisibility(View.VISIBLE);
+				viewHolder.tvChatSendVoiceDuration.setText(fileNameAndDuration[1] + "″");
+			} else {
+				viewHolder.tvChatSend.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
+				viewHolder.tvChatSend.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 34));
+				viewHolder.ivChatSendVoice.setVisibility(View.GONE);
+				viewHolder.tvChatSendVoiceDuration.setVisibility(View.GONE);
+			}
 			long current = System.currentTimeMillis();
 			if (history.getTransmitStatus() == 0 && current - history.getDate().getTime() <= 8000) {
 				viewHolder.ivChatSendStatus.setVisibility(View.VISIBLE);
@@ -185,12 +216,17 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 		TextView tvChatReceiveTime;
 		ImageView ivChatReceivePhoto;
 		TextView tvChatReceive;
+		ImageView ivChatReceiveVoice;
+		TextView tvChatReceiveVoiceDuration;
+		ImageView ivChatReceiveStatus;
 	}
 
 	private class SendViewHolder {
 		TextView tvChatSendTime;
 		ImageView ivChatSendPhoto;
 		TextView tvChatSend;
+		ImageView ivChatSendVoice;
+		TextView tvChatSendVoiceDuration;
 		ImageView ivChatSendStatus;
 	}
 

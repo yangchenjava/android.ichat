@@ -66,8 +66,7 @@
         android:layout_toEndOf="@id/tv_chat_receive"
         android:layout_toRightOf="@id/tv_chat_receive"
         android:textColor="@color/font_blue"
-        android:textStyle="bold"
-        android:visibility="gone" />
+        android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/iv_chat_receive_status"
@@ -81,7 +80,6 @@
         android:layout_toRightOf="@id/tv_chat_receive_voice_duration"
         android:contentDescription="@string/content_description"
         android:scaleType="fitCenter"
-        android:src="@drawable/unread"
-        android:visibility="gone" />
+        android:src="@drawable/unread" />
 
 </RelativeLayout>

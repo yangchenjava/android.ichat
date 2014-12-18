@@ -99,7 +99,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 	private VoiceUtils voice;
 	private MyHandler myHandler;
 	private int timing; // 录音计时
-	private String recordUuid;
+	private String fileName;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -208,7 +208,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 
 	@Override
 	public void onChatReceived(TIchatHistory history) {
-		if (this.chatList != null && history.getUsername().equals(username)) {
+		if (this.chatList != null && history.getUsername().equals(this.username)) {
 			synchronized (this.chatList) {
 				this.chatList.add(history);
 				this.chatAdapter.notifyDataSetChanged();
@@ -248,14 +248,14 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 	// 发送语音
 	private void sendRecord() {
 		FileBean file = new FileBean();
-		file.setUuid(recordUuid);
+		file.setUuid(this.fileName + "_" + this.timing);
 		file.setFrom(Constants.USERNAME);
-		file.setTo(username);
-		file.setFileName(recordUuid);
+		file.setTo(this.username);
+		file.setFileName(this.fileName);
 
 		TIchatHistory history = new TIchatHistory();
 		history.setUuid(file.getUuid());
-		history.setUsername(username);
+		history.setUsername(this.username);
 		history.setChat(Constants.VOICE);
 		history.setType(1L);
 		history.setChatStatus(1L);
@@ -534,8 +534,8 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 
 				Dialog progressDialog = AndroidUtils.showProgressDialog(ChatActivity.this, getResources().getString(R.string.text_load), true, true);
 				File dir = AndroidUtils.getStorageDir(ChatActivity.this, Constants.APP + "/" + Constants.CACHE_VOICE + "/" + username);
-				recordUuid = UUID.randomUUID().toString();
-				voice.startRecord(new File(dir, recordUuid));
+				fileName = UUID.randomUUID().toString();
+				voice.startRecord(new File(dir, fileName));
 				progressDialog.dismiss();
 
 				rlRecordStatus.setVisibility(View.VISIBLE);
@@ -559,14 +559,14 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 						rlRecordStatus.setVisibility(View.GONE);
 					}
 					voice.stopRecord();
-					timing = 0;
 					if (isInside) {
 						sendRecord();
 					} else {
 						File dir = AndroidUtils.getStorageDir(ChatActivity.this, Constants.APP + "/" + Constants.CACHE_VOICE + "/" + username);
-						File file = new File(dir, recordUuid);
+						File file = new File(dir, fileName);
 						if (file.exists()) file.delete();
 					}
+					timing = 0;
 				}
 				v.performClick();
 				break;
@@ -610,8 +610,8 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 					} else {
 						activity.rlRecordStatus.setVisibility(View.GONE);
 						activity.voice.stopRecord();
-						activity.timing = 0;
 						activity.sendRecord();
+						activity.timing = 0;
 					}
 					break;
 				}

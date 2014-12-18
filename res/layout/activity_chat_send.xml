@@ -68,8 +68,7 @@
         android:layout_toLeftOf="@id/tv_chat_send"
         android:layout_toStartOf="@id/tv_chat_send"
         android:textColor="@color/font_blue"
-        android:textStyle="bold"
-        android:visibility="gone" />
+        android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/iv_chat_send_status"
@@ -83,7 +82,6 @@
         android:layout_toStartOf="@id/tv_chat_send_voice_duration"
         android:clickable="true"
         android:contentDescription="@string/content_description"
-        android:scaleType="fitCenter"
-        android:visibility="gone" />
+        android:scaleType="fitCenter" />
 
 </RelativeLayout>
