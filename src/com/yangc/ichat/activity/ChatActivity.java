@@ -65,6 +65,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 	private Vibrator vibrator;
 	private SoundPool soundPool;
 	private int afterUploadVoice;
+	private int playCompleted;
 
 	// top
 	private TextView tvChatNickname;
@@ -111,7 +112,8 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		// 音效
 		this.soundPool = new SoundPool(3, AudioManager.STREAM_MUSIC, 5);
 		try {
-			this.afterUploadVoice = soundPool.load(this.getAssets().openFd("sound/after_upload_voice.mp3"), 1);
+			this.afterUploadVoice = this.soundPool.load(this.getAssets().openFd("sound/after_upload_voice.mp3"), 1);
+			this.playCompleted = this.soundPool.load(this.getAssets().openFd("sound/play_completed.mp3"), 1);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -169,7 +171,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 
 		this.tvChatNickname.setText(this.addressbook.getNickname());
 		this.chatList = DatabaseUtils.getHistoryListByUsername_page(this, this.username, 0L);
-		this.chatAdapter = new ChatActivityChatAdapter(this, this.chatList, this.username, DatabaseUtils.getMe(this).getPhoto(), this.addressbook.getPhoto());
+		this.chatAdapter = new ChatActivityChatAdapter(this, this.soundPool, this.playCompleted, this.chatList, this.username, DatabaseUtils.getMe(this).getPhoto(), this.addressbook.getPhoto());
 		this.lvChat.setAdapter(this.chatAdapter);
 		this.lvChat.setSelection(this.chatList.size() == 0 ? 0 : this.chatList.size() - 1);
 

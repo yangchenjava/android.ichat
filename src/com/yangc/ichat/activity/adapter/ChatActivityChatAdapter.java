@@ -7,6 +7,8 @@ import java.util.List;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.View;
@@ -24,6 +26,7 @@ import com.yangc.ichat.database.bean.TIchatHistory;
 import com.yangc.ichat.service.PushService;
 import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
+import com.yangc.ichat.utils.DatabaseUtils;
 import com.yangc.ichat.utils.EmojiUtils;
 import com.yangc.ichat.utils.UILUtils;
 import com.yangc.ichat.utils.VoiceUtils;
@@ -34,6 +37,8 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 	private static final int SEND = 1;
 
 	private Context context;
+	private SoundPool soundPool;
+	private int playCompleted;
 	private List<TIchatHistory> list;
 	private String username;
 	private String mePhoto;
@@ -43,8 +48,10 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 	private ImageView playingImageView;
 	private TIchatHistory playingHistory;
 
-	public ChatActivityChatAdapter(Context context, List<TIchatHistory> list, String username, String mePhoto, String friendPhoto) {
+	public ChatActivityChatAdapter(Context context, SoundPool soundPool, int playCompleted, List<TIchatHistory> list, String username, String mePhoto, String friendPhoto) {
 		this.context = context;
+		this.soundPool = soundPool;
+		this.playCompleted = playCompleted;
 		this.list = list;
 		this.username = username;
 		this.mePhoto = mePhoto;
@@ -215,9 +222,9 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 				if (animationDrawable.isRunning()) {
 					animationDrawable.stop();
 					this.ivChatVoice.setBackgroundResource(this.history.getChatStatus().longValue() == 0L ? R.drawable.chat_receive_voice : R.drawable.chat_send_voice);
-					playingImageView = null;
-					playingHistory = null;
 				}
+				playingImageView = null;
+				playingHistory = null;
 			} else {
 				voice.stopPlay();
 				if (playingImageView != null && playingHistory != null) {
@@ -227,21 +234,34 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 						playingImageView.setBackgroundResource(playingHistory.getChatStatus().longValue() == 0L ? R.drawable.chat_receive_voice : R.drawable.chat_send_voice);
 					}
 				}
+
 				File dir = AndroidUtils.getStorageDir(context, Constants.APP + "/" + Constants.CACHE_VOICE + "/" + username);
 				File file = new File(dir, fileName);
-				voice.startPlay(file, new VoiceUtils.OnPlayingCompletionListener() {
+				voice.startPlay(file, new MediaPlayer.OnCompletionListener() {
 					@Override
-					public void onPlayingCompletion() {
-
+					public void onCompletion(MediaPlayer mp) {
+						soundPool.play(playCompleted, 1, 1, 0, 0, 1);
+						VoiceUtils.getInstance().stopPlay();
+						AnimationDrawable animationDrawable = (AnimationDrawable) playingImageView.getBackground();
+						if (animationDrawable.isRunning()) {
+							animationDrawable.stop();
+							playingImageView.setBackgroundResource(playingHistory.getChatStatus().longValue() == 0L ? R.drawable.chat_receive_voice : R.drawable.chat_send_voice);
+						}
+						playingImageView = null;
+						playingHistory = null;
 					}
 				});
-
 				this.ivChatVoice.setBackgroundResource(this.history.getChatStatus().longValue() == 0L ? R.anim.frame_receive_voice : R.anim.frame_send_voice);
 				AnimationDrawable animationDrawable = (AnimationDrawable) this.ivChatVoice.getBackground();
 				animationDrawable.start();
+				playingImageView = this.ivChatVoice;
+				playingHistory = this.history;
 
 				if (this.history.getTransmitStatus().longValue() == 3L) {
 					this.history.setTransmitStatus(4L);
+					notifyDataSetChanged();
+
+					DatabaseUtils.updateHistoryByUuid(context, this.history.getUuid(), 4L);
 				}
 			}
 		}
