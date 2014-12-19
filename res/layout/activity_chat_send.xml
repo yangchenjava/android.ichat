@@ -53,9 +53,8 @@
         android:layout_alignRight="@id/tv_chat_send"
         android:layout_below="@id/tv_chat_send_time"
         android:layout_margin="20dp"
-        android:contentDescription="@string/content_description"
-        android:scaleType="fitCenter"
-        android:src="@drawable/chat_send_voice" />
+        android:background="@drawable/chat_send_voice"
+        android:contentDescription="@string/content_description" />
 
     <TextView
         android:id="@+id/tv_chat_send_voice_duration"

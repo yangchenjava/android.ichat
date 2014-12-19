@@ -18,6 +18,10 @@ public class VoiceUtils {
 	private boolean isPlaying;
 	private MediaPlayer mediaPlayer;
 
+	public interface OnPlayingCompletionListener {
+		public void onPlayingCompletion();
+	}
+
 	private VoiceUtils() {
 	}
 
@@ -70,12 +74,18 @@ public class VoiceUtils {
 		return 0;
 	}
 
-	public void startPlay(File file, MediaPlayer.OnCompletionListener completionListener) {
+	public void startPlay(File file, final VoiceUtils.OnPlayingCompletionListener playingCompletionListener) {
 		try {
 			if (file.exists()) {
 				this.stopPlay();
 				this.mediaPlayer = new MediaPlayer();
-				this.mediaPlayer.setOnCompletionListener(completionListener);
+				this.mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+					@Override
+					public void onCompletion(MediaPlayer mp) {
+						stopPlay();
+						playingCompletionListener.onPlayingCompletion();
+					}
+				});
 				this.mediaPlayer.setDataSource(file.getAbsolutePath());
 				this.mediaPlayer.prepare();
 				this.mediaPlayer.start();

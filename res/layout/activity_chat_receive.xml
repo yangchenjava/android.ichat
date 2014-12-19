@@ -51,9 +51,8 @@
         android:layout_alignStart="@id/tv_chat_receive"
         android:layout_below="@id/tv_chat_receive_time"
         android:layout_margin="20dp"
-        android:contentDescription="@string/content_description"
-        android:scaleType="fitCenter"
-        android:src="@drawable/chat_receive_voice" />
+        android:background="@drawable/chat_receive_voice"
+        android:contentDescription="@string/content_description" />
 
     <TextView
         android:id="@+id/tv_chat_receive_voice_duration"

@@ -1,10 +1,12 @@
 package com.yangc.ichat.activity.adapter;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.View;
@@ -20,9 +22,11 @@ import com.yangc.ichat.R;
 import com.yangc.ichat.comm.bean.ChatBean;
 import com.yangc.ichat.database.bean.TIchatHistory;
 import com.yangc.ichat.service.PushService;
+import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.EmojiUtils;
 import com.yangc.ichat.utils.UILUtils;
+import com.yangc.ichat.utils.VoiceUtils;
 
 public class ChatActivityChatAdapter extends BaseAdapter {
 
@@ -35,6 +39,9 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 	private String mePhoto;
 	private String friendPhoto;
 	private DisplayImageOptions options = UILUtils.getDisplayImageOptions();
+
+	private ImageView playingImageView;
+	private TIchatHistory playingHistory;
 
 	public ChatActivityChatAdapter(Context context, List<TIchatHistory> list, String username, String mePhoto, String friendPhoto) {
 		this.context = context;
@@ -109,6 +116,7 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 				String[] fileNameAndDuration = history.getUuid().split("_");
 				viewHolder.tvChatReceive.getLayoutParams().width = 100 + 3 * Integer.parseInt(fileNameAndDuration[1]);
 				viewHolder.tvChatReceive.setText("");
+				viewHolder.tvChatReceive.setOnClickListener(new PlayVoiceClickListener(viewHolder.ivChatReceiveVoice, history));
 				viewHolder.ivChatReceiveVoice.setVisibility(View.VISIBLE);
 				viewHolder.tvChatReceiveVoiceDuration.setVisibility(View.VISIBLE);
 				viewHolder.tvChatReceiveVoiceDuration.setText(fileNameAndDuration[1] + "″");
@@ -116,6 +124,7 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 			} else {
 				viewHolder.tvChatReceive.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
 				viewHolder.tvChatReceive.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 34));
+				viewHolder.tvChatReceive.setOnClickListener(null);
 				viewHolder.ivChatReceiveVoice.setVisibility(View.GONE);
 				viewHolder.tvChatReceiveVoiceDuration.setVisibility(View.GONE);
 				viewHolder.ivChatReceiveStatus.setVisibility(View.GONE);
@@ -154,12 +163,14 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 				String[] fileNameAndDuration = history.getUuid().split("_");
 				viewHolder.tvChatSend.getLayoutParams().width = 100 + 3 * Integer.parseInt(fileNameAndDuration[1]);
 				viewHolder.tvChatSend.setText("");
+				viewHolder.tvChatSend.setOnClickListener(new PlayVoiceClickListener(viewHolder.ivChatSendVoice, history));
 				viewHolder.ivChatSendVoice.setVisibility(View.VISIBLE);
 				viewHolder.tvChatSendVoiceDuration.setVisibility(View.VISIBLE);
 				viewHolder.tvChatSendVoiceDuration.setText(fileNameAndDuration[1] + "″");
 			} else {
 				viewHolder.tvChatSend.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
 				viewHolder.tvChatSend.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 34));
+				viewHolder.tvChatSend.setOnClickListener(null);
 				viewHolder.ivChatSendVoice.setVisibility(View.GONE);
 				viewHolder.tvChatSendVoiceDuration.setVisibility(View.GONE);
 			}
@@ -185,6 +196,57 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 		return convertView;
 	}
 
+	private class PlayVoiceClickListener implements View.OnClickListener {
+		private ImageView ivChatVoice;
+		private TIchatHistory history;
+
+		public PlayVoiceClickListener(ImageView ivChatVoice, TIchatHistory history) {
+			this.history = history;
+		}
+
+		@Override
+		public void onClick(View v) {
+			String fileName = this.history.getUuid().split("_")[0];
+
+			VoiceUtils voice = VoiceUtils.getInstance();
+			if (voice.isPlaying() && TextUtils.equals(fileName, playingHistory.getUuid().split("_")[0])) {
+				voice.stopPlay();
+				AnimationDrawable animationDrawable = (AnimationDrawable) this.ivChatVoice.getBackground();
+				if (animationDrawable.isRunning()) {
+					animationDrawable.stop();
+					this.ivChatVoice.setBackgroundResource(this.history.getChatStatus().longValue() == 0L ? R.drawable.chat_receive_voice : R.drawable.chat_send_voice);
+					playingImageView = null;
+					playingHistory = null;
+				}
+			} else {
+				voice.stopPlay();
+				if (playingImageView != null && playingHistory != null) {
+					AnimationDrawable animationDrawable = (AnimationDrawable) playingImageView.getBackground();
+					if (animationDrawable.isRunning()) {
+						animationDrawable.stop();
+						playingImageView.setBackgroundResource(playingHistory.getChatStatus().longValue() == 0L ? R.drawable.chat_receive_voice : R.drawable.chat_send_voice);
+					}
+				}
+				File dir = AndroidUtils.getStorageDir(context, Constants.APP + "/" + Constants.CACHE_VOICE + "/" + username);
+				File file = new File(dir, fileName);
+				voice.startPlay(file, new VoiceUtils.OnPlayingCompletionListener() {
+					@Override
+					public void onPlayingCompletion() {
+
+					}
+				});
+
+				this.ivChatVoice.setBackgroundResource(this.history.getChatStatus().longValue() == 0L ? R.anim.frame_receive_voice : R.anim.frame_send_voice);
+				AnimationDrawable animationDrawable = (AnimationDrawable) this.ivChatVoice.getBackground();
+				animationDrawable.start();
+
+				if (this.history.getTransmitStatus().longValue() == 3L) {
+					this.history.setTransmitStatus(4L);
+				}
+			}
+		}
+	}
+
 	// 重新发送消息
 	private class ResendClickListener implements View.OnClickListener {
 		private TIchatHistory history;
@@ -195,15 +257,15 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 
 		@Override
 		public void onClick(View v) {
-			history.setTransmitStatus(0L);
-			history.setDate(new Date());
+			this.history.setTransmitStatus(0L);
+			this.history.setDate(new Date());
 			notifyDataSetChanged();
 
 			ChatBean chat = new ChatBean();
-			chat.setUuid(history.getUuid());
+			chat.setUuid(this.history.getUuid());
 			chat.setFrom(Constants.USERNAME);
-			chat.setTo(history.getUsername());
-			chat.setData(history.getChat());
+			chat.setTo(this.history.getUsername());
+			chat.setData(this.history.getChat());
 
 			Intent intent = new Intent(context, PushService.class);
 			intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_SEND_CHAT);

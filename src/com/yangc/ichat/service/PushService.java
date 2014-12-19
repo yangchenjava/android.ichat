@@ -130,7 +130,7 @@ public class PushService extends Service {
 				FileBean file = (FileBean) intent.getSerializableExtra(Constants.EXTRA_FILE);
 
 				File dir = AndroidUtils.getStorageDir(this, Constants.APP + "/" + Constants.CACHE_VOICE + "/" + file.getFrom());
-				File targetFile = new File(dir, file.getUuid());
+				File targetFile = new File(dir, file.getFileName());
 
 				RandomAccessFile raf = null;
 				try {
