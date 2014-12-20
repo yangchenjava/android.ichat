@@ -45,8 +45,8 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 	private String friendPhoto;
 	private DisplayImageOptions options = UILUtils.getDisplayImageOptions();
 
-	private ImageView playingImageView;
-	private TIchatHistory playingHistory;
+	private int playingPosition = -1;
+	private String playingFileName = null;
 
 	public ChatActivityChatAdapter(Context context, SoundPool soundPool, int playCompleted, List<TIchatHistory> list, String username, String mePhoto, String friendPhoto) {
 		this.context = context;
@@ -120,13 +120,22 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 				ImageLoader.getInstance().displayImage(Constants.SERVER_URL + this.friendPhoto, viewHolder.ivChatReceivePhoto, this.options);
 			}
 			if (TextUtils.equals(history.getChat(), Constants.VOICE)) {
-				String[] fileNameAndDuration = history.getUuid().split("_");
-				viewHolder.tvChatReceive.getLayoutParams().width = 100 + 3 * Integer.parseInt(fileNameAndDuration[1]);
+				String duration = history.getUuid().split("_")[1];
+				viewHolder.tvChatReceive.getLayoutParams().width = 100 + 3 * Integer.parseInt(duration);
 				viewHolder.tvChatReceive.setText("");
-				viewHolder.tvChatReceive.setOnClickListener(new PlayVoiceClickListener(viewHolder.ivChatReceiveVoice, history));
+				viewHolder.tvChatReceive.setOnClickListener(new PlayVoiceClickListener(position, history));
 				viewHolder.ivChatReceiveVoice.setVisibility(View.VISIBLE);
+				if (this.playingPosition == position) {
+					viewHolder.ivChatReceiveVoice.setBackgroundResource(R.anim.frame_receive_voice);
+					AnimationDrawable animationDrawable = (AnimationDrawable) viewHolder.ivChatReceiveVoice.getBackground();
+					if (!animationDrawable.isRunning()) {
+						animationDrawable.start();
+					}
+				} else {
+					viewHolder.ivChatReceiveVoice.setBackgroundResource(R.drawable.chat_receive_voice);
+				}
 				viewHolder.tvChatReceiveVoiceDuration.setVisibility(View.VISIBLE);
-				viewHolder.tvChatReceiveVoiceDuration.setText(fileNameAndDuration[1] + "″");
+				viewHolder.tvChatReceiveVoiceDuration.setText(duration + "″");
 				viewHolder.ivChatReceiveStatus.setVisibility(history.getTransmitStatus().longValue() == 3L ? View.VISIBLE : View.GONE);
 			} else {
 				viewHolder.tvChatReceive.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -167,13 +176,22 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 				ImageLoader.getInstance().displayImage(Constants.SERVER_URL + this.mePhoto, viewHolder.ivChatSendPhoto, this.options);
 			}
 			if (TextUtils.equals(history.getChat(), Constants.VOICE)) {
-				String[] fileNameAndDuration = history.getUuid().split("_");
-				viewHolder.tvChatSend.getLayoutParams().width = 100 + 3 * Integer.parseInt(fileNameAndDuration[1]);
+				String duration = history.getUuid().split("_")[1];
+				viewHolder.tvChatSend.getLayoutParams().width = 100 + 3 * Integer.parseInt(duration);
 				viewHolder.tvChatSend.setText("");
-				viewHolder.tvChatSend.setOnClickListener(new PlayVoiceClickListener(viewHolder.ivChatSendVoice, history));
+				viewHolder.tvChatSend.setOnClickListener(new PlayVoiceClickListener(position, history));
 				viewHolder.ivChatSendVoice.setVisibility(View.VISIBLE);
+				if (this.playingPosition == position) {
+					viewHolder.ivChatSendVoice.setBackgroundResource(R.anim.frame_send_voice);
+					AnimationDrawable animationDrawable = (AnimationDrawable) viewHolder.ivChatSendVoice.getBackground();
+					if (!animationDrawable.isRunning()) {
+						animationDrawable.start();
+					}
+				} else {
+					viewHolder.ivChatSendVoice.setBackgroundResource(R.drawable.chat_send_voice);
+				}
 				viewHolder.tvChatSendVoiceDuration.setVisibility(View.VISIBLE);
-				viewHolder.tvChatSendVoiceDuration.setText(fileNameAndDuration[1] + "″");
+				viewHolder.tvChatSendVoiceDuration.setText(duration + "″");
 			} else {
 				viewHolder.tvChatSend.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
 				viewHolder.tvChatSend.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 34));
@@ -204,10 +222,11 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 	}
 
 	private class PlayVoiceClickListener implements View.OnClickListener {
-		private ImageView ivChatVoice;
+		private int position;
 		private TIchatHistory history;
 
-		public PlayVoiceClickListener(ImageView ivChatVoice, TIchatHistory history) {
+		public PlayVoiceClickListener(int position, TIchatHistory history) {
+			this.position = position;
 			this.history = history;
 		}
 
@@ -216,23 +235,15 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 			String fileName = this.history.getUuid().split("_")[0];
 
 			VoiceUtils voice = VoiceUtils.getInstance();
-			if (voice.isPlaying() && TextUtils.equals(fileName, playingHistory.getUuid().split("_")[0])) {
-				voice.stopPlay();
-				AnimationDrawable animationDrawable = (AnimationDrawable) this.ivChatVoice.getBackground();
-				if (animationDrawable.isRunning()) {
-					animationDrawable.stop();
-					this.ivChatVoice.setBackgroundResource(this.history.getChatStatus().longValue() == 0L ? R.drawable.chat_receive_voice : R.drawable.chat_send_voice);
-				}
-				playingImageView = null;
-				playingHistory = null;
+			voice.stopPlay();
+			if (voice.isPlaying() && TextUtils.equals(fileName, playingFileName)) {
+				playingPosition = -1;
+				playingFileName = null;
+				notifyDataSetChanged();
 			} else {
-				voice.stopPlay();
-				if (playingImageView != null && playingHistory != null) {
-					AnimationDrawable animationDrawable = (AnimationDrawable) playingImageView.getBackground();
-					if (animationDrawable.isRunning()) {
-						animationDrawable.stop();
-						playingImageView.setBackgroundResource(playingHistory.getChatStatus().longValue() == 0L ? R.drawable.chat_receive_voice : R.drawable.chat_send_voice);
-					}
+				if (this.history.getTransmitStatus().longValue() == 3L) {
+					this.history.setTransmitStatus(4L);
+					DatabaseUtils.updateHistoryByUuid(context, this.history.getUuid(), 4L);
 				}
 
 				File dir = AndroidUtils.getStorageDir(context, Constants.APP + "/" + Constants.CACHE_VOICE + "/" + username);
@@ -242,27 +253,14 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 					public void onCompletion(MediaPlayer mp) {
 						soundPool.play(playCompleted, 1, 1, 0, 0, 1);
 						VoiceUtils.getInstance().stopPlay();
-						AnimationDrawable animationDrawable = (AnimationDrawable) playingImageView.getBackground();
-						if (animationDrawable.isRunning()) {
-							animationDrawable.stop();
-							playingImageView.setBackgroundResource(playingHistory.getChatStatus().longValue() == 0L ? R.drawable.chat_receive_voice : R.drawable.chat_send_voice);
-						}
-						playingImageView = null;
-						playingHistory = null;
+						playingPosition = -1;
+						playingFileName = null;
+						notifyDataSetChanged();
 					}
 				});
-				this.ivChatVoice.setBackgroundResource(this.history.getChatStatus().longValue() == 0L ? R.anim.frame_receive_voice : R.anim.frame_send_voice);
-				AnimationDrawable animationDrawable = (AnimationDrawable) this.ivChatVoice.getBackground();
-				animationDrawable.start();
-				playingImageView = this.ivChatVoice;
-				playingHistory = this.history;
-
-				if (this.history.getTransmitStatus().longValue() == 3L) {
-					this.history.setTransmitStatus(4L);
-					notifyDataSetChanged();
-
-					DatabaseUtils.updateHistoryByUuid(context, this.history.getUuid(), 4L);
-				}
+				playingPosition = this.position;
+				playingFileName = fileName;
+				notifyDataSetChanged();
 			}
 		}
 	}

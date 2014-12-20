@@ -211,9 +211,11 @@ public class AddressbookFragment extends Fragment {
 	private Response.Listener<List<TIchatAddressbook>> requestNetworkDataListener = new Response.Listener<List<TIchatAddressbook>>() {
 		@Override
 		public void onResponse(final List<TIchatAddressbook> addressbookList) {
-			loadData(addressbookList);
-			adapter.notifyDataSetChanged();
-			DatabaseUtils.saveOrUpdateAddressbook(getActivity(), addressbookList);
+			if (addressbookList != null) {
+				loadData(addressbookList);
+				adapter.notifyDataSetChanged();
+				DatabaseUtils.saveOrUpdateAddressbook(getActivity(), addressbookList);
+			}
 			Constants.IS_REFRESH_ADDRESSBOOK = true;
 		}
 	};
