@@ -229,7 +229,7 @@ public class AndroidUtils {
 		Dialog progressDialog = new Dialog(context, R.style.CustomProgressDialog);
 		progressDialog.setCancelable(cancelable);
 		progressDialog.setCanceledOnTouchOutside(canceledOnTouchOutside);
-		progressDialog.setContentView(llDialogProgress, new LinearLayout.LayoutParams(dp2px(context, 300), dp2px(context, 55)));
+		progressDialog.setContentView(llDialogProgress, new LinearLayout.LayoutParams(dp2px(context, 300), dp2px(context, 45)));
 		progressDialog.show();
 		return progressDialog;
 	}
