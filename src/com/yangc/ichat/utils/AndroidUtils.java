@@ -71,6 +71,18 @@ public class AndroidUtils {
 	}
 
 	/**
+	 * @功能: sp转px
+	 * @作者: yangc
+	 * @创建日期: 2014年11月9日 上午2:19:33
+	 * @param context
+	 * @param sp
+	 * @return
+	 */
+	public static int sp2px(Context context, int sp) {
+		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.getResources().getDisplayMetrics());
+	}
+
+	/**
 	 * @功能: 获取状态栏高度
 	 * @作者: yangc
 	 * @创建日期: 2014年10月22日 下午4:08:39
