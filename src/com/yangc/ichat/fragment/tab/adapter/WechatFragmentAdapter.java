@@ -169,7 +169,7 @@ public class WechatFragmentAdapter extends BaseAdapter {
 		} else {
 			viewHolder.ivWechatItemStatus.setVisibility(View.GONE);
 		}
-		viewHolder.tvWechatItemChat.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 25));
+		viewHolder.tvWechatItemChat.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 15));
 		viewHolder.tvWechatItemTime.setText(DateFormat.format("akk:mm", history.getDate()));
 		viewHolder.llWechatItemRight.setOnClickListener(new View.OnClickListener() {
 			@Override

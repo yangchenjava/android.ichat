@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
@@ -104,10 +105,10 @@ public class MeDetailFragment extends Fragment {
 		this.tvMeDetailSignature.setText(TextUtils.isEmpty(this.me.getSignature()) ? undefined : this.me.getSignature());
 
 		if (this.photoFile != null && this.photoFile.getName().equals(PNG_DEST)) {
-			progressDialog = AndroidUtils.showProgressDialog(this.meActivity, getResources().getString(R.string.text_load), true, true);
+			this.progressDialog = AndroidUtils.showProgressDialog(this.meActivity, getResources().getString(R.string.text_load), true, true);
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("id", this.me.getId());
-			params.put("photo", photoFile);
+			params.put("photo", this.photoFile);
 			this.request = new MultiPartRequest<ResultBean>(Constants.UPDATE_PERSON_PHOTO, params, ResultBean.class, listener, errorListener);
 			VolleyUtils.addMultiPartRequest(this.request, MeActivity.TAG);
 		} else {
@@ -124,19 +125,19 @@ public class MeDetailFragment extends Fragment {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
 		case PHOTO_CAMERA:
-			if (data != null) {
+			if (resultCode == Activity.RESULT_OK && data != null) {
 				this.startImageZoom(Uri.fromFile(this.photoFile));
 			} else if (this.photoFile != null) {
 				this.destoryPhotoFile();
 			}
 			break;
 		case PHOTO_LOCAL:
-			if (data != null) {
+			if (resultCode == Activity.RESULT_OK && data != null) {
 				this.startImageZoom(data.getData());
 			}
 			break;
 		case PHOTO_CUT:
-			if (data != null) {
+			if (resultCode == Activity.RESULT_OK && data != null) {
 				this.setImageToView(data);
 			} else if (this.photoFile != null) {
 				this.destoryPhotoFile();
