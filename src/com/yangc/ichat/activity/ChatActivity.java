@@ -534,11 +534,9 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 				// [静止时长, 震动时长, 静止时长, 震动时长...] 时长的单位是毫秒, 0重复 -1不重复
 				vibrator.vibrate(new long[] { 10, 30, 10, 30 }, -1);
 
-				Dialog progressDialog = AndroidUtils.showProgressDialog(ChatActivity.this, getResources().getString(R.string.text_load), true, true);
 				File dir = AndroidUtils.getStorageDir(ChatActivity.this, Constants.APP + "/" + Constants.CACHE_VOICE + "/" + username);
 				fileName = UUID.randomUUID().toString();
 				voice.startRecord(new File(dir, fileName));
-				progressDialog.dismiss();
 
 				rlRecordStatus.setVisibility(View.VISIBLE);
 				recordStatus("speaking");
@@ -745,7 +743,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 					}
 				} else {
 					Drawable drawable = ChatActivity.this.getResources().getDrawable(emoji.getResId());
-					drawable.setBounds(0, 0, 34, 34);
+					drawable.setBounds(0, 0, AndroidUtils.dp2px(ChatActivity.this, 20), AndroidUtils.dp2px(ChatActivity.this, 20));
 					SpannableString spannableString = new SpannableString(emoji.getContent());
 					spannableString.setSpan(new ImageSpan(drawable), 0, spannableString.length(), SpannableString.SPAN_INCLUSIVE_EXCLUSIVE);
 					editable.insert(selection, spannableString);

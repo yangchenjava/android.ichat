@@ -95,7 +95,7 @@ public class EmojiUtils {
 			Integer resId = EMOJI_MAP.get(matcher.group());
 			if (resId != null) {
 				Drawable drawable = context.getResources().getDrawable(resId);
-				drawable.setBounds(0, 0, size, size);
+				drawable.setBounds(0, 0, AndroidUtils.dp2px(context, size), AndroidUtils.dp2px(context, size));
 				spannableString.setSpan(new ImageSpan(drawable), matcher.start(), matcher.end(), SpannableString.SPAN_INCLUSIVE_EXCLUSIVE);
 			}
 		}

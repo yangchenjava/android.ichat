@@ -139,7 +139,7 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 				viewHolder.ivChatReceiveStatus.setVisibility(history.getTransmitStatus().longValue() == 3L ? View.VISIBLE : View.GONE);
 			} else {
 				viewHolder.tvChatReceive.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
-				viewHolder.tvChatReceive.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 34));
+				viewHolder.tvChatReceive.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 20));
 				viewHolder.tvChatReceive.setOnClickListener(null);
 				viewHolder.ivChatReceiveVoice.setVisibility(View.GONE);
 				viewHolder.tvChatReceiveVoiceDuration.setVisibility(View.GONE);
@@ -194,7 +194,7 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 				viewHolder.tvChatSendVoiceDuration.setText(duration + "″");
 			} else {
 				viewHolder.tvChatSend.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
-				viewHolder.tvChatSend.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 34));
+				viewHolder.tvChatSend.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 20));
 				viewHolder.tvChatSend.setOnClickListener(null);
 				viewHolder.ivChatSendVoice.setVisibility(View.GONE);
 				viewHolder.tvChatSendVoiceDuration.setVisibility(View.GONE);

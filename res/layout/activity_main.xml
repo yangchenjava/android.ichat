@@ -160,19 +160,19 @@
         </LinearLayout>
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/iv_dividing_line"
+    <TextView
+        android:id="@+id/tv_dividing_line"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="1dp"
         android:layout_above="@id/ll_tabs"
-        android:background="@drawable/dividing_line"
-        android:contentDescription="@string/content_description" />
+        android:layout_marginBottom="4dp"
+        android:background="@color/dividing_line" />
 
     <RelativeLayout
         android:id="@+id/rl_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/iv_dividing_line"
+        android:layout_above="@id/tv_dividing_line"
         android:layout_below="@id/rl_title_bar" />
 
 </RelativeLayout>

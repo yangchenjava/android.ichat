@@ -8,6 +8,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.yangc.ichat.utils.AndroidUtils;
+
 public class IndexScroller extends View {
 
 	private OnTouchWordChangedListener onTouchWordChangedListener;
@@ -57,7 +59,7 @@ public class IndexScroller extends View {
 			// this.paint.setTypeface(Typeface.DEFAULT_BOLD);
 			// 消除字体锯齿
 			this.paint.setAntiAlias(true);
-			this.paint.setTextSize(16);
+			this.paint.setTextSize(AndroidUtils.sp2px(this.getContext(), 12));
 			if (i == this.choose) {
 				this.paint.setColor(Color.parseColor("#38C03F"));
 				this.paint.setFakeBoldText(true);
