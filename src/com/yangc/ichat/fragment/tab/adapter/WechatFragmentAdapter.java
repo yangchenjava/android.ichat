@@ -5,7 +5,6 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +21,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.yangc.ichat.R;
 import com.yangc.ichat.database.bean.TIchatAddressbook;
 import com.yangc.ichat.database.bean.TIchatHistory;
+import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.DatabaseUtils;
 import com.yangc.ichat.utils.EmojiUtils;
@@ -170,7 +170,7 @@ public class WechatFragmentAdapter extends BaseAdapter {
 			viewHolder.ivWechatItemStatus.setVisibility(View.GONE);
 		}
 		viewHolder.tvWechatItemChat.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 15));
-		viewHolder.tvWechatItemTime.setText(DateFormat.format("akk:mm", history.getDate()));
+		viewHolder.tvWechatItemTime.setText(AndroidUtils.getLocalDate(this.context, history.getDate()));
 		viewHolder.llWechatItemRight.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

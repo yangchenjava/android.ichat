@@ -2,13 +2,14 @@ package com.yangc.ichat.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.yangc.ichat.comm.bean.ResultBean;
 import com.yangc.ichat.database.bean.TIchatHistory;
 
 public class CallbackManager {
 
-	private static final List<OnChatListener> LISTENERS = new ArrayList<OnChatListener>();
+	private static final List<OnChatListener> LISTENERS = new CopyOnWriteArrayList<OnChatListener>();
 
 	public interface OnChatListener {
 		public void onChatReceived(TIchatHistory history);

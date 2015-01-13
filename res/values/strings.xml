@@ -137,4 +137,24 @@
     <string name="record_loosen">松开手指，取消发送</string>
     <string name="record_short">录音时间太短</string>
 
+    <!-- date -->
+    <string-array name="date_day">
+        <item>凌晨</item>
+        <item>早上</item>
+        <item>上午</item>
+        <item>中午</item>
+        <item>下午</item>
+        <item>晚上</item>
+    </string-array>
+    <string-array name="date_week">
+        <item>周日</item>
+        <item>周一</item>
+        <item>周二</item>
+        <item>周三</item>
+        <item>周四</item>
+        <item>周五</item>
+        <item>周六</item>
+    </string-array>
+    <string name="date_month">M月d日</string>
+
 </resources>

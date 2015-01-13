@@ -2,6 +2,8 @@ package com.yangc.ichat.utils;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.Calendar;
+import java.util.Date;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -12,6 +14,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
+import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
@@ -246,6 +249,38 @@ public class AndroidUtils {
 			InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
 			inputMethodManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 		}
+	}
+
+	/**
+	 * @功能: 获取日期本地化字符串(时间超过一天,小于一周,显示星期+时间;大于一周,显示日期+时间)
+	 * @作者: yangc
+	 * @创建日期: 2015年1月13日 下午8:25:22
+	 * @param context
+	 * @param date
+	 * @return
+	 */
+	public static String getLocalDate(Context context, Date date) {
+		StringBuilder sb = new StringBuilder();
+
+		Calendar current = Calendar.getInstance();
+		current.setTime(date);
+		long diff = current.getTimeInMillis() - date.getTime();
+		if (diff > 604800000) {
+			sb.append(DateFormat.format(context.getString(R.string.date_month), date)).append(" ");
+		} else if (diff > 86400000) {
+			sb.append(context.getResources().getStringArray(R.array.date_week)[current.get(Calendar.DAY_OF_WEEK) - 1]).append(" ");
+		}
+
+		String[] day = context.getResources().getStringArray(R.array.date_day);
+		int hour = current.get(Calendar.HOUR_OF_DAY);
+		if (hour < 6) sb.append(day[0]);
+		else if (hour < 9) sb.append(day[1]);
+		else if (hour < 12) sb.append(day[2]);
+		else if (hour < 13) sb.append(day[3]);
+		else if (hour < 18) sb.append(day[4]);
+		else sb.append(day[5]);
+
+		return sb.append(DateFormat.format("kk:mm", date)).toString();
 	}
 
 }

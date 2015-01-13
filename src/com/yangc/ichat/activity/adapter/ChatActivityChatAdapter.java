@@ -10,7 +10,6 @@ import android.graphics.drawable.AnimationDrawable;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -107,10 +106,10 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 				viewHolder = (ReceiveViewHolder) convertView.getTag();
 			}
 
-			// 两条消息间隔时间大于2分钟,则显示时间
-			if (position == 0 || history.getDate().getTime() - this.list.get(position - 1).getDate().getTime() > 120000) {
+			// 两条消息间隔时间大于5分钟,则显示时间
+			if (position == 0 || history.getDate().getTime() - this.list.get(position - 1).getDate().getTime() > 300000) {
 				viewHolder.tvChatReceiveTime.setVisibility(View.VISIBLE);
-				viewHolder.tvChatReceiveTime.setText(DateFormat.format("akk:mm", history.getDate()));
+				viewHolder.tvChatReceiveTime.setText(AndroidUtils.getLocalDate(this.context, history.getDate()));
 			} else {
 				viewHolder.tvChatReceiveTime.setVisibility(View.GONE);
 			}
@@ -119,9 +118,11 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 			} else {
 				ImageLoader.getInstance().displayImage(Constants.SERVER_URL + this.friendPhoto, viewHolder.ivChatReceivePhoto, this.options);
 			}
+			ViewGroup.LayoutParams layoutParams = viewHolder.tvChatReceive.getLayoutParams();
 			if (TextUtils.equals(history.getChat(), Constants.VOICE)) {
 				String duration = history.getUuid().split("_")[1];
-				viewHolder.tvChatReceive.getLayoutParams().width = 100 + 3 * Integer.parseInt(duration);
+				layoutParams.width = 100 + 3 * Integer.parseInt(duration);
+				viewHolder.tvChatReceive.setLayoutParams(layoutParams);
 				viewHolder.tvChatReceive.setText("");
 				viewHolder.tvChatReceive.setOnClickListener(new PlayVoiceClickListener(position, history));
 				viewHolder.ivChatReceiveVoice.setVisibility(View.VISIBLE);
@@ -138,7 +139,8 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 				viewHolder.tvChatReceiveVoiceDuration.setText(duration + "″");
 				viewHolder.ivChatReceiveStatus.setVisibility(history.getTransmitStatus().longValue() == 3L ? View.VISIBLE : View.GONE);
 			} else {
-				viewHolder.tvChatReceive.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
+				layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+				viewHolder.tvChatReceive.setLayoutParams(layoutParams);
 				viewHolder.tvChatReceive.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 20));
 				viewHolder.tvChatReceive.setOnClickListener(null);
 				viewHolder.ivChatReceiveVoice.setVisibility(View.GONE);
@@ -163,10 +165,10 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 				viewHolder = (SendViewHolder) convertView.getTag();
 			}
 
-			// 两条消息间隔时间大于2分钟,则显示时间
-			if (position == 0 || history.getDate().getTime() - this.list.get(position - 1).getDate().getTime() > 120000) {
+			// 两条消息间隔时间大于5分钟,则显示时间
+			if (position == 0 || history.getDate().getTime() - this.list.get(position - 1).getDate().getTime() > 300000) {
 				viewHolder.tvChatSendTime.setVisibility(View.VISIBLE);
-				viewHolder.tvChatSendTime.setText(DateFormat.format("akk:mm", history.getDate()));
+				viewHolder.tvChatSendTime.setText(AndroidUtils.getLocalDate(this.context, history.getDate()));
 			} else {
 				viewHolder.tvChatSendTime.setVisibility(View.GONE);
 			}
@@ -175,9 +177,11 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 			} else {
 				ImageLoader.getInstance().displayImage(Constants.SERVER_URL + this.mePhoto, viewHolder.ivChatSendPhoto, this.options);
 			}
+			ViewGroup.LayoutParams layoutParams = viewHolder.tvChatSend.getLayoutParams();
 			if (TextUtils.equals(history.getChat(), Constants.VOICE)) {
 				String duration = history.getUuid().split("_")[1];
-				viewHolder.tvChatSend.getLayoutParams().width = 100 + 3 * Integer.parseInt(duration);
+				layoutParams.width = 100 + 3 * Integer.parseInt(duration);
+				viewHolder.tvChatSend.setLayoutParams(layoutParams);
 				viewHolder.tvChatSend.setText("");
 				viewHolder.tvChatSend.setOnClickListener(new PlayVoiceClickListener(position, history));
 				viewHolder.ivChatSendVoice.setVisibility(View.VISIBLE);
@@ -193,7 +197,8 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 				viewHolder.tvChatSendVoiceDuration.setVisibility(View.VISIBLE);
 				viewHolder.tvChatSendVoiceDuration.setText(duration + "″");
 			} else {
-				viewHolder.tvChatSend.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
+				layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+				viewHolder.tvChatSend.setLayoutParams(layoutParams);
 				viewHolder.tvChatSend.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 20));
 				viewHolder.tvChatSend.setOnClickListener(null);
 				viewHolder.ivChatSendVoice.setVisibility(View.GONE);
