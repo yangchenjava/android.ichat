@@ -118,11 +118,9 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 			} else {
 				ImageLoader.getInstance().displayImage(Constants.SERVER_URL + this.friendPhoto, viewHolder.ivChatReceivePhoto, this.options);
 			}
-			ViewGroup.LayoutParams layoutParams = viewHolder.tvChatReceive.getLayoutParams();
 			if (TextUtils.equals(history.getChat(), Constants.VOICE)) {
 				String duration = history.getUuid().split("_")[1];
-				layoutParams.width = 100 + 3 * Integer.parseInt(duration);
-				viewHolder.tvChatReceive.setLayoutParams(layoutParams);
+				viewHolder.tvChatReceive.getLayoutParams().width = AndroidUtils.dp2px(this.context, 80 + 2 * Integer.parseInt(duration));
 				viewHolder.tvChatReceive.setText("");
 				viewHolder.tvChatReceive.setOnClickListener(new PlayVoiceClickListener(position, history));
 				viewHolder.ivChatReceiveVoice.setVisibility(View.VISIBLE);
@@ -139,8 +137,7 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 				viewHolder.tvChatReceiveVoiceDuration.setText(duration + "″");
 				viewHolder.ivChatReceiveStatus.setVisibility(history.getTransmitStatus().longValue() == 3L ? View.VISIBLE : View.GONE);
 			} else {
-				layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-				viewHolder.tvChatReceive.setLayoutParams(layoutParams);
+				viewHolder.tvChatReceive.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
 				viewHolder.tvChatReceive.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 20));
 				viewHolder.tvChatReceive.setOnClickListener(null);
 				viewHolder.ivChatReceiveVoice.setVisibility(View.GONE);
@@ -177,11 +174,9 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 			} else {
 				ImageLoader.getInstance().displayImage(Constants.SERVER_URL + this.mePhoto, viewHolder.ivChatSendPhoto, this.options);
 			}
-			ViewGroup.LayoutParams layoutParams = viewHolder.tvChatSend.getLayoutParams();
 			if (TextUtils.equals(history.getChat(), Constants.VOICE)) {
 				String duration = history.getUuid().split("_")[1];
-				layoutParams.width = 100 + 3 * Integer.parseInt(duration);
-				viewHolder.tvChatSend.setLayoutParams(layoutParams);
+				viewHolder.tvChatSend.getLayoutParams().width = AndroidUtils.dp2px(this.context, 80 + 2 * Integer.parseInt(duration));
 				viewHolder.tvChatSend.setText("");
 				viewHolder.tvChatSend.setOnClickListener(new PlayVoiceClickListener(position, history));
 				viewHolder.ivChatSendVoice.setVisibility(View.VISIBLE);
@@ -197,8 +192,7 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 				viewHolder.tvChatSendVoiceDuration.setVisibility(View.VISIBLE);
 				viewHolder.tvChatSendVoiceDuration.setText(duration + "″");
 			} else {
-				layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-				viewHolder.tvChatSend.setLayoutParams(layoutParams);
+				viewHolder.tvChatSend.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
 				viewHolder.tvChatSend.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 20));
 				viewHolder.tvChatSend.setOnClickListener(null);
 				viewHolder.ivChatSendVoice.setVisibility(View.GONE);
