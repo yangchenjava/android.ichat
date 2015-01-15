@@ -1,6 +1,7 @@
 package com.yangc.ichat.fragment.me;
 
 import uk.co.senab.photoview.PhotoView;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -56,7 +57,10 @@ public class MeDetailPhotoFragment extends Fragment {
 		public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
 			ivLoadingPhoto.clearAnimation();
 			ivLoadingPhoto.setVisibility(View.GONE);
-			AndroidUtils.alertToast(getActivity(), R.string.error_timeout);
+			Context context = getActivity();
+			if (context != null) {
+				AndroidUtils.alertToast(context, R.string.error_timeout);
+			}
 		}
 
 		@Override
