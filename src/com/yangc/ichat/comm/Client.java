@@ -9,13 +9,13 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.filter.keepalive.KeepAliveFilter;
+import org.apache.mina.filter.keepalive.KeepAliveRequestTimeoutHandler;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
 import android.content.Context;
@@ -28,6 +28,7 @@ import com.yangc.ichat.comm.bean.FileBean;
 import com.yangc.ichat.comm.bean.ResultBean;
 import com.yangc.ichat.comm.bean.UserBean;
 import com.yangc.ichat.comm.factory.DataCodecFactory;
+import com.yangc.ichat.comm.factory.KeepAliveFactory;
 import com.yangc.ichat.comm.handler.ClientHandler;
 import com.yangc.ichat.comm.protocol.ProtobufMessage;
 import com.yangc.ichat.service.PushService;
@@ -46,7 +47,6 @@ public class Client {
 
 	private NioSocketConnector connector;
 	private IoSession session;
-	private ScheduledExecutorService scheduledExecutorService;
 
 	private Client() {
 	}
@@ -75,6 +75,9 @@ public class Client {
 		this.connector.setConnectTimeoutMillis(8000);
 		this.connector.getSessionConfig().setIdleTime(IdleStatus.READER_IDLE, Constants.TIMEOUT);
 		this.connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new DataCodecFactory()));
+		KeepAliveFilter keepAliveFilter = new KeepAliveFilter(new KeepAliveFactory(), IdleStatus.WRITER_IDLE, KeepAliveRequestTimeoutHandler.NOOP, 60, Constants.TIMEOUT);
+		keepAliveFilter.setForwardEvent(true);
+		this.connector.getFilterChain().addLast("heartBeat", keepAliveFilter);
 		this.connector.setHandler(new ClientHandler(this.context));
 	}
 
@@ -101,18 +104,6 @@ public class Client {
 				}
 			});
 			future.get();
-
-			// 心跳,第一次5秒后发送,以后每隔45秒发送
-			this.scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-			this.scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
-				@Override
-				public void run() {
-					if (session != null && session.isConnected()) {
-						Log.i(TAG, "KeepAliveReceiver");
-						session.write(ProtobufMessage.Heart.newBuilder().build());
-					}
-				}
-			}, 5, 45, TimeUnit.SECONDS);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Intent intent = new Intent(this.context, PushService.class);
@@ -128,9 +119,6 @@ public class Client {
 	 */
 	public void destroy() {
 		Log.i(TAG, "destroy");
-		if (scheduledExecutorService != null) {
-			scheduledExecutorService.shutdownNow();
-		}
 		if (this.session != null) {
 			this.session.close(true).awaitUninterruptibly();
 			this.session = null;
