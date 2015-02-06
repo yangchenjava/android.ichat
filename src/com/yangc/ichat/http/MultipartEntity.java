@@ -84,9 +84,8 @@ public class MultipartEntity implements HttpEntity {
 	public void addPart(String key, String fileName, InputStream in, String type) {
 		this.writeFirstBoundaryIfNeeds();
 		try {
-			type = "Content-Type: " + type + "\r\n";
 			this.out.write(("Content-Disposition: form-data; name=\"" + key + "\"; filename=\"" + fileName + "\"\r\n").getBytes());
-			this.out.write(type.getBytes());
+			this.out.write(("Content-Type: " + type + "\r\n").getBytes());
 			this.out.write("Content-Transfer-Encoding: binary\r\n\r\n".getBytes());
 
 			byte[] b = new byte[4096];
