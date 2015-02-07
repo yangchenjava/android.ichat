@@ -26,7 +26,6 @@ import com.yangc.ichat.comm.bean.FileBean;
 import com.yangc.ichat.comm.bean.ResultBean;
 import com.yangc.ichat.comm.bean.UserBean;
 import com.yangc.ichat.database.bean.TIchatHistory;
-import com.yangc.ichat.service.CallbackManager.OnChatListener;
 import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.DatabaseUtils;
@@ -71,9 +70,7 @@ public class PushService extends Service {
 				break;
 			}
 			case Constants.ACTION_NETWORK_ERROR: {
-				for (OnChatListener listener : CallbackManager.getChatListeners()) {
-					listener.onNetworkError();
-				}
+				CallbackManager.notifyNetworkError();
 				break;
 			}
 			case Constants.ACTION_CANCEL_NOTIFICATION: {
@@ -117,9 +114,7 @@ public class PushService extends Service {
 				history.setDate(new Date());
 				DatabaseUtils.saveHistory(this, history);
 
-				for (OnChatListener listener : CallbackManager.getChatListeners()) {
-					listener.onChatReceived(history);
-				}
+				CallbackManager.notifyChatReceived(history);
 
 				if (!isChatActivity || !chat.getFrom().equals(Constants.CHATTING_USERNAME)) {
 					this.showNotification(chat.getFrom(), DatabaseUtils.getAddressbookByUsername(this, chat.getFrom()).getNickname(), chat.getData());
@@ -175,9 +170,7 @@ public class PushService extends Service {
 					history.setDate(new Date());
 					DatabaseUtils.saveHistory(this, history);
 
-					for (OnChatListener listener : CallbackManager.getChatListeners()) {
-						listener.onChatReceived(history);
-					}
+					CallbackManager.notifyChatReceived(history);
 
 					if (!isChatActivity || !file.getFrom().equals(Constants.CHATTING_USERNAME)) {
 						this.showNotification(file.getFrom(), DatabaseUtils.getAddressbookByUsername(this, file.getFrom()).getNickname(), Constants.VOICE);
@@ -188,9 +181,7 @@ public class PushService extends Service {
 			case Constants.ACTION_RECEIVE_RESULT: {
 				ResultBean result = (ResultBean) intent.getSerializableExtra(Constants.EXTRA_RESULT);
 				DatabaseUtils.updateHistoryByUuid(this, result.getUuid(), result.isSuccess() ? 2L : 1L);
-				for (OnChatListener listener : CallbackManager.getChatListeners()) {
-					listener.onResultReceived(result);
-				}
+				CallbackManager.notifyResultReceived(result);
 				break;
 			}
 			default: {

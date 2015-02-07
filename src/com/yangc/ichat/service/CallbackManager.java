@@ -1,6 +1,5 @@
 package com.yangc.ichat.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -36,17 +35,25 @@ public class CallbackManager {
 	 * @param listener
 	 */
 	public static void unregisterChatListener(OnChatListener listener) {
-		String name = listener.getClass().getName();
-		for (int i = 0; i < LISTENERS.size(); i++) {
-			if (LISTENERS.get(i).getClass().getName().equals(name)) {
-				LISTENERS.remove(i);
-				break;
-			}
+		LISTENERS.remove(listener);
+	}
+
+	public static void notifyChatReceived(TIchatHistory history) {
+		for (OnChatListener listener : LISTENERS) {
+			listener.onChatReceived(history);
 		}
 	}
 
-	public static List<OnChatListener> getChatListeners() {
-		return new ArrayList<OnChatListener>(LISTENERS);
+	public static void notifyResultReceived(ResultBean result) {
+		for (OnChatListener listener : LISTENERS) {
+			listener.onResultReceived(result);
+		}
+	}
+
+	public static void notifyNetworkError() {
+		for (OnChatListener listener : LISTENERS) {
+			listener.onNetworkError();
+		}
 	}
 
 }
