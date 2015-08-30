@@ -101,4 +101,5 @@ public class EmojiUtils {
 		}
 		return spannableString;
 	}
+
 }

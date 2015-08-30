@@ -45,9 +45,9 @@ public class BootloaderActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		super.onDestroy();
-		VolleyUtils.cancelAllRequest(TAG);
 		Log.i(TAG, "destory");
+		VolleyUtils.cancelAllRequest(TAG);
+		super.onDestroy();
 	}
 
 	private void startup() {

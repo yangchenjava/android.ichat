@@ -226,7 +226,7 @@ public class AddressbookFragment extends Fragment {
 			if (error instanceof AuthFailureError) {
 				VolleyErrorHelper.sessionTimeout(getActivity(), syncNetworkData, MainActivity.TAG);
 			} else {
-				AndroidUtils.alertToast(getActivity(), VolleyErrorHelper.getResId(error));
+				// AndroidUtils.alertToast(getActivity(), VolleyErrorHelper.getResId(error));
 				Log.e(MainActivity.TAG, error.getMessage(), error.getCause());
 			}
 		}

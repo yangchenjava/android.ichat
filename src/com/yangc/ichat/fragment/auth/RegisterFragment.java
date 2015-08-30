@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
@@ -100,6 +101,7 @@ public class RegisterFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
+		// 从相机页面回到当前页面时
 		if (this.photoFile != null && this.photoFile.getName().equals(PNG_DEST)) {
 			this.etRegisterPhoto.setImageBitmap(BitmapFactory.decodeFile(this.photoFile.getAbsolutePath()));
 		}
@@ -109,19 +111,19 @@ public class RegisterFragment extends Fragment {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
 		case PHOTO_CAMERA:
-			if (data != null) {
+			if (resultCode == Activity.RESULT_OK && data != null) {
 				this.startImageZoom(Uri.fromFile(this.photoFile));
 			} else if (this.photoFile != null) {
 				this.destoryPhotoFile();
 			}
 			break;
 		case PHOTO_LOCAL:
-			if (data != null) {
+			if (resultCode == Activity.RESULT_OK && data != null) {
 				this.startImageZoom(data.getData());
 			}
 			break;
 		case PHOTO_CUT:
-			if (data != null) {
+			if (resultCode == Activity.RESULT_OK && data != null) {
 				this.setImageToView(data);
 			} else if (this.photoFile != null) {
 				this.destoryPhotoFile();
@@ -150,7 +152,7 @@ public class RegisterFragment extends Fragment {
 		Intent intent = new Intent("com.android.camera.action.CROP");
 		intent.setDataAndType(uri, "image/*");
 		// crop为true是设置在开启的intent中设置显示的view可以剪裁
-		intent.putExtra("crop", "true");
+		intent.putExtra("crop", true);
 		// aspectX aspectY 是宽高的比例
 		intent.putExtra("aspectX", 1);
 		intent.putExtra("aspectY", 1);

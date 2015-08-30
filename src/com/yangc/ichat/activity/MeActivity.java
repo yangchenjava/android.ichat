@@ -23,8 +23,8 @@ public class MeActivity extends FragmentActivity {
 
 	@Override
 	protected void onDestroy() {
-		super.onDestroy();
 		VolleyUtils.cancelAllRequest(TAG);
+		super.onDestroy();
 	}
 
 	public void addFragmentToStack(Fragment fragment, Bundle bundle, boolean isAddStack) {

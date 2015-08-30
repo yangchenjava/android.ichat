@@ -156,5 +156,6 @@
         <item>周六</item>
     </string-array>
     <string name="date_month">M月d日</string>
+    <string name="date_year">yyyy年M月d日</string>
 
 </resources>

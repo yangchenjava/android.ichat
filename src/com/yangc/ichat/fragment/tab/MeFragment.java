@@ -67,7 +67,7 @@ public class MeFragment extends Fragment {
 			Map<String, String> params = new HashMap<String, String>();
 			params.put("userId", Constants.USER_ID);
 			this.request = new GsonObjectRequest<TIchatMe>(Request.Method.POST, Constants.USER_INFO, params, TIchatMe.class, listener, errorListener);
-			VolleyUtils.addNormalRequest(request, MainActivity.TAG);
+			VolleyUtils.addNormalRequest(this.request, MainActivity.TAG);
 		} else {
 			this.initMeInfo(me);
 		}

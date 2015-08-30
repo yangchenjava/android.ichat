@@ -75,7 +75,7 @@ public class Client {
 		this.connector.setConnectTimeoutMillis(8000);
 		this.connector.getSessionConfig().setIdleTime(IdleStatus.READER_IDLE, Constants.TIMEOUT);
 		this.connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new DataCodecFactory()));
-		KeepAliveFilter keepAliveFilter = new KeepAliveFilter(new KeepAliveFactory(), IdleStatus.WRITER_IDLE, KeepAliveRequestTimeoutHandler.NOOP, 60, Constants.TIMEOUT);
+		KeepAliveFilter keepAliveFilter = new KeepAliveFilter(new KeepAliveFactory(), IdleStatus.WRITER_IDLE, KeepAliveRequestTimeoutHandler.NOOP, Constants.INTERVAL, Constants.TIMEOUT);
 		keepAliveFilter.setForwardEvent(true);
 		this.connector.getFilterChain().addLast("heartBeat", keepAliveFilter);
 		this.connector.setHandler(new ClientHandler(this.context));
@@ -113,7 +113,7 @@ public class Client {
 	}
 
 	/**
-	 * @功能: 销毁心跳服务,会话,连接
+	 * @功能: 关闭会话,连接
 	 * @作者: yangc
 	 * @创建日期: 2014年12月7日 下午6:25:12
 	 */

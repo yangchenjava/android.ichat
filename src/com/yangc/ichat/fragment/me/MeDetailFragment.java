@@ -166,7 +166,7 @@ public class MeDetailFragment extends Fragment {
 		Intent intent = new Intent("com.android.camera.action.CROP");
 		intent.setDataAndType(uri, "image/*");
 		// crop为true是设置在开启的intent中设置显示的view可以剪裁
-		intent.putExtra("crop", "true");
+		intent.putExtra("crop", true);
 		// aspectX aspectY 是宽高的比例
 		intent.putExtra("aspectX", 1);
 		intent.putExtra("aspectY", 1);

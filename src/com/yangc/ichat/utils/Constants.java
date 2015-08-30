@@ -39,7 +39,8 @@ public class Constants {
 	/** TCP地址 */
 	public static final String IP = "10.23.6.12";
 	public static final int PORT = 8811;
-	public static final int TIMEOUT = 90;
+	public static final int INTERVAL = 180;
+	public static final int TIMEOUT = 300;
 	public static final String CHARSET_NAME = "UTF-8";
 
 	/** HTTP地址 */

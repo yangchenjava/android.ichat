@@ -11,20 +11,18 @@ import com.android.volley.Response;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.yangc.ichat.utils.JsonUtils;
 
 public class GsonArrayRequest<T> extends Request<T> {
 
-	private final Gson gson;
 	private final Map<String, String> params;
 	private final TypeToken<T> typeToken;
 	private final Listener<T> listener;
 
 	public GsonArrayRequest(int method, String url, Map<String, String> params, TypeToken<T> typeToken, Listener<T> listener, ErrorListener errorListener) {
 		super(method, url, errorListener);
-		this.gson = new Gson();
 		this.params = params;
 		this.typeToken = typeToken;
 		this.listener = listener;
@@ -61,7 +59,7 @@ public class GsonArrayRequest<T> extends Request<T> {
 			parsed = new String(response.data);
 		}
 		try {
-			T result = this.gson.fromJson(parsed, this.typeToken.getType());
+			T result = JsonUtils.fromJson(parsed, this.typeToken);
 			return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
 		} catch (JsonSyntaxException e) {
 			return Response.error(new AuthFailureError());

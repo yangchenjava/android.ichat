@@ -31,7 +31,6 @@ public class MultipartEntity implements HttpEntity {
 			sb.append(MULTIPART_CHARS[rand.nextInt(MULTIPART_CHARS.length)]);
 		}
 		this.boundary = sb.toString();
-
 	}
 
 	public void writeFirstBoundaryIfNeeds() {

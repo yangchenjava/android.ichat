@@ -238,7 +238,6 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 			if (voice.isPlaying() && TextUtils.equals(fileName, playingFileName)) {
 				playingPosition = -1;
 				playingFileName = null;
-				notifyDataSetChanged();
 			} else {
 				if (this.history.getTransmitStatus().longValue() == 3L) {
 					this.history.setTransmitStatus(4L);
@@ -259,8 +258,8 @@ public class ChatActivityChatAdapter extends BaseAdapter {
 				});
 				playingPosition = this.position;
 				playingFileName = fileName;
-				notifyDataSetChanged();
 			}
+			notifyDataSetChanged();
 		}
 	}
 

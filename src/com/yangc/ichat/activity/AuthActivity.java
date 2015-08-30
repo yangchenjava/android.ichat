@@ -24,8 +24,8 @@ public class AuthActivity extends FragmentActivity {
 
 	@Override
 	protected void onDestroy() {
-		super.onDestroy();
 		VolleyUtils.cancelAllRequest(TAG);
+		super.onDestroy();
 	}
 
 	@Override

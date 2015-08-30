@@ -531,6 +531,8 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 				this.isInside = true;
 				this.y = event.getY();
 
+				if (voice.isPlaying()) voice.stopPlay();
+
 				// [静止时长, 震动时长, 静止时长, 震动时长...] 时长的单位是毫秒, 0重复 -1不重复
 				vibrator.vibrate(new long[] { 10, 30, 10, 30 }, -1);
 
@@ -561,7 +563,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 					voice.stopRecord();
 					if (isInside) {
 						sendRecord();
-					} else {
+					} else if (!TextUtils.isEmpty(fileName)) {
 						File dir = AndroidUtils.getStorageDir(ChatActivity.this, Constants.APP + "/" + Constants.CACHE_VOICE + "/" + username);
 						File file = new File(dir, fileName);
 						if (file.exists()) file.delete();

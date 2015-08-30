@@ -262,17 +262,19 @@ public class AndroidUtils {
 	public static String getLocalDate(Context context, Date date) {
 		StringBuilder sb = new StringBuilder();
 
-		Calendar current = Calendar.getInstance();
-		current.setTime(date);
-		long diff = current.getTimeInMillis() - date.getTime();
+		Calendar c = Calendar.getInstance();
+		c.setTime(date);
+		long diff = System.currentTimeMillis() - c.getTimeInMillis();
 		if (diff > 604800000) {
-			sb.append(DateFormat.format(context.getString(R.string.date_month), date)).append(" ");
+			sb.append(DateFormat.format(context.getString(R.string.date_month), c)).append(" ");
 		} else if (diff > 86400000) {
-			sb.append(context.getResources().getStringArray(R.array.date_week)[current.get(Calendar.DAY_OF_WEEK) - 1]).append(" ");
+			sb.append(context.getResources().getStringArray(R.array.date_week)[c.get(Calendar.DAY_OF_WEEK) - 1]).append(" ");
+		} else if (diff < 0) {
+			sb.append(DateFormat.format(context.getString(R.string.date_year), c)).append(" ");
 		}
 
 		String[] day = context.getResources().getStringArray(R.array.date_day);
-		int hour = current.get(Calendar.HOUR_OF_DAY);
+		int hour = c.get(Calendar.HOUR_OF_DAY);
 		if (hour < 6) sb.append(day[0]);
 		else if (hour < 9) sb.append(day[1]);
 		else if (hour < 12) sb.append(day[2]);
@@ -280,7 +282,7 @@ public class AndroidUtils {
 		else if (hour < 18) sb.append(day[4]);
 		else sb.append(day[5]);
 
-		return sb.append(DateFormat.format("kk:mm", date)).toString();
+		return sb.append(DateFormat.format("kk:mm", c)).toString();
 	}
 
 }

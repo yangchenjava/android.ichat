@@ -11,19 +11,17 @@ import com.android.volley.Response;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.google.gson.Gson;
 import com.yangc.ichat.bean.ResultBean;
+import com.yangc.ichat.utils.JsonUtils;
 
 public class GsonObjectRequest<T> extends Request<T> {
 
-	private final Gson gson;
 	private final Map<String, String> params;
 	private final Class<T> clazz;
 	private final Listener<T> listener;
 
 	public GsonObjectRequest(int method, String url, Map<String, String> params, Class<T> clazz, Listener<T> listener, ErrorListener errorListener) {
 		super(method, url, errorListener);
-		this.gson = new Gson();
 		this.params = params;
 		this.clazz = clazz;
 		this.listener = listener;
@@ -59,10 +57,10 @@ public class GsonObjectRequest<T> extends Request<T> {
 		} catch (UnsupportedEncodingException e) {
 			parsed = new String(response.data);
 		}
-		if (this.gson.fromJson(parsed, ResultBean.class).getStatusCode() == 101) {
+		if (JsonUtils.fromJson(parsed, ResultBean.class).getStatusCode() == 101) {
 			return Response.error(new AuthFailureError());
 		}
-		T result = this.gson.fromJson(parsed, this.clazz);
+		T result = JsonUtils.fromJson(parsed, this.clazz);
 		return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
 	}
 
