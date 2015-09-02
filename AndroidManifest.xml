@@ -32,7 +32,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".activity.BootloaderActivity"
+            android:name=".ui.activity.BootloaderActivity"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,20 +41,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.AuthActivity"
+            android:name=".ui.activity.AuthActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".ui.activity.MainActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.ChatActivity"
+            android:name=".ui.activity.ChatActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
-            android:name=".activity.FriendActivity"
+            android:name=".ui.activity.FriendActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.MeActivity"
+            android:name=".ui.activity.MeActivity"
             android:screenOrientation="portrait" />
 
         <service android:name=".service.PushService" />
