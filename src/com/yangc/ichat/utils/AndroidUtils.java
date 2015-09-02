@@ -56,6 +56,7 @@ public class AndroidUtils {
 	 * @param context
 	 * @return
 	 */
+	@SuppressWarnings("deprecation")
 	public static String getRunningActivityName(Context context) {
 		ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 		return activityManager.getRunningTasks(1).get(0).topActivity.getClassName();

@@ -19,13 +19,13 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.yangc.ichat.R;
-import com.yangc.ichat.activity.ChatActivity;
 import com.yangc.ichat.comm.Client;
 import com.yangc.ichat.comm.bean.ChatBean;
 import com.yangc.ichat.comm.bean.FileBean;
 import com.yangc.ichat.comm.bean.ResultBean;
 import com.yangc.ichat.comm.bean.UserBean;
 import com.yangc.ichat.database.bean.TIchatHistory;
+import com.yangc.ichat.ui.activity.ChatActivity;
 import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.DatabaseUtils;
@@ -270,6 +270,7 @@ public class PushService extends Service {
 					new Thread(reconnectAndLogin).start();
 				} else {
 					client.destroy();
+					AndroidUtils.alertToast(context, R.string.error_network);
 				}
 			}
 		}

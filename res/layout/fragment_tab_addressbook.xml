@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/white" >
 
+    <!--
     <ListView
         android:id="@+id/lv_addressbook"
         android:layout_width="match_parent"
@@ -14,8 +15,14 @@
         android:drawSelectorOnTop="false"
         android:fadingEdge="none"
         android:scrollbars="none" />
+    -->
 
-    <com.yangc.ichat.widget.IndexScroller
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_addressbook"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.yangc.ichat.ui.widget.IndexScroller
         android:id="@+id/is_index"
         android:layout_width="25dp"
         android:layout_height="match_parent"

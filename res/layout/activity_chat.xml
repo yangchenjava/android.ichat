@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <com.yangc.ichat.widget.ResizeLayout
+    <com.yangc.ichat.ui.widget.ResizeLayout
         android:id="@+id/rl_chat"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -185,7 +185,7 @@
                 android:orientation="horizontal" >
             </LinearLayout>
         </RelativeLayout>
-    </com.yangc.ichat.widget.ResizeLayout>
+    </com.yangc.ichat.ui.widget.ResizeLayout>
 
     <RelativeLayout
         android:id="@+id/rl_record_status"

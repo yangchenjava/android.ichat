@@ -6,8 +6,8 @@ import android.content.Context;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.yangc.ichat.volley.MultiPartStack;
-import com.yangc.ichat.volley.Volley;
+import com.yangc.ichat.http.volley.MultiPartStack;
+import com.yangc.ichat.http.volley.Volley;
 
 public class VolleyUtils {
 
