@@ -4,15 +4,15 @@ import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -27,12 +27,12 @@ import com.yangc.ichat.utils.DatabaseUtils;
 import com.yangc.ichat.utils.EmojiUtils;
 import com.yangc.ichat.utils.UILUtils;
 
-public class WechatFragmentAdapter extends RecyclerView.Adapter<WechatFragmentAdapter.ViewHolder> {
+public class WechatFragmentAdapter extends BaseAdapter {
 
 	private int swipePosition = -1;
 
 	private Context context;
-	private RecyclerView rvWechat;
+	private ListView lvWechat;
 	private List<TIchatHistory> list;
 	private OnItemListener onItemListener;
 	private int screenWidth;
@@ -46,37 +46,64 @@ public class WechatFragmentAdapter extends RecyclerView.Adapter<WechatFragmentAd
 		public void onRemoveClick(int position);
 	}
 
-	public WechatFragmentAdapter(Context context, RecyclerView rvWechat, List<TIchatHistory> list, OnItemListener onItemListener, int screenWidth) {
+	public WechatFragmentAdapter(Context context, ListView lvWechat, List<TIchatHistory> list, OnItemListener onItemListener, int screenWidth) {
 		this.context = context;
-		this.rvWechat = rvWechat;
+		this.lvWechat = lvWechat;
 		this.list = list;
 		this.onItemListener = onItemListener;
 		this.screenWidth = screenWidth;
 	}
 
 	@Override
-	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_tab_wechat_item, parent, false);
-		return new ViewHolder(view);
+	public int getCount() {
+		return this.list.size();
+	}
+
+	@Override
+	public Object getItem(int position) {
+		return this.list.get(position);
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return position;
 	}
 
 	@Override
 	@SuppressLint("ClickableViewAccessibility")
-	public void onBindViewHolder(ViewHolder holder, final int position) {
-		holder.hsvWechatItem.setOnTouchListener(new View.OnTouchListener() {
+	public View getView(final int position, View convertView, ViewGroup parent) {
+		ViewHolder viewHolder;
+		if (convertView == null) {
+			convertView = View.inflate(this.context, R.layout.fragment_tab_wechat_item, null);
+			viewHolder = new ViewHolder();
+			viewHolder.hsvWechatItem = (HorizontalScrollView) convertView.findViewById(R.id.hsv_wechat_item);
+			viewHolder.rlWechatItemLeft = (RelativeLayout) convertView.findViewById(R.id.rl_wechat_item_left);
+			viewHolder.rlWechatItemLeft.getLayoutParams().width = this.screenWidth;
+			viewHolder.ivWechatItemPhoto = (ImageView) convertView.findViewById(R.id.iv_wechat_item_photo);
+			viewHolder.tvWechatItemNickname = (TextView) convertView.findViewById(R.id.tv_wechat_item_nickname);
+			viewHolder.ivWechatItemStatus = (ImageView) convertView.findViewById(R.id.iv_wechat_item_status);
+			viewHolder.tvWechatItemChat = (TextView) convertView.findViewById(R.id.tv_wechat_item_chat);
+			viewHolder.tvWechatItemTime = (TextView) convertView.findViewById(R.id.tv_wechat_item_time);
+			viewHolder.llWechatItemRight = (LinearLayout) convertView.findViewById(R.id.ll_wechat_item_right);
+			convertView.setTag(viewHolder);
+		} else {
+			viewHolder = (ViewHolder) convertView.getTag();
+		}
+
+		convertView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_UP) {
-					ViewHolder holder = (ViewHolder) rvWechat.getChildViewHolder(v);
+					ViewHolder holder = (ViewHolder) v.getTag();
 					int scrollX = holder.hsvWechatItem.getScrollX();
 					int width = holder.llWechatItemRight.getWidth();
 					// 滑动长度大于控件的1/2则显示,否则复原
 					if (scrollX > width / 2) {
 						holder.hsvWechatItem.smoothScrollTo(width, 0);
 						if (swipePosition != -1 && swipePosition != position) {
-							View view = rvWechat.getChildAt(swipePosition - rvWechat.getChildPosition(rvWechat.getChildAt(0)));
+							View view = lvWechat.getChildAt(swipePosition - lvWechat.getFirstVisiblePosition());
 							if (view != null) {
-								((ViewHolder) rvWechat.getChildViewHolder(view)).hsvWechatItem.smoothScrollTo(0, 0);
+								((ViewHolder) view.getTag()).hsvWechatItem.smoothScrollTo(0, 0);
 							}
 						}
 						swipePosition = position;
@@ -89,8 +116,8 @@ public class WechatFragmentAdapter extends RecyclerView.Adapter<WechatFragmentAd
 				return false;
 			}
 		});
-		holder.rlWechatItemLeft.getLayoutParams().width = this.screenWidth;
-		holder.rlWechatItemLeft.setOnTouchListener(new View.OnTouchListener() {
+
+		viewHolder.rlWechatItemLeft.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -101,7 +128,7 @@ public class WechatFragmentAdapter extends RecyclerView.Adapter<WechatFragmentAd
 				return false;
 			}
 		});
-		holder.rlWechatItemLeft.setOnClickListener(new View.OnClickListener() {
+		viewHolder.rlWechatItemLeft.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if (swipePosition == position) {
@@ -111,7 +138,7 @@ public class WechatFragmentAdapter extends RecyclerView.Adapter<WechatFragmentAd
 				}
 			}
 		});
-		holder.rlWechatItemLeft.setOnLongClickListener(new View.OnLongClickListener() {
+		viewHolder.rlWechatItemLeft.setOnLongClickListener(new View.OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
 				if (swipePosition == position) {
@@ -126,48 +153,44 @@ public class WechatFragmentAdapter extends RecyclerView.Adapter<WechatFragmentAd
 		TIchatHistory history = this.list.get(position);
 		TIchatAddressbook addressbook = DatabaseUtils.getAddressbookByUsername(this.context, history.getUsername());
 		if (addressbook == null || TextUtils.isEmpty(addressbook.getPhoto())) {
-			holder.ivWechatItemPhoto.setImageResource(R.drawable.me_info);
+			viewHolder.ivWechatItemPhoto.setImageResource(R.drawable.me_info);
 		} else {
-			ImageLoader.getInstance().displayImage(Constants.SERVER_URL + addressbook.getPhoto(), holder.ivWechatItemPhoto, this.options);
+			ImageLoader.getInstance().displayImage(Constants.SERVER_URL + addressbook.getPhoto(), viewHolder.ivWechatItemPhoto, this.options);
 		}
 		if (addressbook != null && !TextUtils.isEmpty(addressbook.getNickname())) {
-			holder.tvWechatItemNickname.setText(addressbook.getNickname());
+			viewHolder.tvWechatItemNickname.setText(addressbook.getNickname());
 		}
 		long current = System.currentTimeMillis();
 		if (history.getTransmitStatus() == 0 && current - history.getDate().getTime() <= 8000) {
-			holder.ivWechatItemStatus.setVisibility(View.VISIBLE);
-			holder.ivWechatItemStatus.setImageResource(R.drawable.chat_status_sending_1);
+			viewHolder.ivWechatItemStatus.setVisibility(View.VISIBLE);
+			viewHolder.ivWechatItemStatus.setImageResource(R.drawable.chat_status_sending_1);
 		} else if (history.getTransmitStatus() == 1 || (history.getTransmitStatus() == 0 && current - history.getDate().getTime() > 8000)) {
-			holder.ivWechatItemStatus.setVisibility(View.VISIBLE);
-			holder.ivWechatItemStatus.setImageResource(R.drawable.chat_status_unsend_1);
+			viewHolder.ivWechatItemStatus.setVisibility(View.VISIBLE);
+			viewHolder.ivWechatItemStatus.setImageResource(R.drawable.chat_status_unsend_1);
 		} else {
-			holder.ivWechatItemStatus.setVisibility(View.GONE);
+			viewHolder.ivWechatItemStatus.setVisibility(View.GONE);
 		}
-		holder.tvWechatItemChat.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 15));
-		holder.tvWechatItemTime.setText(AndroidUtils.getLocalDate(this.context, history.getDate()));
-		holder.llWechatItemRight.setOnClickListener(new View.OnClickListener() {
+		viewHolder.tvWechatItemChat.setText(EmojiUtils.escapeEmoji(this.context, history.getChat(), 15));
+		viewHolder.tvWechatItemTime.setText(AndroidUtils.getLocalDate(this.context, history.getDate()));
+		viewHolder.llWechatItemRight.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				closeSwipe();
 				onItemListener.onRemoveClick(position);
 			}
 		});
-	}
-
-	@Override
-	public int getItemCount() {
-		return this.list.size();
+		return convertView;
 	}
 
 	private void closeSwipe() {
-		View view = this.rvWechat.getChildAt(this.swipePosition - this.rvWechat.getChildPosition(this.rvWechat.getChildAt(0)));
+		View view = this.lvWechat.getChildAt(this.swipePosition - this.lvWechat.getFirstVisiblePosition());
 		if (view != null) {
-			((ViewHolder) this.rvWechat.getChildViewHolder(view)).hsvWechatItem.smoothScrollTo(0, 0);
+			((ViewHolder) view.getTag()).hsvWechatItem.smoothScrollTo(0, 0);
 			this.swipePosition = -1;
 		}
 	}
 
-	class ViewHolder extends RecyclerView.ViewHolder {
+	private class ViewHolder {
 		HorizontalScrollView hsvWechatItem;
 		RelativeLayout rlWechatItemLeft;
 		ImageView ivWechatItemPhoto;
@@ -176,18 +199,6 @@ public class WechatFragmentAdapter extends RecyclerView.Adapter<WechatFragmentAd
 		TextView tvWechatItemChat;
 		TextView tvWechatItemTime;
 		LinearLayout llWechatItemRight;
-
-		public ViewHolder(View itemView) {
-			super(itemView);
-			this.hsvWechatItem = (HorizontalScrollView) itemView.findViewById(R.id.hsv_wechat_item);
-			this.rlWechatItemLeft = (RelativeLayout) itemView.findViewById(R.id.rl_wechat_item_left);
-			this.ivWechatItemPhoto = (ImageView) itemView.findViewById(R.id.iv_wechat_item_photo);
-			this.tvWechatItemNickname = (TextView) itemView.findViewById(R.id.tv_wechat_item_nickname);
-			this.ivWechatItemStatus = (ImageView) itemView.findViewById(R.id.iv_wechat_item_status);
-			this.tvWechatItemChat = (TextView) itemView.findViewById(R.id.tv_wechat_item_chat);
-			this.tvWechatItemTime = (TextView) itemView.findViewById(R.id.tv_wechat_item_time);
-			this.llWechatItemRight = (LinearLayout) itemView.findViewById(R.id.ll_wechat_item_right);
-		}
 	}
 
 }

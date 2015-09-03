@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/white" >
 
+    <!--
     <ListView
         android:id="@+id/lv_wechat"
         android:layout_width="match_parent"
@@ -14,5 +15,11 @@
         android:drawSelectorOnTop="false"
         android:fadingEdge="none"
         android:scrollbars="none" />
+    -->
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_wechat"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </RelativeLayout>

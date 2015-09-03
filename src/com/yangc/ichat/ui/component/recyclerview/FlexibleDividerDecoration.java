@@ -14,7 +14,6 @@ import android.support.annotation.DimenRes;
 import android.support.annotation.DrawableRes;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.LayoutParams;
 import android.support.v7.widget.RecyclerView.State;
 import android.view.View;
 
@@ -86,9 +85,8 @@ public abstract class FlexibleDividerDecoration extends RecyclerView.ItemDecorat
 		int childCount = mShowLastDivider ? parent.getChildCount() : parent.getChildCount() - 1;
 		for (int i = 0; i < childCount; i++) {
 			View child = parent.getChildAt(i);
-			int position = ((LayoutParams) child.getLayoutParams()).getViewPosition();
-			if (mPositionWithoutDivider == null || !mPositionWithoutDivider.contains(position)) {
-				int childPosition = parent.getChildPosition(child);
+			int childPosition = parent.getChildPosition(child);
+			if (mPositionWithoutDivider == null || !mPositionWithoutDivider.contains(childPosition)) {
 				if (childPosition < lastChildPosition) {
 					// Avoid remaining divider when animation starts
 					continue;
@@ -124,10 +122,10 @@ public abstract class FlexibleDividerDecoration extends RecyclerView.ItemDecorat
 
 	@Override
 	public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-		int position = ((LayoutParams) view.getLayoutParams()).getViewPosition();
+		int position = parent.getChildPosition(view);
 		// 去掉最后一项的分割线
 		if ((mShowLastDivider || position != parent.getAdapter().getItemCount() - 1) && (mPositionWithoutDivider == null || !mPositionWithoutDivider.contains(position))) {
-			setItemOffsets(outRect, parent.getChildPosition(view), parent);
+			setItemOffsets(outRect, position, parent);
 		}
 	}
 

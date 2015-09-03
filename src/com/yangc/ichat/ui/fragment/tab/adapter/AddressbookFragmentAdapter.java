@@ -137,6 +137,7 @@ public class AddressbookFragmentAdapter extends RecyclerView.Adapter<RecyclerVie
 					return false;
 				}
 			});
+			viewHolder.rlAddressbookItemLeft.getLayoutParams().width = this.screenWidth;
 			viewHolder.rlAddressbookItemLeft.setOnTouchListener(new View.OnTouchListener() {
 				@Override
 				public boolean onTouch(View v, MotionEvent event) {
@@ -248,7 +249,6 @@ public class AddressbookFragmentAdapter extends RecyclerView.Adapter<RecyclerVie
 			super(itemView);
 			this.hsvAddressbookItem = (HorizontalScrollView) itemView.findViewById(R.id.hsv_addressbook_item);
 			this.rlAddressbookItemLeft = (RelativeLayout) itemView.findViewById(R.id.rl_addressbook_item_left);
-			this.rlAddressbookItemLeft.getLayoutParams().width = screenWidth;
 			this.ivAddressbookItemPhoto = (ImageView) itemView.findViewById(R.id.iv_addressbook_item_photo);
 			this.tvAddressbookItemNickname = (TextView) itemView.findViewById(R.id.tv_addressbook_item_nickname);
 			this.tvAddressbookItemSignature = (TextView) itemView.findViewById(R.id.tv_addressbook_item_signature);

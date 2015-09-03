@@ -137,6 +137,7 @@ public class AddressbookFragmentAdapter extends BaseAdapter {
 							swipePosition = position;
 						} else {
 							holder.hsvAddressbookItem.smoothScrollTo(0, 0);
+							swipePosition = -1;
 						}
 						return true;
 					}
