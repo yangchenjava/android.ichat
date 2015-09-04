@@ -9,13 +9,11 @@ import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -32,7 +30,7 @@ import com.yangc.ichat.utils.EmojiUtils;
 import com.yangc.ichat.utils.UILUtils;
 import com.yangc.ichat.utils.VoiceUtils;
 
-public class ChatActivityChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ChatActivityChatAdapter extends BaseAdapter {
 
 	private static final int RECEIVE = 0;
 	private static final int SEND = 1;
@@ -60,30 +58,54 @@ public class ChatActivityChatAdapter extends RecyclerView.Adapter<RecyclerView.V
 	}
 
 	@Override
-	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		View view = null;
-		ViewHolder viewHolder = null;
-		switch (viewType) {
-		case RECEIVE: {
-			view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_chat_receive, parent, false);
-			viewHolder = new ReceiveViewHolder(view);
-			break;
-		}
-		case SEND: {
-			view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_chat_send, parent, false);
-			viewHolder = new SendViewHolder(view);
-			break;
-		}
-		}
-		return viewHolder;
+	public int getCount() {
+		return this.list.size();
 	}
 
 	@Override
-	public void onBindViewHolder(ViewHolder holder, int position) {
+	public Object getItem(int position) {
+		return this.list.get(position);
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return position;
+	}
+
+	@Override
+	public int getItemViewType(int position) {
+		if (this.list.get(position).getChatStatus() == 0) {
+			return RECEIVE;
+		} else {
+			return SEND;
+		}
+	}
+
+	@Override
+	public int getViewTypeCount() {
+		return 2;
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
 		TIchatHistory history = this.list.get(position);
 		switch (this.getItemViewType(position)) {
 		case RECEIVE: {
-			ReceiveViewHolder viewHolder = (ReceiveViewHolder) holder;
+			ReceiveViewHolder viewHolder;
+			if (convertView == null) {
+				convertView = View.inflate(this.context, R.layout.activity_chat_receive, null);
+				viewHolder = new ReceiveViewHolder();
+				viewHolder.tvChatReceiveTime = (TextView) convertView.findViewById(R.id.tv_chat_receive_time);
+				viewHolder.ivChatReceivePhoto = (ImageView) convertView.findViewById(R.id.iv_chat_receive_photo);
+				viewHolder.tvChatReceive = (TextView) convertView.findViewById(R.id.tv_chat_receive);
+				viewHolder.ivChatReceiveVoice = (ImageView) convertView.findViewById(R.id.iv_chat_receive_voice);
+				viewHolder.tvChatReceiveVoiceDuration = (TextView) convertView.findViewById(R.id.tv_chat_receive_voice_duration);
+				viewHolder.ivChatReceiveStatus = (ImageView) convertView.findViewById(R.id.iv_chat_receive_status);
+				convertView.setTag(viewHolder);
+			} else {
+				viewHolder = (ReceiveViewHolder) convertView.getTag();
+			}
+
 			// 两条消息间隔时间大于5分钟,则显示时间
 			if (position == 0 || history.getDate().getTime() - this.list.get(position - 1).getDate().getTime() > 300000) {
 				viewHolder.tvChatReceiveTime.setVisibility(View.VISIBLE);
@@ -125,7 +147,21 @@ public class ChatActivityChatAdapter extends RecyclerView.Adapter<RecyclerView.V
 			break;
 		}
 		case SEND: {
-			SendViewHolder viewHolder = (SendViewHolder) holder;
+			SendViewHolder viewHolder;
+			if (convertView == null) {
+				convertView = View.inflate(this.context, R.layout.activity_chat_send, null);
+				viewHolder = new SendViewHolder();
+				viewHolder.tvChatSendTime = (TextView) convertView.findViewById(R.id.tv_chat_send_time);
+				viewHolder.ivChatSendPhoto = (ImageView) convertView.findViewById(R.id.iv_chat_send_photo);
+				viewHolder.tvChatSend = (TextView) convertView.findViewById(R.id.tv_chat_send);
+				viewHolder.ivChatSendVoice = (ImageView) convertView.findViewById(R.id.iv_chat_send_voice);
+				viewHolder.tvChatSendVoiceDuration = (TextView) convertView.findViewById(R.id.tv_chat_send_voice_duration);
+				viewHolder.ivChatSendStatus = (ImageView) convertView.findViewById(R.id.iv_chat_send_status);
+				convertView.setTag(viewHolder);
+			} else {
+				viewHolder = (SendViewHolder) convertView.getTag();
+			}
+
 			// 两条消息间隔时间大于5分钟,则显示时间
 			if (position == 0 || history.getDate().getTime() - this.list.get(position - 1).getDate().getTime() > 300000) {
 				viewHolder.tvChatSendTime.setVisibility(View.VISIBLE);
@@ -181,20 +217,7 @@ public class ChatActivityChatAdapter extends RecyclerView.Adapter<RecyclerView.V
 			break;
 		}
 		}
-	}
-
-	@Override
-	public int getItemViewType(int position) {
-		if (this.list.get(position).getChatStatus() == 0) {
-			return RECEIVE;
-		} else {
-			return SEND;
-		}
-	}
-
-	@Override
-	public int getItemCount() {
-		return this.list.size();
+		return convertView;
 	}
 
 	private class PlayVoiceClickListener implements View.OnClickListener {
@@ -267,42 +290,22 @@ public class ChatActivityChatAdapter extends RecyclerView.Adapter<RecyclerView.V
 		}
 	};
 
-	class ReceiveViewHolder extends RecyclerView.ViewHolder {
+	private class ReceiveViewHolder {
 		TextView tvChatReceiveTime;
 		ImageView ivChatReceivePhoto;
 		TextView tvChatReceive;
 		ImageView ivChatReceiveVoice;
 		TextView tvChatReceiveVoiceDuration;
 		ImageView ivChatReceiveStatus;
-
-		public ReceiveViewHolder(View itemView) {
-			super(itemView);
-			this.tvChatReceiveTime = (TextView) itemView.findViewById(R.id.tv_chat_receive_time);
-			this.ivChatReceivePhoto = (ImageView) itemView.findViewById(R.id.iv_chat_receive_photo);
-			this.tvChatReceive = (TextView) itemView.findViewById(R.id.tv_chat_receive);
-			this.ivChatReceiveVoice = (ImageView) itemView.findViewById(R.id.iv_chat_receive_voice);
-			this.tvChatReceiveVoiceDuration = (TextView) itemView.findViewById(R.id.tv_chat_receive_voice_duration);
-			this.ivChatReceiveStatus = (ImageView) itemView.findViewById(R.id.iv_chat_receive_status);
-		}
 	}
 
-	class SendViewHolder extends RecyclerView.ViewHolder {
+	private class SendViewHolder {
 		TextView tvChatSendTime;
 		ImageView ivChatSendPhoto;
 		TextView tvChatSend;
 		ImageView ivChatSendVoice;
 		TextView tvChatSendVoiceDuration;
 		ImageView ivChatSendStatus;
-
-		public SendViewHolder(View itemView) {
-			super(itemView);
-			this.tvChatSendTime = (TextView) itemView.findViewById(R.id.tv_chat_send_time);
-			this.ivChatSendPhoto = (ImageView) itemView.findViewById(R.id.iv_chat_send_photo);
-			this.tvChatSend = (TextView) itemView.findViewById(R.id.tv_chat_send);
-			this.ivChatSendVoice = (ImageView) itemView.findViewById(R.id.iv_chat_send_voice);
-			this.tvChatSendVoiceDuration = (TextView) itemView.findViewById(R.id.tv_chat_send_voice_duration);
-			this.ivChatSendStatus = (ImageView) itemView.findViewById(R.id.iv_chat_send_status);
-		}
 	}
 
 }
