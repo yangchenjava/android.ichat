@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -61,11 +63,15 @@ public class AddressbookFragment extends Fragment {
 	private Request<ResultBean> removeData;
 
 	@Override
+	@SuppressLint("NewApi")
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_tab_addressbook, container, false);
 		// this.lvAddressbook = (ListView) view.findViewById(R.id.lv_addressbook);
 		// this.lvAddressbook.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true));
 		this.rvAddressbook = (RecyclerView) view.findViewById(R.id.rv_addressbook);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+			this.rvAddressbook.setOverScrollMode(View.OVER_SCROLL_NEVER);
+		}
 		this.rvAddressbook.setLayoutManager(new LinearLayoutManager(this.getActivity()));
 		this.rvAddressbook.setItemAnimator(new DefaultItemAnimator());
 		this.rvAddressbook.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true));

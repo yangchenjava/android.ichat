@@ -43,6 +43,7 @@ public class ClientHandler extends IoHandlerAdapter {
 	public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
 		Log.e(TAG, "exceptionCaught -> " + cause.getMessage(), cause);
 		session.close(true);
+		this.context.startService(this.getIntent(Constants.ACTION_NETWORK_ERROR));
 	}
 
 	@Override

@@ -31,6 +31,8 @@ import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.DatabaseUtils;
 import com.yangc.ichat.utils.Md5Utils;
 
+import de.greenrobot.event.EventBus;
+
 public class PushService extends Service {
 
 	private static final String TAG = PushService.class.getName();
@@ -70,7 +72,8 @@ public class PushService extends Service {
 				break;
 			}
 			case Constants.ACTION_NETWORK_ERROR: {
-				CallbackManager.notifyNetworkError();
+				// CallbackManager.notifyNetworkError();
+				EventBus.getDefault().post("");
 				break;
 			}
 			case Constants.ACTION_CANCEL_NOTIFICATION: {
@@ -114,7 +117,8 @@ public class PushService extends Service {
 				history.setDate(new Date());
 				DatabaseUtils.saveHistory(this, history);
 
-				CallbackManager.notifyChatReceived(history);
+				// CallbackManager.notifyChatReceived(history);
+				EventBus.getDefault().post(history);
 
 				if (!isChatActivity || !chat.getFrom().equals(Constants.CHATTING_USERNAME)) {
 					this.showNotification(chat.getFrom(), DatabaseUtils.getAddressbookByUsername(this, chat.getFrom()).getNickname(), chat.getData());
@@ -170,7 +174,8 @@ public class PushService extends Service {
 					history.setDate(new Date());
 					DatabaseUtils.saveHistory(this, history);
 
-					CallbackManager.notifyChatReceived(history);
+					// CallbackManager.notifyChatReceived(history);
+					EventBus.getDefault().post(history);
 
 					if (!isChatActivity || !file.getFrom().equals(Constants.CHATTING_USERNAME)) {
 						this.showNotification(file.getFrom(), DatabaseUtils.getAddressbookByUsername(this, file.getFrom()).getNickname(), Constants.VOICE);
@@ -181,7 +186,8 @@ public class PushService extends Service {
 			case Constants.ACTION_RECEIVE_RESULT: {
 				ResultBean result = (ResultBean) intent.getSerializableExtra(Constants.EXTRA_RESULT);
 				DatabaseUtils.updateHistoryByUuid(this, result.getUuid(), result.isSuccess() ? 2L : 1L);
-				CallbackManager.notifyResultReceived(result);
+				// CallbackManager.notifyResultReceived(result);
+				EventBus.getDefault().post(result);
 				break;
 			}
 			default: {

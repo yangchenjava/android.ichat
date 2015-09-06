@@ -7,14 +7,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -50,7 +51,6 @@ import com.yangc.ichat.comm.bean.FileBean;
 import com.yangc.ichat.comm.bean.ResultBean;
 import com.yangc.ichat.database.bean.TIchatAddressbook;
 import com.yangc.ichat.database.bean.TIchatHistory;
-import com.yangc.ichat.service.CallbackManager;
 import com.yangc.ichat.service.PushService;
 import com.yangc.ichat.ui.activity.adapter.ChatActivityChatAdapter;
 import com.yangc.ichat.ui.activity.adapter.ChatActivityEmojiAdapter;
@@ -62,7 +62,9 @@ import com.yangc.ichat.utils.DatabaseUtils;
 import com.yangc.ichat.utils.EmojiUtils;
 import com.yangc.ichat.utils.VoiceUtils;
 
-public class ChatActivity extends Activity implements CallbackManager.OnChatListener {
+import de.greenrobot.event.EventBus;
+
+public class ChatActivity extends Activity {
 
 	private Vibrator vibrator;
 	private SoundPool soundPool;
@@ -106,6 +108,8 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 	private String fileName;
 
 	@Override
+	@SuppressLint("NewApi")
+	@SuppressWarnings("deprecation")
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_chat);
@@ -113,11 +117,11 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		// 添加震动效果
 		this.vibrator = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
 		// 音效
-		// this.soundPool = new SoundPool(3, AudioManager.STREAM_MUSIC, 5);
-		SoundPool.Builder soundPoolBuilder = new SoundPool.Builder();
-		soundPoolBuilder.setAudioAttributes(new AudioAttributes.Builder().setLegacyStreamType(AudioManager.STREAM_MUSIC).build());
-		soundPoolBuilder.setMaxStreams(3);
-		this.soundPool = soundPoolBuilder.build();
+		this.soundPool = new SoundPool(3, AudioManager.STREAM_MUSIC, 5);
+		// SoundPool.Builder soundPoolBuilder = new SoundPool.Builder();
+		// soundPoolBuilder.setAudioAttributes(new AudioAttributes.Builder().setLegacyStreamType(AudioManager.STREAM_MUSIC).build());
+		// soundPoolBuilder.setMaxStreams(3);
+		// this.soundPool = soundPoolBuilder.build();
 
 		try {
 			this.afterUploadVoice = this.soundPool.load(this.getAssets().openFd("sound/after_upload_voice.mp3"), 1);
@@ -136,7 +140,10 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		// center
 		// this.lvChat = (ListView) this.findViewById(R.id.lv_chat);
 		// this.lvChat.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true, this.scrollListener));
-		this.rvChat = (RecyclerView) this.findViewById(R.id.rv_addressbook);
+		this.rvChat = (RecyclerView) this.findViewById(R.id.rv_chat);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+			this.rvChat.setOverScrollMode(View.OVER_SCROLL_NEVER);
+		}
 		this.rvChat.setLayoutManager(new LinearLayoutManager(this));
 		this.rvChat.setItemAnimator(new DefaultItemAnimator());
 		this.rvChat.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true, this.scrollListener));
@@ -157,6 +164,9 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		// emoji
 		this.rlChatEmoji = (RelativeLayout) this.findViewById(R.id.rl_chat_emoji);
 		this.vpChatEmoji = (ViewPager) this.findViewById(R.id.vp_chat_emoji);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+			this.vpChatEmoji.setOverScrollMode(View.OVER_SCROLL_NEVER);
+		}
 		this.vpChatEmoji.setOffscreenPageLimit(2);
 		this.vpChatEmoji.setOnPageChangeListener(this.pageChangeListener);
 		this.vpChatEmoji.setAdapter(this.pagerAdapter);
@@ -174,7 +184,8 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 	@Override
 	protected void onResume() {
 		super.onResume();
-		CallbackManager.registerChatListener(this);
+		// CallbackManager.registerChatListener(this);
+		EventBus.getDefault().register(this);
 
 		this.username = this.getIntent().getStringExtra("username");
 		// 当前对话的用户
@@ -200,7 +211,8 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 	@Override
 	protected void onPause() {
 		super.onPause();
-		CallbackManager.unregisterChatListener(this);
+		// CallbackManager.unregisterChatListener(this);
+		EventBus.getDefault().unregister(this);
 		this.voice.stopRecord();
 		this.voice.stopPlay();
 	}
@@ -221,8 +233,38 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		}
 	}
 
-	@Override
-	public void onChatReceived(TIchatHistory history) {
+	// @Override
+	// public void onChatReceived(TIchatHistory history) {
+	// if (this.chatList != null && history.getUsername().equals(this.username)) {
+	// synchronized (this.chatList) {
+	// this.chatList.add(history);
+	// this.chatAdapter.notifyDataSetChanged();
+	// // this.lvChat.setSelection(this.chatList.size() - 1);
+	// this.rvChat.scrollToPosition(this.chatList.size() - 1);
+	// }
+	// }
+	// }
+	//
+	// @Override
+	// public void onResultReceived(ResultBean result) {
+	// synchronized (this.chatList) {
+	// for (int i = this.chatList.size() - 1; i >= 0; i--) {
+	// TIchatHistory history = this.chatList.get(i);
+	// if (history.getChatStatus() == 1 && history.getUuid().equals(result.getUuid())) {
+	// history.setTransmitStatus(result.isSuccess() ? 2L : 1L);
+	// break;
+	// }
+	// }
+	// }
+	// this.chatAdapter.notifyDataSetChanged();
+	// }
+	//
+	// @Override
+	// public void onNetworkError() {
+	// AndroidUtils.alertToast(this, R.string.error_network);
+	// }
+
+	public void onEventMainThread(TIchatHistory history) {
 		if (this.chatList != null && history.getUsername().equals(this.username)) {
 			synchronized (this.chatList) {
 				this.chatList.add(history);
@@ -233,8 +275,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		}
 	}
 
-	@Override
-	public void onResultReceived(ResultBean result) {
+	public void onEventMainThread(ResultBean result) {
 		synchronized (this.chatList) {
 			for (int i = this.chatList.size() - 1; i >= 0; i--) {
 				TIchatHistory history = this.chatList.get(i);
@@ -247,8 +288,7 @@ public class ChatActivity extends Activity implements CallbackManager.OnChatList
 		this.chatAdapter.notifyDataSetChanged();
 	}
 
-	@Override
-	public void onNetworkError() {
+	public void onEventMainThread(String what) {
 		AndroidUtils.alertToast(this, R.string.error_network);
 	}
 

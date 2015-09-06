@@ -20,7 +20,8 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_addressbook"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:fadingEdge="none" />
 
     <com.yangc.ichat.ui.widget.IndexScroller
         android:id="@+id/is_index"

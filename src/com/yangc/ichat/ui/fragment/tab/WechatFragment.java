@@ -3,10 +3,12 @@ package com.yangc.ichat.ui.fragment.tab;
 import java.io.File;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -26,7 +28,6 @@ import com.yangc.ichat.R;
 import com.yangc.ichat.comm.bean.ResultBean;
 import com.yangc.ichat.database.bean.TIchatAddressbook;
 import com.yangc.ichat.database.bean.TIchatHistory;
-import com.yangc.ichat.service.CallbackManager;
 import com.yangc.ichat.ui.activity.ChatActivity;
 import com.yangc.ichat.ui.component.recyclerview.HorizontalDividerItemDecoration;
 import com.yangc.ichat.ui.component.recyclerview.PauseOnScrollListener;
@@ -35,7 +36,9 @@ import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.Constants;
 import com.yangc.ichat.utils.DatabaseUtils;
 
-public class WechatFragment extends Fragment implements CallbackManager.OnChatListener {
+import de.greenrobot.event.EventBus;
+
+public class WechatFragment extends Fragment {
 
 	// private ListView lvWechat;
 	private RecyclerView rvWechat;
@@ -44,12 +47,16 @@ public class WechatFragment extends Fragment implements CallbackManager.OnChatLi
 	private List<TIchatHistory> list;
 
 	@Override
+	@SuppressLint("NewApi")
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_tab_wechat, container, false);
 		// this.lvWechat = (ListView) view.findViewById(R.id.lv_wechat);
 		// this.lvWechat.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true));
 		this.rvWechat = (RecyclerView) view.findViewById(R.id.rv_wechat);
-		this.rvWechat.addItemDecoration(new HorizontalDividerItemDecoration.Builder(this.getActivity()).colorResId(R.color.dividing_line).build());
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+			this.rvWechat.setOverScrollMode(View.OVER_SCROLL_NEVER);
+		}
+		this.rvWechat.addItemDecoration(new HorizontalDividerItemDecoration.Builder(this.getActivity()).colorResId(R.color.dividing_line).showLastDivider().build());
 		this.rvWechat.setLayoutManager(new LinearLayoutManager(this.getActivity()));
 		this.rvWechat.setItemAnimator(new DefaultItemAnimator());
 		this.rvWechat.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true));
@@ -59,7 +66,8 @@ public class WechatFragment extends Fragment implements CallbackManager.OnChatLi
 	@Override
 	public void onResume() {
 		super.onResume();
-		CallbackManager.registerChatListener(this);
+		// CallbackManager.registerChatListener(this);
+		EventBus.getDefault().register(this);
 
 		this.list = DatabaseUtils.getHistoryList(this.getActivity());
 		this.adapter = new WechatFragmentAdapter(this.getActivity(), this.rvWechat, this.list, this.itemListener, AndroidUtils.getScreenWidth(this.getActivity()));
@@ -69,25 +77,45 @@ public class WechatFragment extends Fragment implements CallbackManager.OnChatLi
 	@Override
 	public void onPause() {
 		super.onPause();
-		CallbackManager.unregisterChatListener(this);
+		// CallbackManager.unregisterChatListener(this);
+		EventBus.getDefault().unregister(this);
 	}
 
-	@Override
-	public void onChatReceived(TIchatHistory history) {
+	// @Override
+	// public void onChatReceived(TIchatHistory history) {
+	// this.list.clear();
+	// this.list.addAll(DatabaseUtils.getHistoryList(this.getActivity()));
+	// this.adapter.notifyDataSetChanged();
+	// }
+	//
+	// @Override
+	// public void onResultReceived(ResultBean result) {
+	// this.list.clear();
+	// this.list.addAll(DatabaseUtils.getHistoryList(this.getActivity()));
+	// this.adapter.notifyDataSetChanged();
+	// }
+	//
+	// @Override
+	// public void onNetworkError() {
+	// Activity activity = this.getActivity();
+	// if (activity != null) {
+	// AndroidUtils.alertToast(activity, R.string.error_network);
+	// }
+	// }
+
+	public void onEventMainThread(TIchatHistory history) {
 		this.list.clear();
 		this.list.addAll(DatabaseUtils.getHistoryList(this.getActivity()));
 		this.adapter.notifyDataSetChanged();
 	}
 
-	@Override
-	public void onResultReceived(ResultBean result) {
+	public void onEventMainThread(ResultBean result) {
 		this.list.clear();
 		this.list.addAll(DatabaseUtils.getHistoryList(this.getActivity()));
 		this.adapter.notifyDataSetChanged();
 	}
 
-	@Override
-	public void onNetworkError() {
+	public void onEventMainThread(String what) {
 		Activity activity = this.getActivity();
 		if (activity != null) {
 			AndroidUtils.alertToast(activity, R.string.error_network);
