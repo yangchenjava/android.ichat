@@ -116,6 +116,14 @@
     <string name="find_vicinity">附近的人</string>
     <string name="find_game">游戏</string>
 
+    <!-- scan -->
+    <string name="scan_title_bar">二维码/条码</string>
+    <string name="scan_prompt">将二维码/条码放入框内，即可自动扫描</string>
+    <string name="scan_tab_qrcode">扫码</string>
+    <string name="scan_tab_cover">封面</string>
+    <string name="scan_tab_streetscape">街景</string>
+    <string name="scan_tab_translation">翻译</string>
+
     <!-- me -->
     <string name="me_info">微信号：</string>
     <string name="me_album">我的相册</string>
@@ -155,6 +163,7 @@
         <item>周五</item>
         <item>周六</item>
     </string-array>
+
     <string name="date_month">M月d日</string>
     <string name="date_year">yyyy年M月d日</string>
 

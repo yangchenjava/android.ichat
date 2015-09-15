@@ -17,6 +17,8 @@
     <!-- title_bar -->
     <color name="title_bar_normal">#181E1F</color>
     <color name="title_bar_select">#484D50</color>
+    <color name="title_bar_normal_transparent">#B0181E1F</color>
+    <color name="title_bar_select_transparent">#B0484D50</color>
 
     <!-- dividing_line -->
     <color name="dividing_line_title_bar_plus">#BCBFC4</color>
@@ -38,5 +40,14 @@
     <!-- right -->
     <color name="right_normal">#5F5F5F</color>
     <color name="right_select">#3F3F3F</color>
+
+    <!-- scan -->
+    <color name="scan_mask">#60000000</color>
+    <color name="scan_result">#B0000000</color>
+    <color name="scan_line_left_right">#82AF44</color>
+    <color name="scan_line_center">#73D33F</color>
+    <color name="scan_tab_normal">#BFBFBF</color>
+    <color name="scan_tab_select">#38C03F</color>
+    <color name="scan_tab_bkg">#B0020202</color>
 
 </resources>
