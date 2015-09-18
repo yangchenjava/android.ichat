@@ -37,14 +37,14 @@ public class Constants {
 	public static final int ACTION_RECEIVE_RESULT = 15;
 
 	/** TCP地址 */
-	public static final String IP = "192.168.1.104";
+	public static final String IP = "192.168.1.102";
 	public static final int PORT = 8811;
 	public static final int INTERVAL = 180;
 	public static final int TIMEOUT = 300;
 	public static final String CHARSET_NAME = "UTF-8";
 
 	/** HTTP地址 */
-	public static final String SERVER_URL = "http://192.168.1.104:8080/com.yangc.bridge/";
+	public static final String SERVER_URL = "http://192.168.1.102:8080/com.yangc.bridge/";
 	public static final String LOGIN = SERVER_URL + "resource/interface/login";
 	public static final String REGISTER = SERVER_URL + "resource/interface/register";
 	public static final String USER_INFO = SERVER_URL + "resource/interface/userInfo";

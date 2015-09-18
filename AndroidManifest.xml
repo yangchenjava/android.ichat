@@ -24,6 +24,10 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <!-- 录音 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- 访问相机 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- 访问散光灯 -->
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
 
     <application
         android:name=".MainApplication"
@@ -52,6 +56,15 @@
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".ui.activity.FriendActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".zxing.CaptureActivity"
+            android:clearTaskOnLaunch="true"
+            android:screenOrientation="portrait"
+            android:stateNotNeeded="true"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.activity.BrowserActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.MeActivity"

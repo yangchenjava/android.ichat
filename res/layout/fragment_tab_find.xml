@@ -41,6 +41,7 @@
         android:orientation="vertical" >
 
         <LinearLayout
+            android:id="@+id/ll_find_scan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/selector_main"

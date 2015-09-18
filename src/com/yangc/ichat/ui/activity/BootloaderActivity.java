@@ -27,7 +27,7 @@ import com.yangc.ichat.utils.VolleyUtils;
 
 public class BootloaderActivity extends Activity {
 
-	private static final String TAG = BootloaderActivity.class.getName();
+	private static final String TAG = BootloaderActivity.class.getSimpleName();
 
 	private Request<ResultBean> request;
 

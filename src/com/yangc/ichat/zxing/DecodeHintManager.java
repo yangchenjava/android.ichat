@@ -33,7 +33,7 @@ import com.google.zxing.DecodeHintType;
  */
 public final class DecodeHintManager {
 
-	private static final String TAG = DecodeHintManager.class.getName();
+	private static final String TAG = DecodeHintManager.class.getSimpleName();
 
 	// This pattern is used in decoding integer arrays.
 	private static final Pattern COMMA = Pattern.compile(",");

@@ -23,6 +23,7 @@ import java.util.Map;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -30,8 +31,13 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.Window;
+import android.view.View;
 import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.DecodeHintType;
@@ -49,7 +55,7 @@ import com.yangc.ichat.zxing.camera.CameraManager;
  */
 public final class CaptureActivity extends Activity implements SurfaceHolder.Callback {
 
-	private static final String TAG = CaptureActivity.class.getName();
+	private static final String TAG = CaptureActivity.class.getSimpleName();
 
 	private CameraManager cameraManager;
 	private CaptureActivityHandler handler;
@@ -61,6 +67,17 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 	private InactivityTimer inactivityTimer;
 	private BeepManager beepManager;
 	private AmbientLightManager ambientLightManager;
+
+	private int colorScanTabNormal;
+	private int colorScanTabSelect;
+
+	private PopupWindow mPopupWindow;
+	private ImageView ivCaptureMore;
+
+	private LinearLayout llCaptureTabQrcode;
+	private LinearLayout llCaptureTabCover;
+	private LinearLayout llCaptureTabStreetscape;
+	private LinearLayout llCaptureTabTranslation;
 
 	ViewfinderView getViewfinderView() {
 		return viewfinderView;
@@ -78,14 +95,42 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 
-		Window window = getWindow();
-		window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setContentView(R.layout.activity_capture);
 
 		hasSurface = false;
 		inactivityTimer = new InactivityTimer(this);
 		beepManager = new BeepManager(this);
 		ambientLightManager = new AmbientLightManager(this);
+
+		this.colorScanTabNormal = this.getResources().getColor(R.color.scan_tab_normal);
+		this.colorScanTabSelect = this.getResources().getColor(R.color.scan_tab_select);
+
+		this.initPopupWindow();
+
+		((ImageView) this.findViewById(R.id.iv_capture_backspace)).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				onBackPressed();
+			}
+		});
+		this.ivCaptureMore = (ImageView) this.findViewById(R.id.iv_capture_more);
+		this.ivCaptureMore.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				showPopupWindow();
+			}
+		});
+
+		this.llCaptureTabQrcode = (LinearLayout) this.findViewById(R.id.ll_capture_tab_qrcode);
+		this.llCaptureTabCover = (LinearLayout) this.findViewById(R.id.ll_capture_tab_cover);
+		this.llCaptureTabStreetscape = (LinearLayout) this.findViewById(R.id.ll_capture_tab_streetscape);
+		this.llCaptureTabTranslation = (LinearLayout) this.findViewById(R.id.ll_capture_tab_translation);
+
+		this.llCaptureTabQrcode.setOnClickListener(clickListener);
+		this.llCaptureTabCover.setOnClickListener(clickListener);
+		this.llCaptureTabStreetscape.setOnClickListener(clickListener);
+		this.llCaptureTabTranslation.setOnClickListener(clickListener);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -150,6 +195,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
 			characterSet = intent.getStringExtra(Intents.Scan.CHARACTER_SET);
 		}
+
+		this.switchTab(R.id.ll_capture_tab_qrcode);
 	}
 
 	@Override
@@ -199,6 +246,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 		case KeyEvent.KEYCODE_VOLUME_UP:
 			cameraManager.setTorch(true);
 			return true;
+		case KeyEvent.KEYCODE_MENU:
+			return this.showPopupWindow();
 		}
 		return super.onKeyDown(keyCode, event);
 	}
@@ -309,6 +358,93 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
 	public void drawViewfinder() {
 		viewfinderView.drawViewfinder();
+	}
+
+	/** ========================================== custom ====================================================== */
+
+	private void initPopupWindow() {
+		// PopupWindow
+		View popupWindowView = View.inflate(this, R.layout.popup_window_capture, null);
+		popupWindowView.setFocusable(true);
+		popupWindowView.setFocusableInTouchMode(true);
+		popupWindowView.setOnKeyListener(new View.OnKeyListener() {
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				if (keyCode == KeyEvent.KEYCODE_MENU && event.getRepeatCount() == 0 && event.getAction() == KeyEvent.ACTION_DOWN) {
+					closePopupWindow();
+				}
+				return false;
+			}
+		});
+
+		this.mPopupWindow = new PopupWindow(popupWindowView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
+		// 设置点击返回键和PopupWindow以外的地方,退出
+		this.mPopupWindow.setTouchable(true);
+		this.mPopupWindow.setOutsideTouchable(true);
+		this.mPopupWindow.setBackgroundDrawable(new BitmapDrawable(this.getResources(), (Bitmap) null));
+	}
+
+	private boolean showPopupWindow() {
+		if (this.mPopupWindow != null && !this.mPopupWindow.isShowing()) {
+			this.mPopupWindow.showAsDropDown(this.ivCaptureMore);
+			return true;
+		}
+		return false;
+	}
+
+	private boolean closePopupWindow() {
+		if (this.mPopupWindow != null && this.mPopupWindow.isShowing()) {
+			this.mPopupWindow.dismiss();
+			return true;
+		}
+		return false;
+	}
+
+	private View.OnClickListener clickListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			switchTab(v.getId());
+		}
+	};
+
+	private void switchTab(int tabId) {
+		ImageView ivCaptureTabQrcode = (ImageView) this.llCaptureTabQrcode.findViewById(R.id.iv_capture_tab_qrcode);
+		TextView tvCaptureTabQrcode = (TextView) this.llCaptureTabQrcode.findViewById(R.id.tv_capture_tab_qrcode);
+		ImageView ivCaptureTabCover = (ImageView) this.llCaptureTabCover.findViewById(R.id.iv_capture_tab_cover);
+		TextView tvCaptureTabCover = (TextView) this.llCaptureTabCover.findViewById(R.id.tv_capture_tab_cover);
+		ImageView ivCaptureTabStreetscape = (ImageView) this.llCaptureTabStreetscape.findViewById(R.id.iv_capture_tab_streetscape);
+		TextView tvCaptureTabStreetscape = (TextView) this.llCaptureTabStreetscape.findViewById(R.id.tv_capture_tab_streetscape);
+		ImageView ivCaptureTabTranslation = (ImageView) this.llCaptureTabTranslation.findViewById(R.id.iv_capture_tab_translation);
+		TextView tvCaptureTabTranslation = (TextView) this.llCaptureTabTranslation.findViewById(R.id.tv_capture_tab_translation);
+
+		// reset
+		ivCaptureTabQrcode.setImageResource(R.drawable.scan_tab_qrcode_normal);
+		tvCaptureTabQrcode.setTextColor(this.colorScanTabNormal);
+		ivCaptureTabCover.setImageResource(R.drawable.scan_tab_cover_normal);
+		tvCaptureTabCover.setTextColor(this.colorScanTabNormal);
+		ivCaptureTabStreetscape.setImageResource(R.drawable.scan_tab_streetscape_normal);
+		tvCaptureTabStreetscape.setTextColor(this.colorScanTabNormal);
+		ivCaptureTabTranslation.setImageResource(R.drawable.scan_tab_translation_normal);
+		tvCaptureTabTranslation.setTextColor(this.colorScanTabNormal);
+
+		switch (tabId) {
+		case R.id.ll_capture_tab_qrcode:
+			ivCaptureTabQrcode.setImageResource(R.drawable.scan_tab_qrcode_select);
+			tvCaptureTabQrcode.setTextColor(this.colorScanTabSelect);
+			break;
+		case R.id.ll_capture_tab_cover:
+			ivCaptureTabCover.setImageResource(R.drawable.scan_tab_cover_select);
+			tvCaptureTabCover.setTextColor(this.colorScanTabSelect);
+			break;
+		case R.id.ll_capture_tab_streetscape:
+			ivCaptureTabStreetscape.setImageResource(R.drawable.scan_tab_streetscape_select);
+			tvCaptureTabStreetscape.setTextColor(this.colorScanTabSelect);
+			break;
+		case R.id.ll_capture_tab_translation:
+			ivCaptureTabTranslation.setImageResource(R.drawable.scan_tab_translation_select);
+			tvCaptureTabTranslation.setTextColor(this.colorScanTabSelect);
+			break;
+		}
 	}
 
 }

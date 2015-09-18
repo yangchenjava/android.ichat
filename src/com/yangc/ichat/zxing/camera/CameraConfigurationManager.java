@@ -35,7 +35,7 @@ import com.yangc.ichat.zxing.PreferencesActivity;
 @SuppressWarnings("deprecation")
 public final class CameraConfigurationManager {
 
-	private static final String TAG = CameraConfigurationManager.class.getName();
+	private static final String TAG = CameraConfigurationManager.class.getSimpleName();
 
 	private final Context context;
 	private Point screenResolution;
@@ -50,7 +50,7 @@ public final class CameraConfigurationManager {
 	 */
 	@SuppressLint("NewApi")
 	void initFromCameraParameters(Camera camera) {
-		camera.setDisplayOrientation(90);
+		camera.setDisplayOrientation(90); // 转为竖屏
 		Camera.Parameters parameters = camera.getParameters();
 		WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 		Display display = manager.getDefaultDisplay();
@@ -63,6 +63,7 @@ public final class CameraConfigurationManager {
 		}
 		Log.i(TAG, "Screen resolution: " + screenResolution);
 
+		// 转为竖屏
 		Point screenResolutionForCamera = new Point();
 		screenResolutionForCamera.x = screenResolution.x;
 		screenResolutionForCamera.y = screenResolution.y;

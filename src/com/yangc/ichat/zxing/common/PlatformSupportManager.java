@@ -49,7 +49,7 @@ import android.util.Log;
  */
 public abstract class PlatformSupportManager<T> {
 
-	private static final String TAG = PlatformSupportManager.class.getName();
+	private static final String TAG = PlatformSupportManager.class.getSimpleName();
 
 	private final Class<T> managedInterface;
 	private final T defaultImplementation;

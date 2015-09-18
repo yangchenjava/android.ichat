@@ -38,7 +38,7 @@ import com.yangc.ichat.zxing.camera.open.OpenCameraManager;
 @SuppressWarnings("deprecation")
 public final class CameraManager {
 
-	private static final String TAG = CameraManager.class.getName();
+	private static final String TAG = CameraManager.class.getSimpleName();
 
 	private static final int MIN_FRAME_WIDTH = 240;
 	// private static final int MIN_FRAME_HEIGHT = 240;
@@ -253,6 +253,7 @@ public final class CameraManager {
 				// Called early, before init even finished
 				return null;
 			}
+			// 转为竖屏
 			// rect.left = rect.left * cameraResolution.x / screenResolution.x;
 			// rect.right = rect.right * cameraResolution.x / screenResolution.x;
 			// rect.top = rect.top * cameraResolution.y / screenResolution.y;

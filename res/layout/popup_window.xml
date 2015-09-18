@@ -31,7 +31,7 @@
     <TextView
         android:layout_width="180dp"
         android:layout_height="1dp"
-        android:background="@color/dividing_line_title_bar_plus" />
+        android:background="@color/dividing_line_title_bar" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -60,9 +60,10 @@
     <TextView
         android:layout_width="180dp"
         android:layout_height="1dp"
-        android:background="@color/dividing_line_title_bar_plus" />
+        android:background="@color/dividing_line_title_bar" />
 
     <LinearLayout
+        android:id="@+id/ll_popup_window_scan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/selector_popup_window"
@@ -89,7 +90,7 @@
     <TextView
         android:layout_width="180dp"
         android:layout_height="1dp"
-        android:background="@color/dividing_line_title_bar_plus" />
+        android:background="@color/dividing_line_title_bar" />
 
     <LinearLayout
         android:layout_width="wrap_content"

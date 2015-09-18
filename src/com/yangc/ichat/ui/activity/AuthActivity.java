@@ -12,7 +12,7 @@ import com.yangc.ichat.utils.VolleyUtils;
 
 public class AuthActivity extends FragmentActivity {
 
-	public static final String TAG = AuthActivity.class.getName();
+	public static final String TAG = AuthActivity.class.getSimpleName();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

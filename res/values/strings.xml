@@ -79,6 +79,8 @@
     <string name="popup_window_add">添加朋友</string>
     <string name="popup_window_scan">扫一扫</string>
     <string name="popup_window_feedback">意见反馈</string>
+    <string name="popup_window_capture_desktop">将扫一扫添加到桌面</string>
+    <string name="popup_window_capture_file">从相册选取二维码</string>
 
     <!-- tab -->
     <string name="tab_wechat">微信</string>
@@ -123,6 +125,10 @@
     <string name="scan_tab_cover">封面</string>
     <string name="scan_tab_streetscape">街景</string>
     <string name="scan_tab_translation">翻译</string>
+
+    <!-- browser -->
+    <string name="browser_title">提示</string>
+    <string name="browser_content">已扫描到以下内容</string>
 
     <!-- me -->
     <string name="me_info">微信号：</string>

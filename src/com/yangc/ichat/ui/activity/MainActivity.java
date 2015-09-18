@@ -1,5 +1,7 @@
 package com.yangc.ichat.ui.activity;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -22,14 +24,18 @@ import com.yangc.ichat.ui.fragment.tab.AddressbookFragment;
 import com.yangc.ichat.ui.fragment.tab.FindFragment;
 import com.yangc.ichat.ui.fragment.tab.MeFragment;
 import com.yangc.ichat.ui.fragment.tab.WechatFragment;
+import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.DatabaseUtils;
 import com.yangc.ichat.utils.VolleyUtils;
+import com.yangc.ichat.zxing.CaptureActivity;
 
 public class MainActivity extends FragmentActivity {
 
-	public static final String TAG = MainActivity.class.getName();
+	public static final String TAG = MainActivity.class.getSimpleName();
 
 	public static int CURRENT_TAB_ID;
+
+	private static final int REQUEST_CODE = 1;
 
 	private int colorTabNormal;
 	private int colorTabSelect;
@@ -43,6 +49,8 @@ public class MainActivity extends FragmentActivity {
 	private LinearLayout llTabMe;
 
 	private SparseArrayCompat<Fragment> fragments;
+
+	private Dialog progressDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -92,9 +100,24 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	@Override
+	public void onPause() {
+		super.onPause();
+		if (this.progressDialog != null) {
+			this.progressDialog.dismiss();
+		}
+	}
+
+	@Override
 	protected void onDestroy() {
 		VolleyUtils.cancelAllRequest(TAG);
 		super.onDestroy();
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
+			this.startActivity(data.setClass(this, BrowserActivity.class));
+		}
 	}
 
 	@Override
@@ -113,31 +136,44 @@ public class MainActivity extends FragmentActivity {
 	private void initPopupWindow() {
 		// PopupWindow
 		View popupWindowView = View.inflate(this, R.layout.popup_window, null);
+		popupWindowView.setFocusable(true);
+		popupWindowView.setFocusableInTouchMode(true);
+		popupWindowView.setOnKeyListener(new View.OnKeyListener() {
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				if (keyCode == KeyEvent.KEYCODE_MENU && event.getRepeatCount() == 0 && event.getAction() == KeyEvent.ACTION_DOWN) {
+					closePopupWindow();
+				}
+				return false;
+			}
+		});
+		popupWindowView.findViewById(R.id.ll_popup_window_scan).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				closePopupWindow();
+				progressDialog = AndroidUtils.showProgressDialog(MainActivity.this, getResources().getString(R.string.text_load), false, false);
+				startActivityForResult(new Intent(MainActivity.this, CaptureActivity.class), REQUEST_CODE);
+			}
+		});
+
 		this.mPopupWindow = new PopupWindow(popupWindowView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
 		// 设置点击返回键和PopupWindow以外的地方,退出
 		this.mPopupWindow.setTouchable(true);
 		this.mPopupWindow.setOutsideTouchable(true);
 		this.mPopupWindow.setBackgroundDrawable(new BitmapDrawable(this.getResources(), (Bitmap) null));
-
-		this.mPopupWindow.getContentView().setFocusable(true);
-		this.mPopupWindow.getContentView().setFocusableInTouchMode(true);
-		this.mPopupWindow.getContentView().setOnKeyListener(new View.OnKeyListener() {
-			@Override
-			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (keyCode == KeyEvent.KEYCODE_MENU && event.getRepeatCount() == 0 && event.getAction() == KeyEvent.ACTION_DOWN) {
-					if (mPopupWindow != null && mPopupWindow.isShowing()) {
-						mPopupWindow.dismiss();
-						return true;
-					}
-				}
-				return false;
-			}
-		});
 	}
 
 	private boolean showPopupWindow() {
 		if (this.mPopupWindow != null && !this.mPopupWindow.isShowing()) {
 			this.mPopupWindow.showAsDropDown(this.ivTitleBarPlus);
+			return true;
+		}
+		return false;
+	}
+
+	private boolean closePopupWindow() {
+		if (this.mPopupWindow != null && this.mPopupWindow.isShowing()) {
+			this.mPopupWindow.dismiss();
 			return true;
 		}
 		return false;

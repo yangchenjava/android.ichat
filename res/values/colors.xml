@@ -21,7 +21,7 @@
     <color name="title_bar_select_transparent">#B0484D50</color>
 
     <!-- dividing_line -->
-    <color name="dividing_line_title_bar_plus">#BCBFC4</color>
+    <color name="dividing_line_title_bar">#BCBFC4</color>
     <color name="dividing_line">#DBDBDB</color>
 
     <!-- tab -->

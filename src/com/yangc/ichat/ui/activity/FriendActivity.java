@@ -10,7 +10,7 @@ import com.yangc.ichat.ui.fragment.friend.FriendInfoFragment;
 
 public class FriendActivity extends FragmentActivity {
 
-	public static final String TAG = FriendActivity.class.getName();
+	public static final String TAG = FriendActivity.class.getSimpleName();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

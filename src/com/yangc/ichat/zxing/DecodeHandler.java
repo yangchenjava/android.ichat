@@ -37,7 +37,7 @@ import com.yangc.ichat.R;
 
 public final class DecodeHandler extends Handler {
 
-	private static final String TAG = DecodeHandler.class.getName();
+	private static final String TAG = DecodeHandler.class.getSimpleName();
 
 	private final CaptureActivity activity;
 	private final MultiFormatReader multiFormatReader;
@@ -76,6 +76,7 @@ public final class DecodeHandler extends Handler {
 		long start = System.currentTimeMillis();
 		Result rawResult = null;
 
+		// 转为竖屏
 		byte[] rotatedData = new byte[data.length];
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++)

@@ -34,7 +34,7 @@ import com.yangc.ichat.zxing.common.executor.AsyncTaskExecManager;
 @SuppressWarnings("deprecation")
 public final class AutoFocusManager implements Camera.AutoFocusCallback {
 
-	private static final String TAG = AutoFocusManager.class.getName();
+	private static final String TAG = AutoFocusManager.class.getSimpleName();
 
 	private static final long AUTO_FOCUS_INTERVAL_MS = 2000L;
 	private static final Collection<String> FOCUS_MODES_CALLING_AF;

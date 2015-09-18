@@ -28,7 +28,7 @@ import android.util.Log;
 @SuppressWarnings("deprecation")
 public final class GingerbreadOpenCameraInterface implements OpenCameraInterface {
 
-	private static final String TAG = GingerbreadOpenCameraInterface.class.getName();
+	private static final String TAG = GingerbreadOpenCameraInterface.class.getSimpleName();
 
 	/**
 	 * Opens a rear-facing camera with {@link Camera#open(int)}, if one exists, or opens camera 0.

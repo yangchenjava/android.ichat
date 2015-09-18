@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_width="180dp"
+        android:layout_height="45dp"
+        android:background="@drawable/selector_popup_window"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:paddingEnd="0dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="0dp"
+        android:paddingStart="8dp"
+        android:text="@string/popup_window_capture_desktop"
+        android:textColor="@android:color/white"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="180dp"
+        android:layout_height="1dp"
+        android:background="@color/dividing_line_title_bar" />
+
+    <TextView
+        android:layout_width="180dp"
+        android:layout_height="45dp"
+        android:background="@drawable/selector_popup_window"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:paddingEnd="0dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="0dp"
+        android:paddingStart="8dp"
+        android:text="@string/popup_window_capture_file"
+        android:textColor="@android:color/white"
+        android:textSize="15sp" />
+
+</LinearLayout>
