@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 
 import com.yangc.ichat.R;
 import com.yangc.ichat.ui.activity.BrowserActivity;
+import com.yangc.ichat.ui.activity.ShakeActivity;
 import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.zxing.CaptureActivity;
 
@@ -25,6 +26,7 @@ public class FindFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_tab_find, container, false);
 		((LinearLayout) view.findViewById(R.id.ll_find_scan)).setOnClickListener(this.findScanListener);
+		((LinearLayout) view.findViewById(R.id.ll_find_shake)).setOnClickListener(this.findShakeListener);
 		return view;
 	}
 
@@ -52,7 +54,14 @@ public class FindFragment extends Fragment {
 		@Override
 		public void onClick(View v) {
 			progressDialog = AndroidUtils.showProgressDialog(getActivity(), getActivity().getResources().getString(R.string.text_load), false, false);
-			getActivity().startActivityForResult(new Intent(getActivity(), CaptureActivity.class), REQUEST_CODE);
+			startActivityForResult(new Intent(getActivity(), CaptureActivity.class), REQUEST_CODE);
+		}
+	};
+
+	private View.OnClickListener findShakeListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			startActivity(new Intent(getActivity(), ShakeActivity.class));
 		}
 	};
 

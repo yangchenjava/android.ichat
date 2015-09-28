@@ -107,9 +107,9 @@ public class ChatActivity extends Activity {
 	private int timing; // 录音计时
 	private String fileName;
 
-	@Override
 	@SuppressLint("NewApi")
 	@SuppressWarnings("deprecation")
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_chat);

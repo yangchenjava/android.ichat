@@ -16,17 +16,21 @@
 
 package com.yangc.ichat.zxing;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
@@ -44,6 +48,8 @@ import com.google.zxing.DecodeHintType;
 import com.google.zxing.Result;
 import com.google.zxing.ResultMetadataType;
 import com.yangc.ichat.R;
+import com.yangc.ichat.utils.AndroidUtils;
+import com.yangc.ichat.utils.QRCodeUtils;
 import com.yangc.ichat.zxing.camera.CameraManager;
 
 /**
@@ -56,6 +62,8 @@ import com.yangc.ichat.zxing.camera.CameraManager;
 public final class CaptureActivity extends Activity implements SurfaceHolder.Callback {
 
 	private static final String TAG = CaptureActivity.class.getSimpleName();
+
+	private static final int PHOTO_LOCAL = 1;
 
 	private CameraManager cameraManager;
 	private CaptureActivityHandler handler;
@@ -127,10 +135,10 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 		this.llCaptureTabStreetscape = (LinearLayout) this.findViewById(R.id.ll_capture_tab_streetscape);
 		this.llCaptureTabTranslation = (LinearLayout) this.findViewById(R.id.ll_capture_tab_translation);
 
-		this.llCaptureTabQrcode.setOnClickListener(clickListener);
-		this.llCaptureTabCover.setOnClickListener(clickListener);
-		this.llCaptureTabStreetscape.setOnClickListener(clickListener);
-		this.llCaptureTabTranslation.setOnClickListener(clickListener);
+		this.llCaptureTabQrcode.setOnClickListener(this.clickListener);
+		this.llCaptureTabCover.setOnClickListener(this.clickListener);
+		this.llCaptureTabStreetscape.setOnClickListener(this.clickListener);
+		this.llCaptureTabTranslation.setOnClickListener(this.clickListener);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -221,6 +229,31 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 	protected void onDestroy() {
 		inactivityTimer.shutdown();
 		super.onDestroy();
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == PHOTO_LOCAL && resultCode == Activity.RESULT_OK && data != null) {
+			Dialog progressDialog = AndroidUtils.showProgressDialog(this, getResources().getString(R.string.text_load), true, true);
+			String result = null;
+			try {
+				Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), data.getData());
+				result = QRCodeUtils.decode(bitmap);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			Intent intent = new Intent(getIntent().getAction());
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+			if (!TextUtils.isEmpty(result)) {
+				intent.putExtra(Intents.Scan.RESULT, result);
+				intent.putExtra(Intents.Scan.RESULT_FORMAT, BarcodeFormat.QR_CODE.toString());
+			}
+			sendReplyMessage(R.id.return_scan_result, intent);
+			progressDialog.dismiss();
+		}
 	}
 
 	@Override
@@ -374,6 +407,15 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 					closePopupWindow();
 				}
 				return false;
+			}
+		});
+		popupWindowView.findViewById(R.id.tv_popup_window_capture_file).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				closePopupWindow();
+				Intent intent = new Intent(Intent.ACTION_PICK);
+				intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+				startActivityForResult(intent, PHOTO_LOCAL);
 			}
 		});
 

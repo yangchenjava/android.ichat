@@ -121,6 +121,7 @@
     <!-- scan -->
     <string name="scan_title_bar">二维码/条码</string>
     <string name="scan_prompt">将二维码/条码放入框内，即可自动扫描</string>
+    <string name="scan_not_found">未发现二维码/条码</string>
     <string name="scan_tab_qrcode">扫码</string>
     <string name="scan_tab_cover">封面</string>
     <string name="scan_tab_streetscape">街景</string>
@@ -129,6 +130,14 @@
     <!-- browser -->
     <string name="browser_title">提示</string>
     <string name="browser_content">已扫描到以下内容</string>
+
+    <!-- shake -->
+    <string name="shake_title_bar_person">摇一摇</string>
+    <string name="shake_title_bar_song">摇歌曲</string>
+    <string name="shake_title_bar_tv">摇电视</string>
+    <string name="shake_tab_person">人</string>
+    <string name="shake_tab_song">歌曲</string>
+    <string name="shake_tab_tv">电视</string>
 
     <!-- me -->
     <string name="me_info">微信号：</string>

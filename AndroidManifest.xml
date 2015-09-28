@@ -67,6 +67,9 @@
             android:name=".ui.activity.BrowserActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.activity.ShakeActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.activity.MeActivity"
             android:screenOrientation="portrait" />
 

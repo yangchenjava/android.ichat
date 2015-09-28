@@ -46,8 +46,13 @@
     <color name="scan_result">#B0000000</color>
     <color name="scan_line_left_right">#82AF44</color>
     <color name="scan_line_center">#73D33F</color>
+    <color name="scan_tab_bkg">#B0020202</color>
     <color name="scan_tab_normal">#BFBFBF</color>
     <color name="scan_tab_select">#38C03F</color>
-    <color name="scan_tab_bkg">#B0020202</color>
+
+    <!-- shake -->
+    <color name="shake_bkg">#292C2D</color>
+    <color name="shake_tab_normal">#BFBFBF</color>
+    <color name="shake_tab_select">#38C03F</color>
 
 </resources>

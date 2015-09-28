@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/rl_shake_title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/title_bar" >
+
+        <ImageView
+            android:id="@+id/iv_shake_backspace"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/selector_title_bar"
+            android:clickable="true"
+            android:contentDescription="@string/content_description"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/title_bar_backspace" />
+
+        <ImageView
+            android:id="@+id/iv_shake_setting"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/selector_title_bar"
+            android:clickable="true"
+            android:contentDescription="@string/content_description"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/title_bar_setting" />
+
+        <TextView
+            android:id="@+id/tv_shake_title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@id/iv_shake_backspace"
+            android:layout_toLeftOf="@id/iv_shake_setting"
+            android:layout_toRightOf="@id/iv_shake_backspace"
+            android:layout_toStartOf="@id/iv_shake_setting"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_shake_tab"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/shake_bkg"
+        android:baselineAligned="false"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:id="@+id/ll_shake_tab_person"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:orientation="vertical" >
+
+            <ImageView
+                android:id="@+id/iv_shake_tab_person"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:contentDescription="@string/content_description"
+                android:padding="12dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/shake_tab_person_normal" />
+
+            <TextView
+                android:id="@+id/tv_shake_tab_person"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="top|center_horizontal"
+                android:text="@string/shake_tab_person"
+                android:textColor="@color/shake_tab_normal"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_shake_tab_song"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:orientation="vertical" >
+
+            <ImageView
+                android:id="@+id/iv_shake_tab_song"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:contentDescription="@string/content_description"
+                android:padding="12dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/shake_tab_song_normal" />
+
+            <TextView
+                android:id="@+id/tv_shake_tab_song"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="top|center_horizontal"
+                android:text="@string/shake_tab_song"
+                android:textColor="@color/shake_tab_normal"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_shake_tab_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:orientation="vertical" >
+
+            <ImageView
+                android:id="@+id/iv_shake_tab_tv"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:contentDescription="@string/content_description"
+                android:padding="12dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/shake_tab_tv_normal" />
+
+            <TextView
+                android:id="@+id/tv_shake_tab_tv"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="top|center_horizontal"
+                android:text="@string/shake_tab_tv"
+                android:textColor="@color/shake_tab_normal"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/ll_shake_tab"
+        android:layout_below="@id/rl_shake_title_bar"
+        android:background="@color/shake_bkg"
+        android:gravity="center" >
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:contentDescription="@string/content_description"
+            android:scaleType="center"
+            android:src="@drawable/shake_flower" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/ll_shake_tab"
+        android:layout_below="@id/rl_shake_title_bar"
+        android:background="@android:color/transparent"
+        android:gravity="center" >
+
+        <ImageView
+            android:id="@+id/iv_shake_up"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@color/shake_bkg"
+            android:contentDescription="@string/content_description"
+            android:scaleType="fitCenter"
+            android:src="@drawable/shake_up" />
+
+        <ImageView
+            android:id="@+id/iv_shake_border_up"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_below="@id/iv_shake_up"
+            android:background="@drawable/shake_border_up"
+            android:contentDescription="@string/content_description"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/iv_shake_border_down"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_below="@id/iv_shake_border_up"
+            android:background="@drawable/shake_border_down"
+            android:contentDescription="@string/content_description"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/iv_shake_down"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_below="@id/iv_shake_border_down"
+            android:background="@color/shake_bkg"
+            android:contentDescription="@string/content_description"
+            android:scaleType="fitCenter"
+            android:src="@drawable/shake_down" />
+    </RelativeLayout>
+
+</RelativeLayout>

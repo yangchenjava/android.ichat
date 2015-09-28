@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.yangc.ichat.R;
+import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.zxing.Intents;
 
 public class BrowserActivity extends Activity {
@@ -51,7 +52,7 @@ public class BrowserActivity extends Activity {
 		String resultFormat = intent.getStringExtra(Intents.Scan.RESULT_FORMAT), result = intent.getStringExtra(Intents.Scan.RESULT);
 		Log.i(TAG, resultFormat);
 		Log.i(TAG, result);
-		if (result.matches("^[a-zA-z]+:\\/\\/[^\\s]*$")) {
+		if (result != null && result.matches("^[a-zA-z]+:\\/\\/[^\\s]*$")) {
 			this.loadUrl(result);
 			this.llBrowser.setVisibility(View.GONE);
 		} else {
@@ -60,6 +61,7 @@ public class BrowserActivity extends Activity {
 			this.pbBrowser.setVisibility(View.GONE);
 			this.tvBrowserContent.setText(result);
 		}
+		if (result == null) AndroidUtils.alertToast(this, R.string.scan_not_found);
 	}
 
 	@SuppressLint("SetJavaScriptEnabled")
