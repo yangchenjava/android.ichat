@@ -57,9 +57,7 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_main);
 
-		// Intent intent = new Intent(this, PushService.class);
-		// intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_LOGIN);
-		// this.startService(intent);
+		// 启动后台TCP连接
 		this.startService(new Intent(this, PushService.class));
 
 		this.colorTabNormal = this.getResources().getColor(R.color.tab_normal);

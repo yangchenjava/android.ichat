@@ -41,6 +41,9 @@ public class PushService extends Service {
 
 	private NotificationManager notificationManager;
 
+	// 是否需要断线重连
+	private boolean isNeedReconnect = false;
+
 	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -68,6 +71,7 @@ public class PushService extends Service {
 				break;
 			}
 			case Constants.ACTION_RECONNECT: {
+				this.isNeedReconnect = true;
 				new Thread(this.reconnectAndLogin).start();
 				break;
 			}
@@ -214,13 +218,21 @@ public class PushService extends Service {
 	private Runnable reconnectAndLogin = new Runnable() {
 		@Override
 		public void run() {
-			try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			client.reconnect();
-			client.login(getUser());
+			boolean isConnect = false;
+			do {
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				if (isNeedReconnect) {
+					isConnect = client.reconnect();
+					if (isConnect) client.login(getUser());
+				} else {
+					client.destroy();
+					break;
+				}
+			} while (!isConnect);
 		}
 	};
 
@@ -273,8 +285,10 @@ public class PushService extends Service {
 			if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
 				Log.i(TAG, "networkChangedReceiver");
 				if (AndroidUtils.checkNetwork(context)) {
+					isNeedReconnect = true;
 					new Thread(reconnectAndLogin).start();
 				} else {
+					isNeedReconnect = false;
 					client.destroy();
 					AndroidUtils.alertToast(context, R.string.error_network);
 				}

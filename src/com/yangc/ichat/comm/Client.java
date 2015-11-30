@@ -86,7 +86,7 @@ public class Client {
 	 * @作者: yangc
 	 * @创建日期: 2014年12月7日 下午6:24:06
 	 */
-	public synchronized void connect() {
+	public synchronized boolean connect() {
 		Log.i(TAG, "connect");
 		try {
 			if (!AndroidUtils.checkNetwork(this.context)) {
@@ -104,12 +104,14 @@ public class Client {
 				}
 			});
 			future.get();
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 			Intent intent = new Intent(this.context, PushService.class);
 			intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_NETWORK_ERROR);
 			this.context.startService(intent);
 		}
+		return false;
 	}
 
 	/**
@@ -123,10 +125,6 @@ public class Client {
 			this.session.close(true).awaitUninterruptibly();
 			this.session = null;
 		}
-		// if (this.connector != null) {
-		// this.connector.dispose();
-		// this.connector = null;
-		// }
 	}
 
 	/**
@@ -134,11 +132,10 @@ public class Client {
 	 * @作者: yangc
 	 * @创建日期: 2014年12月7日 下午6:26:36
 	 */
-	public void reconnect() {
+	public boolean reconnect() {
 		Log.i(TAG, "reconnect");
 		this.destroy();
-		// this.init();
-		this.connect();
+		return this.connect();
 	}
 
 	/**
