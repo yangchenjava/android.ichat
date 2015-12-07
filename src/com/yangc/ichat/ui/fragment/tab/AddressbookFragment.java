@@ -56,6 +56,8 @@ public class AddressbookFragment extends Fragment {
 	private RecyclerView.ItemDecoration itemDecoration;
 	private AddressbookFragmentAdapter adapter;
 
+	private PauseOnScrollListener mPauseOnScrollListener;
+
 	private List<TIchatAddressbook> list;
 	private Map<String, Integer> map;
 
@@ -74,7 +76,8 @@ public class AddressbookFragment extends Fragment {
 		}
 		this.rvAddressbook.setLayoutManager(new LinearLayoutManager(this.getActivity()));
 		this.rvAddressbook.setItemAnimator(new DefaultItemAnimator());
-		this.rvAddressbook.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true));
+		this.mPauseOnScrollListener = new PauseOnScrollListener(ImageLoader.getInstance(), false, true);
+		this.rvAddressbook.addOnScrollListener(this.mPauseOnScrollListener);
 		IndexScroller isIndex = (IndexScroller) view.findViewById(R.id.is_index);
 		isIndex.setOnTouchWordChangedListener(this.touchWordChangedListener);
 		this.tvIndexWord = (TextView) view.findViewById(R.id.tv_index_word);
@@ -100,6 +103,12 @@ public class AddressbookFragment extends Fragment {
 
 		this.adapter = new AddressbookFragmentAdapter(this.rvAddressbook, list, this.itemListener, AndroidUtils.getScreenWidth(this.getActivity()));
 		this.rvAddressbook.setAdapter(this.adapter);
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		this.rvAddressbook.removeOnScrollListener(this.mPauseOnScrollListener);
 	}
 
 	private AddressbookFragmentAdapter.OnItemListener itemListener = new AddressbookFragmentAdapter.OnItemListener() {

@@ -98,6 +98,8 @@ public class ChatActivity extends Activity {
 	private ImageView ivRecordShort;
 	private TextView tvRecordText;
 
+	private PauseOnScrollListener mPauseOnScrollListener;
+
 	private String username;
 	private TIchatAddressbook addressbook;
 	private List<TIchatHistory> chatList;
@@ -146,7 +148,8 @@ public class ChatActivity extends Activity {
 		}
 		this.rvChat.setLayoutManager(new LinearLayoutManager(this));
 		this.rvChat.setItemAnimator(new DefaultItemAnimator());
-		this.rvChat.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true, this.scrollListener));
+		this.mPauseOnScrollListener = new PauseOnScrollListener(ImageLoader.getInstance(), false, true, this.scrollListener);
+		this.rvChat.addOnScrollListener(this.mPauseOnScrollListener);
 		// bottom
 		this.tvChatMode = (TextView) this.findViewById(R.id.tv_chat_mode);
 		this.tvChatMode.setOnClickListener(this.modeListener);
@@ -168,7 +171,7 @@ public class ChatActivity extends Activity {
 			this.vpChatEmoji.setOverScrollMode(View.OVER_SCROLL_NEVER);
 		}
 		this.vpChatEmoji.setOffscreenPageLimit(2);
-		this.vpChatEmoji.setOnPageChangeListener(this.pageChangeListener);
+		this.vpChatEmoji.addOnPageChangeListener(this.pageChangeListener);
 		this.vpChatEmoji.setAdapter(this.pagerAdapter);
 		this.llChatEmojiNavi = (LinearLayout) this.findViewById(R.id.ll_chat_emoji_navi);
 		this.setEmojiNavi(0);
@@ -222,6 +225,8 @@ public class ChatActivity extends Activity {
 		super.onDestroy();
 		this.soundPool.release();
 		this.soundPool = null;
+		this.rvChat.removeOnScrollListener(this.mPauseOnScrollListener);
+		this.vpChatEmoji.removeOnPageChangeListener(this.pageChangeListener);
 	}
 
 	@Override
@@ -229,7 +234,7 @@ public class ChatActivity extends Activity {
 		if (this.rlChatEmoji.getVisibility() == View.VISIBLE) {
 			this.rlChatEmoji.setVisibility(View.GONE);
 		} else {
-			this.goToMain();
+			goToMain();
 		}
 	}
 
@@ -295,10 +300,8 @@ public class ChatActivity extends Activity {
 	// 回到主页面
 	private void goToMain() {
 		AndroidUtils.hideSoftInput(this);
-		MainActivity.CURRENT_TAB_ID = R.id.ll_tab_wechat;
-		Intent intent = new Intent(this, MainActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		this.startActivity(intent);
+		MainActivity.CURRENT_TAB_ID = 0;
+		this.finish();
 	}
 
 	// 发送语音
@@ -414,7 +417,7 @@ public class ChatActivity extends Activity {
 
 		@Override
 		public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-			this.firstVisibleItem = recyclerView.getChildPosition(recyclerView.getChildAt(0));
+			this.firstVisibleItem = recyclerView.getChildAdapterPosition(recyclerView.getChildAt(0));
 		}
 	};
 
@@ -781,6 +784,7 @@ public class ChatActivity extends Activity {
 			container.removeView((View) object);
 		}
 
+		@SuppressWarnings("deprecation")
 		private AdapterView.OnItemClickListener gridViewItemClickListener = new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

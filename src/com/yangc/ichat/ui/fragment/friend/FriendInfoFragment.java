@@ -149,9 +149,10 @@ public class FriendInfoFragment extends Fragment {
 	private View.OnClickListener sendClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			Intent intent = new Intent(getActivity(), ChatActivity.class);
+			Intent intent = new Intent(friendActivity, ChatActivity.class);
 			intent.putExtra("username", getArguments().getString("username"));
-			getActivity().startActivity(intent);
+			friendActivity.startActivity(intent);
+			friendActivity.finish();
 		}
 	};
 

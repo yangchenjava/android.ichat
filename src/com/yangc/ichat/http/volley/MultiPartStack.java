@@ -22,6 +22,7 @@ import com.android.volley.Request;
 import com.android.volley.toolbox.HttpStack;
 import com.yangc.ichat.http.MultipartEntity;
 
+@SuppressWarnings("deprecation")
 public class MultiPartStack implements HttpStack {
 
 	@Override

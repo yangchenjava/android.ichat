@@ -44,6 +44,8 @@ public class WechatFragment extends Fragment {
 	private RecyclerView rvWechat;
 	private WechatFragmentAdapter adapter;
 
+	private PauseOnScrollListener mPauseOnScrollListener;
+
 	private List<TIchatHistory> list;
 
 	@Override
@@ -59,7 +61,8 @@ public class WechatFragment extends Fragment {
 		this.rvWechat.addItemDecoration(new HorizontalDividerItemDecoration.Builder(this.getActivity()).colorResId(R.color.dividing_line).showLastDivider().build());
 		this.rvWechat.setLayoutManager(new LinearLayoutManager(this.getActivity()));
 		this.rvWechat.setItemAnimator(new DefaultItemAnimator());
-		this.rvWechat.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true));
+		this.mPauseOnScrollListener = new PauseOnScrollListener(ImageLoader.getInstance(), false, true);
+		this.rvWechat.addOnScrollListener(this.mPauseOnScrollListener);
 		return view;
 	}
 
@@ -79,6 +82,12 @@ public class WechatFragment extends Fragment {
 		super.onPause();
 		// CallbackManager.unregisterChatListener(this);
 		EventBus.getDefault().unregister(this);
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		this.rvWechat.removeOnScrollListener(this.mPauseOnScrollListener);
 	}
 
 	// @Override

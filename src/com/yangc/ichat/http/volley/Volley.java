@@ -18,6 +18,7 @@ import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.HttpStack;
 import com.android.volley.toolbox.HurlStack;
 
+@SuppressWarnings("deprecation")
 public class Volley extends com.android.volley.toolbox.Volley {
 
 	private static final String DEFAULT_CACHE_DIR = "volley";
@@ -66,4 +67,5 @@ public class Volley extends com.android.volley.toolbox.Volley {
 		queue.start();
 		return queue;
 	}
+
 }

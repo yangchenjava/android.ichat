@@ -93,8 +93,7 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		this.resetView();
-		this.initView(CURRENT_TAB_ID == 0 ? DatabaseUtils.getAddressbookCount(this) == 0 ? R.id.ll_tab_addressbook : R.id.ll_tab_wechat : CURRENT_TAB_ID);
+		this.showView(CURRENT_TAB_ID == 0 ? DatabaseUtils.getAddressbookCount(this) == 0 ? R.id.ll_tab_addressbook : R.id.ll_tab_wechat : CURRENT_TAB_ID);
 	}
 
 	@Override
@@ -113,6 +112,7 @@ public class MainActivity extends FragmentActivity {
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
 			this.startActivity(data.setClass(this, BrowserActivity.class));
 		}
@@ -177,7 +177,8 @@ public class MainActivity extends FragmentActivity {
 		return false;
 	}
 
-	private void resetView() {
+	public void showView(int tabId) {
+		// resetView
 		((ImageView) this.llTabWechat.findViewById(R.id.iv_tab_wechat)).setImageResource(R.drawable.tab_wechat_normal);
 		((TextView) this.llTabWechat.findViewById(R.id.tv_tab_wechat)).setTextColor(this.colorTabNormal);
 		((ImageView) this.llTabAddressbook.findViewById(R.id.iv_tab_addressbook)).setImageResource(R.drawable.tab_addressbook_normal);
@@ -186,9 +187,8 @@ public class MainActivity extends FragmentActivity {
 		((TextView) this.llTabFind.findViewById(R.id.tv_tab_find)).setTextColor(this.colorTabNormal);
 		((ImageView) this.llTabMe.findViewById(R.id.iv_tab_me)).setImageResource(R.drawable.tab_me_normal);
 		((TextView) this.llTabMe.findViewById(R.id.tv_tab_me)).setTextColor(this.colorTabNormal);
-	}
 
-	private void initView(int tabId) {
+		// initView
 		switch (tabId) {
 		case R.id.ll_tab_wechat:
 			((ImageView) this.llTabWechat.findViewById(R.id.iv_tab_wechat)).setImageResource(R.drawable.tab_wechat_select);
@@ -208,9 +208,10 @@ public class MainActivity extends FragmentActivity {
 			break;
 		}
 		FragmentTransaction fragmentTransaction = this.getSupportFragmentManager().beginTransaction();
-		Fragment currentFragment = this.getSupportFragmentManager().findFragmentByTag("" + CURRENT_TAB_ID);
-		if (currentFragment != null) {
-			fragmentTransaction.hide(currentFragment);
+		if (this.getSupportFragmentManager().getFragments() != null) {
+			for (Fragment fragment : this.getSupportFragmentManager().getFragments()) {
+				fragmentTransaction.hide(fragment);
+			}
 		}
 		if (this.fragments.get(tabId).isAdded()) {
 			fragmentTransaction.show(this.fragments.get(tabId));
@@ -224,8 +225,7 @@ public class MainActivity extends FragmentActivity {
 	private class ClickListener implements View.OnClickListener {
 		@Override
 		public void onClick(View v) {
-			resetView();
-			initView(v.getId());
+			showView(v.getId());
 		}
 	}
 

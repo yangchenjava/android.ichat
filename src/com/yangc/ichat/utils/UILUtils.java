@@ -5,7 +5,7 @@ import java.io.File;
 import android.content.Context;
 import android.graphics.Bitmap;
 
-import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
+import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -23,7 +23,7 @@ public class UILUtils {
 	public static void init(Context context) {
 		File cacheDir = AndroidUtils.getStorageDir(context, Constants.APP + "/" + Constants.CACHE_PORTRAIT);
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context).threadPoolSize(3).threadPriority(Thread.NORM_PRIORITY - 2).tasksProcessingOrder(QueueProcessingType.LIFO)
-				.denyCacheImageMultipleSizesInMemory().diskCache(new UnlimitedDiscCache(cacheDir)).diskCacheSize(50 * 1024 * 1024).diskCacheFileCount(100)
+				.denyCacheImageMultipleSizesInMemory().diskCache(new UnlimitedDiskCache(cacheDir)).diskCacheSize(50 * 1024 * 1024).diskCacheFileCount(100)
 				.diskCacheFileNameGenerator(new Md5FileNameGenerator()).build();
 		ImageLoader.getInstance().init(config);
 	}

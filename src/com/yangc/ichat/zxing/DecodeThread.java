@@ -22,15 +22,14 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.DecodeHintType;
 import com.google.zxing.ResultPointCallback;
+import com.yangc.ichat.utils.PreferenceUtils;
 
 /**
  * This thread does all the heavy lifting of decoding the images.
@@ -58,24 +57,23 @@ public final class DecodeThread extends Thread {
 
 		// The prefs can't change while the thread is running, so pick them up once here.
 		if (decodeFormats == null || decodeFormats.isEmpty()) {
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
 			decodeFormats = EnumSet.noneOf(BarcodeFormat.class);
-			if (prefs.getBoolean(PreferencesActivity.KEY_DECODE_1D_PRODUCT, true)) {
+			if (PreferenceUtils.getBoolean(this.activity, PreferencesActivity.KEY_DECODE_1D_PRODUCT, true)) {
 				decodeFormats.addAll(DecodeFormatManager.PRODUCT_FORMATS);
 			}
-			if (prefs.getBoolean(PreferencesActivity.KEY_DECODE_1D_INDUSTRIAL, true)) {
+			if (PreferenceUtils.getBoolean(this.activity, PreferencesActivity.KEY_DECODE_1D_INDUSTRIAL, true)) {
 				decodeFormats.addAll(DecodeFormatManager.INDUSTRIAL_FORMATS);
 			}
-			if (prefs.getBoolean(PreferencesActivity.KEY_DECODE_QR, true)) {
+			if (PreferenceUtils.getBoolean(this.activity, PreferencesActivity.KEY_DECODE_QR, true)) {
 				decodeFormats.addAll(DecodeFormatManager.QR_CODE_FORMATS);
 			}
-			if (prefs.getBoolean(PreferencesActivity.KEY_DECODE_DATA_MATRIX, true)) {
+			if (PreferenceUtils.getBoolean(this.activity, PreferencesActivity.KEY_DECODE_DATA_MATRIX, true)) {
 				decodeFormats.addAll(DecodeFormatManager.DATA_MATRIX_FORMATS);
 			}
-			if (prefs.getBoolean(PreferencesActivity.KEY_DECODE_AZTEC, false)) {
+			if (PreferenceUtils.getBoolean(this.activity, PreferencesActivity.KEY_DECODE_AZTEC, false)) {
 				decodeFormats.addAll(DecodeFormatManager.AZTEC_FORMATS);
 			}
-			if (prefs.getBoolean(PreferencesActivity.KEY_DECODE_PDF417, false)) {
+			if (PreferenceUtils.getBoolean(this.activity, PreferencesActivity.KEY_DECODE_PDF417, false)) {
 				decodeFormats.addAll(DecodeFormatManager.PDF417_FORMATS);
 			}
 		}

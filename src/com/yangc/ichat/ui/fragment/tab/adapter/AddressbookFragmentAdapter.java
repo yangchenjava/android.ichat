@@ -122,7 +122,7 @@ public class AddressbookFragmentAdapter extends RecyclerView.Adapter<RecyclerVie
 						if (scrollX > width / 2) {
 							holder.hsvAddressbookItem.smoothScrollTo(width, 0);
 							if (swipePosition != -1 && swipePosition != position) {
-								View view = rvAddressbook.getChildAt(swipePosition - rvAddressbook.getChildPosition(rvAddressbook.getChildAt(0)));
+								View view = rvAddressbook.getChildAt(swipePosition - rvAddressbook.getChildAdapterPosition(rvAddressbook.getChildAt(0)));
 								if (view != null) {
 									((ItemViewHolder) rvAddressbook.getChildViewHolder(view)).hsvAddressbookItem.smoothScrollTo(0, 0);
 								}
@@ -212,7 +212,7 @@ public class AddressbookFragmentAdapter extends RecyclerView.Adapter<RecyclerVie
 	}
 
 	private void closeSwipe() {
-		View view = this.rvAddressbook.getChildAt(this.swipePosition - this.rvAddressbook.getChildPosition(this.rvAddressbook.getChildAt(0)));
+		View view = this.rvAddressbook.getChildAt(this.swipePosition - this.rvAddressbook.getChildAdapterPosition(this.rvAddressbook.getChildAt(0)));
 		if (view != null) {
 			((ItemViewHolder) this.rvAddressbook.getChildViewHolder(view)).hsvAddressbookItem.smoothScrollTo(0, 0);
 			this.swipePosition = -1;

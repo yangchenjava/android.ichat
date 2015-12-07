@@ -141,8 +141,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 		this.llCaptureTabTranslation.setOnClickListener(this.clickListener);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
+	@SuppressWarnings("deprecation")
 	protected void onResume() {
 		super.onResume();
 
@@ -366,7 +366,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 		}
 	}
 
-	private void initCamera(SurfaceHolder surfaceHolder) {
+	private void initCamera(final SurfaceHolder surfaceHolder) {
 		if (surfaceHolder == null) {
 			throw new IllegalStateException("No SurfaceHolder provided");
 		}
@@ -375,13 +375,20 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 			return;
 		}
 		try {
-			cameraManager.openDriver(surfaceHolder);
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						cameraManager.openDriver(surfaceHolder);
+					} catch (IOException ioe) {
+						Log.w(TAG, ioe);
+					}
+				}
+			}).start();
 			// Creating the handler starts the preview, which can also throw a RuntimeException.
 			if (handler == null) {
 				handler = new CaptureActivityHandler(this, decodeFormats, decodeHints, characterSet, cameraManager);
 			}
-		} catch (IOException ioe) {
-			Log.w(TAG, ioe);
 		} catch (RuntimeException e) {
 			// Barcode Scanner has seen crashes in the wild of this variety:
 			// java.lang.RuntimeException: Fail to connect to camera service

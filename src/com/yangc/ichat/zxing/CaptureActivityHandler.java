@@ -49,7 +49,7 @@ public final class CaptureActivityHandler extends Handler {
 		PREVIEW, SUCCESS, DONE
 	}
 
-	CaptureActivityHandler(CaptureActivity activity, Collection<BarcodeFormat> decodeFormats, Map<DecodeHintType, ?> baseHints, String characterSet, CameraManager cameraManager) {
+	CaptureActivityHandler(CaptureActivity activity, Collection<BarcodeFormat> decodeFormats, Map<DecodeHintType, ?> baseHints, String characterSet, final CameraManager cameraManager) {
 		this.activity = activity;
 		decodeThread = new DecodeThread(activity, decodeFormats, baseHints, characterSet, null);
 		decodeThread.start();
@@ -57,7 +57,12 @@ public final class CaptureActivityHandler extends Handler {
 
 		// Start ourselves capturing previews and decoding.
 		this.cameraManager = cameraManager;
-		cameraManager.startPreview();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				cameraManager.startPreview();
+			}
+		}).start();
 		restartPreviewAndDecode();
 	}
 
@@ -115,7 +120,12 @@ public final class CaptureActivityHandler extends Handler {
 	private void restartPreviewAndDecode() {
 		if (state == State.SUCCESS) {
 			state = State.PREVIEW;
-			cameraManager.requestPreviewFrame(decodeThread.getHandler(), R.id.decode);
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					cameraManager.requestPreviewFrame(decodeThread.getHandler(), R.id.decode);
+				}
+			}).start();
 			activity.drawViewfinder();
 		}
 	}

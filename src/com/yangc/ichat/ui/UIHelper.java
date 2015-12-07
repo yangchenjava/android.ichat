@@ -8,6 +8,8 @@ public interface UIHelper {
 
 	public void initViewValue();
 
-	public void initViewListener();
+	public void addViewListener();
+
+	public void removeViewListener();
 
 }

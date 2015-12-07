@@ -1,10 +1,9 @@
 package com.yangc.ichat;
 
 import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
 
 import com.yangc.ichat.utils.Constants;
+import com.yangc.ichat.utils.PreferenceUtils;
 import com.yangc.ichat.utils.UILUtils;
 import com.yangc.ichat.utils.VolleyUtils;
 
@@ -15,11 +14,9 @@ public class MainApplication extends Application {
 		super.onCreate();
 		UILUtils.init(this);
 		VolleyUtils.init(this);
-		// 模式: Context.MODE_PRIVATE只有本应用可以使用, Context.MODE_WORLD_READABLE其他应用可以读, Context.MODE_WORLD_WRITEABLE其他应用可以写
-		SharedPreferences sharedPreferences = this.getSharedPreferences(Constants.APP, Context.MODE_PRIVATE);
-		Constants.USER_ID = sharedPreferences.getString("userId", "");
-		Constants.USERNAME = sharedPreferences.getString("username", "");
-		Constants.PASSWORD = sharedPreferences.getString("password", "");
+		Constants.USER_ID = PreferenceUtils.getString(this, "userId", "");
+		Constants.USERNAME = PreferenceUtils.getString(this, "username", "");
+		Constants.PASSWORD = PreferenceUtils.getString(this, "password", "");
 	}
 
 }

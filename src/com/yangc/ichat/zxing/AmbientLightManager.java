@@ -17,12 +17,10 @@
 package com.yangc.ichat.zxing;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.preference.PreferenceManager;
 
 import com.yangc.ichat.zxing.camera.CameraManager;
 import com.yangc.ichat.zxing.camera.FrontLightMode;
@@ -48,8 +46,7 @@ public final class AmbientLightManager implements SensorEventListener {
 
 	void start(CameraManager cameraManager) {
 		this.cameraManager = cameraManager;
-		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-		if (FrontLightMode.readPref(sharedPrefs) == FrontLightMode.AUTO) {
+		if (FrontLightMode.readPref(context) == FrontLightMode.AUTO) {
 			SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
 			lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
 			if (lightSensor != null) {

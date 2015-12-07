@@ -16,8 +16,9 @@
 
 package com.yangc.ichat.zxing.camera;
 
-import android.content.SharedPreferences;
+import android.content.Context;
 
+import com.yangc.ichat.utils.PreferenceUtils;
 import com.yangc.ichat.zxing.PreferencesActivity;
 
 /**
@@ -36,8 +37,8 @@ public enum FrontLightMode {
 		return modeString == null ? OFF : valueOf(modeString);
 	}
 
-	public static FrontLightMode readPref(SharedPreferences sharedPrefs) {
-		return parse(sharedPrefs.getString(PreferencesActivity.KEY_FRONT_LIGHT_MODE, OFF.toString()));
+	public static FrontLightMode readPref(Context context) {
+		return parse(PreferenceUtils.getString(context, PreferencesActivity.KEY_FRONT_LIGHT_MODE, OFF.toString()));
 	}
 
 }

@@ -21,12 +21,11 @@ import java.util.Collection;
 import java.util.concurrent.RejectedExecutionException;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.hardware.Camera;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.yangc.ichat.utils.PreferenceUtils;
 import com.yangc.ichat.zxing.PreferencesActivity;
 import com.yangc.ichat.zxing.common.executor.AsyncTaskExecInterface;
 import com.yangc.ichat.zxing.common.executor.AsyncTaskExecManager;
@@ -54,9 +53,8 @@ public final class AutoFocusManager implements Camera.AutoFocusCallback {
 	AutoFocusManager(Context context, Camera camera) {
 		this.camera = camera;
 		this.taskExec = new AsyncTaskExecManager().build();
-		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String currentFocusMode = camera.getParameters().getFocusMode();
-		useAutoFocus = sharedPrefs.getBoolean(PreferencesActivity.KEY_AUTO_FOCUS, true) && FOCUS_MODES_CALLING_AF.contains(currentFocusMode);
+		useAutoFocus = PreferenceUtils.getBoolean(context, PreferencesActivity.KEY_AUTO_FOCUS, true) && FOCUS_MODES_CALLING_AF.contains(currentFocusMode);
 		Log.i(TAG, "Current focus mode '" + currentFocusMode + "'; use auto focus? " + useAutoFocus);
 		start();
 	}

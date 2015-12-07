@@ -1,7 +1,6 @@
 package com.yangc.ichat.utils;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 public class Constants {
 
@@ -58,8 +57,9 @@ public class Constants {
 	}
 
 	public static void saveConstants(Context context, String userId, String username, String password) {
-		SharedPreferences.Editor editor = context.getSharedPreferences(Constants.APP, Context.MODE_PRIVATE).edit();
-		editor.putString("userId", userId).putString("username", username).putString("password", password).commit();
+		PreferenceUtils.setString(context, "userId", userId);
+		PreferenceUtils.setString(context, "username", username);
+		PreferenceUtils.setString(context, "password", password);
 		USER_ID = userId;
 		USERNAME = username;
 		PASSWORD = password;

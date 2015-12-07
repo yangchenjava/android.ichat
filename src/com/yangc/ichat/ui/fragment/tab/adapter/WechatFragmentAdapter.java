@@ -74,7 +74,7 @@ public class WechatFragmentAdapter extends RecyclerView.Adapter<WechatFragmentAd
 					if (scrollX > width / 2) {
 						holder.hsvWechatItem.smoothScrollTo(width, 0);
 						if (swipePosition != -1 && swipePosition != position) {
-							View view = rvWechat.getChildAt(swipePosition - rvWechat.getChildPosition(rvWechat.getChildAt(0)));
+							View view = rvWechat.getChildAt(swipePosition - rvWechat.getChildAdapterPosition(rvWechat.getChildAt(0)));
 							if (view != null) {
 								((ViewHolder) rvWechat.getChildViewHolder(view)).hsvWechatItem.smoothScrollTo(0, 0);
 							}
@@ -160,7 +160,7 @@ public class WechatFragmentAdapter extends RecyclerView.Adapter<WechatFragmentAd
 	}
 
 	private void closeSwipe() {
-		View view = this.rvWechat.getChildAt(this.swipePosition - this.rvWechat.getChildPosition(this.rvWechat.getChildAt(0)));
+		View view = this.rvWechat.getChildAt(this.swipePosition - this.rvWechat.getChildAdapterPosition(this.rvWechat.getChildAt(0)));
 		if (view != null) {
 			((ViewHolder) this.rvWechat.getChildViewHolder(view)).hsvWechatItem.smoothScrollTo(0, 0);
 			this.swipePosition = -1;

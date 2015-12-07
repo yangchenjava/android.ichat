@@ -18,15 +18,14 @@ package com.yangc.ichat.zxing.camera;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
+import com.yangc.ichat.utils.PreferenceUtils;
 import com.yangc.ichat.zxing.PreferencesActivity;
 
 /**
@@ -91,22 +90,21 @@ public final class CameraConfigurationManager {
 			Log.w(TAG, "In camera config safe mode -- most settings will not be honored");
 		}
 
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		initializeTorch(parameters, safeMode);
 
-		initializeTorch(parameters, prefs, safeMode);
-
-		CameraConfigurationUtils.setFocus(parameters, prefs.getBoolean(PreferencesActivity.KEY_AUTO_FOCUS, true), prefs.getBoolean(PreferencesActivity.KEY_DISABLE_CONTINUOUS_FOCUS, true), safeMode);
+		CameraConfigurationUtils.setFocus(parameters, PreferenceUtils.getBoolean(context, PreferencesActivity.KEY_AUTO_FOCUS, true),
+				PreferenceUtils.getBoolean(context, PreferencesActivity.KEY_DISABLE_CONTINUOUS_FOCUS, true), safeMode);
 
 		if (!safeMode) {
-			if (prefs.getBoolean(PreferencesActivity.KEY_INVERT_SCAN, false)) {
+			if (PreferenceUtils.getBoolean(context, PreferencesActivity.KEY_INVERT_SCAN, false)) {
 				CameraConfigurationUtils.setInvertColor(parameters);
 			}
 
-			if (!prefs.getBoolean(PreferencesActivity.KEY_DISABLE_BARCODE_SCENE_MODE, true)) {
+			if (!PreferenceUtils.getBoolean(context, PreferencesActivity.KEY_DISABLE_BARCODE_SCENE_MODE, true)) {
 				CameraConfigurationUtils.setBarcodeSceneMode(parameters);
 			}
 
-			if (!prefs.getBoolean(PreferencesActivity.KEY_DISABLE_METERING, true)) {
+			if (!PreferenceUtils.getBoolean(context, PreferencesActivity.KEY_DISABLE_METERING, true)) {
 				CameraConfigurationUtils.setVideoStabilization(parameters);
 				CameraConfigurationUtils.setFocusArea(parameters);
 				CameraConfigurationUtils.setMetering(parameters);
@@ -153,15 +151,14 @@ public final class CameraConfigurationManager {
 		camera.setParameters(parameters);
 	}
 
-	private void initializeTorch(Camera.Parameters parameters, SharedPreferences prefs, boolean safeMode) {
-		boolean currentSetting = FrontLightMode.readPref(prefs) == FrontLightMode.ON;
+	private void initializeTorch(Camera.Parameters parameters, boolean safeMode) {
+		boolean currentSetting = FrontLightMode.readPref(context) == FrontLightMode.ON;
 		doSetTorch(parameters, currentSetting, safeMode);
 	}
 
 	private void doSetTorch(Camera.Parameters parameters, boolean newSetting, boolean safeMode) {
 		CameraConfigurationUtils.setTorch(parameters, newSetting);
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		if (!safeMode && !prefs.getBoolean(PreferencesActivity.KEY_DISABLE_EXPOSURE, true)) {
+		if (!safeMode && !PreferenceUtils.getBoolean(context, PreferencesActivity.KEY_DISABLE_EXPOSURE, true)) {
 			CameraConfigurationUtils.setBestExposure(parameters, newSetting);
 		}
 	}

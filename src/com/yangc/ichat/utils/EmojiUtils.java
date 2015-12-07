@@ -88,6 +88,7 @@ public class EmojiUtils {
 	 * @param source
 	 * @return
 	 */
+	@SuppressWarnings("deprecation")
 	public static SpannableString escapeEmoji(Context context, String source, int size) {
 		SpannableString spannableString = new SpannableString(source);
 		Matcher matcher = Pattern.compile("\\[[\u4e00-\u9fa5]+?\\]").matcher(spannableString);

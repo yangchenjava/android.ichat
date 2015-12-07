@@ -85,7 +85,7 @@ public abstract class FlexibleDividerDecoration extends RecyclerView.ItemDecorat
 		int childCount = mShowLastDivider ? parent.getChildCount() : parent.getChildCount() - 1;
 		for (int i = 0; i < childCount; i++) {
 			View child = parent.getChildAt(i);
-			int childPosition = parent.getChildPosition(child);
+			int childPosition = parent.getChildAdapterPosition(child);
 			if (mPositionWithoutDivider == null || !mPositionWithoutDivider.contains(childPosition)) {
 				if (childPosition < lastChildPosition) {
 					// Avoid remaining divider when animation starts
@@ -122,7 +122,7 @@ public abstract class FlexibleDividerDecoration extends RecyclerView.ItemDecorat
 
 	@Override
 	public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-		int position = parent.getChildPosition(view);
+		int position = parent.getChildAdapterPosition(view);
 		// 去掉最后一项的分割线
 		if ((mShowLastDivider || position != parent.getAdapter().getItemCount() - 1) && (mPositionWithoutDivider == null || !mPositionWithoutDivider.contains(position))) {
 			setItemOffsets(outRect, position, parent);
@@ -257,6 +257,7 @@ public abstract class FlexibleDividerDecoration extends RecyclerView.ItemDecorat
 			return (T) this;
 		}
 
+		@SuppressWarnings("deprecation")
 		public T drawable(@DrawableRes int id) {
 			return drawable(mResources.getDrawable(id));
 		}
