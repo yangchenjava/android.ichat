@@ -48,6 +48,7 @@ import com.google.zxing.DecodeHintType;
 import com.google.zxing.Result;
 import com.google.zxing.ResultMetadataType;
 import com.yangc.ichat.R;
+import com.yangc.ichat.ui.activity.MainActivity;
 import com.yangc.ichat.utils.AndroidUtils;
 import com.yangc.ichat.utils.QRCodeUtils;
 import com.yangc.ichat.zxing.camera.CameraManager;
@@ -119,7 +120,14 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 		((ImageView) this.findViewById(R.id.iv_capture_backspace)).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				onBackPressed();
+				// onBackPressed();
+				// 防止屏幕一闪
+				MainActivity.CURRENT_TAB_ID = R.id.ll_tab_find;
+				Intent intent = new Intent(CaptureActivity.this, MainActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intent);
+				setResult(RESULT_CANCELED);
+				finish();
 			}
 		});
 		this.ivCaptureMore = (ImageView) this.findViewById(R.id.iv_capture_more);
@@ -264,6 +272,11 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 			// sign = false;
 			// handler.sendEmptyMessage(R.id.restart_preview);
 			// } else {
+			// 防止屏幕一闪
+			MainActivity.CURRENT_TAB_ID = R.id.ll_tab_find;
+			Intent intent = new Intent(this, MainActivity.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
 			setResult(RESULT_CANCELED);
 			finish();
 			// }
