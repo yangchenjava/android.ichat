@@ -291,7 +291,7 @@ public class RegisterFragment extends Fragment {
 				params.put("photo", photoFile);
 			}
 			Request<ResultBean> request = new MultiPartRequest<ResultBean>(Constants.REGISTER, params, ResultBean.class, listener, errorListener);
-			request.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+			request.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 			VolleyUtils.addMultiPartRequest(request, AuthActivity.TAG);
 		}
 	};

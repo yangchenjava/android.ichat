@@ -17,7 +17,7 @@ public class FriendActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_friend);
 
-		this.addFragmentToStack(new FriendInfoFragment(), this.getIntent().getBundleExtra("addressbook"), false);
+		this.addFragmentToStack(Fragment.instantiate(this, FriendInfoFragment.class.getName()), this.getIntent().getBundleExtra("addressbook"), false);
 	}
 
 	public void addFragmentToStack(Fragment fragment, Bundle bundle, boolean isAddStack) {

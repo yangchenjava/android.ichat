@@ -84,10 +84,10 @@ public class MainActivity extends FragmentActivity {
 		this.llTabMe.setOnClickListener(new ClickListener());
 
 		this.fragments = new SparseArrayCompat<Fragment>(4);
-		this.fragments.put(R.id.ll_tab_wechat, new WechatFragment());
-		this.fragments.put(R.id.ll_tab_addressbook, new AddressbookFragment());
-		this.fragments.put(R.id.ll_tab_find, new FindFragment());
-		this.fragments.put(R.id.ll_tab_me, new MeFragment());
+		this.fragments.put(R.id.ll_tab_wechat, Fragment.instantiate(this, WechatFragment.class.getName()));
+		this.fragments.put(R.id.ll_tab_addressbook, Fragment.instantiate(this, AddressbookFragment.class.getName()));
+		this.fragments.put(R.id.ll_tab_find, Fragment.instantiate(this, FindFragment.class.getName()));
+		this.fragments.put(R.id.ll_tab_me, Fragment.instantiate(this, MeFragment.class.getName()));
 	}
 
 	@Override
@@ -210,10 +210,12 @@ public class MainActivity extends FragmentActivity {
 		FragmentTransaction fragmentTransaction = this.getSupportFragmentManager().beginTransaction();
 		if (this.getSupportFragmentManager().getFragments() != null) {
 			for (Fragment fragment : this.getSupportFragmentManager().getFragments()) {
-				fragmentTransaction.hide(fragment);
+				if (fragment.isVisible()) {
+					fragmentTransaction.hide(fragment);
+				}
 			}
 		}
-		if (this.fragments.get(tabId).isAdded()) {
+		if (this.fragments.get(tabId).isAdded() && this.fragments.get(tabId).isHidden()) {
 			fragmentTransaction.show(this.fragments.get(tabId));
 		} else {
 			fragmentTransaction.add(R.id.rl_main, this.fragments.get(tabId), "" + tabId);

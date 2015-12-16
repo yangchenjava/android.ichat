@@ -315,7 +315,7 @@ public class MeDetailFragment extends Fragment {
 			if (!TextUtils.isEmpty(me.getPhoto())) {
 				Bundle bundle = new Bundle(1);
 				bundle.putString("photo", me.getPhoto());
-				meActivity.addFragmentToStack(new MeDetailPhotoFragment(), bundle, true);
+				meActivity.addFragmentToStack(Fragment.instantiate(meActivity, MeDetailPhotoFragment.class.getName()), bundle, true);
 			}
 		}
 	};
@@ -326,7 +326,7 @@ public class MeDetailFragment extends Fragment {
 		public void onClick(View v) {
 			Bundle bundle = new Bundle(1);
 			bundle.putString("nickname", me.getNickname());
-			meActivity.addFragmentToStack(new MeDetailNicknameFragment(), bundle, true);
+			meActivity.addFragmentToStack(Fragment.instantiate(meActivity, MeDetailNicknameFragment.class.getName()), bundle, true);
 		}
 	};
 
@@ -336,7 +336,7 @@ public class MeDetailFragment extends Fragment {
 		public void onClick(View v) {
 			Bundle bundle = new Bundle(1);
 			bundle.putString("phone", me.getPhone());
-			meActivity.addFragmentToStack(new MeDetailPhoneFragment(), bundle, true);
+			meActivity.addFragmentToStack(Fragment.instantiate(meActivity, MeDetailPhoneFragment.class.getName()), bundle, true);
 		}
 	};
 
@@ -405,7 +405,7 @@ public class MeDetailFragment extends Fragment {
 		public void onClick(View v) {
 			Bundle bundle = new Bundle(1);
 			bundle.putString("signature", me.getSignature());
-			meActivity.addFragmentToStack(new MeDetailSignatureFragment(), bundle, true);
+			meActivity.addFragmentToStack(Fragment.instantiate(meActivity, MeDetailSignatureFragment.class.getName()), bundle, true);
 		}
 	};
 

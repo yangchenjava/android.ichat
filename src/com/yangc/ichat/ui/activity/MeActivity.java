@@ -18,7 +18,7 @@ public class MeActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_me);
 
-		this.addFragmentToStack(new MeDetailFragment(), null, false);
+		this.addFragmentToStack(Fragment.instantiate(this, MeDetailFragment.class.getName()), null, false);
 	}
 
 	@Override

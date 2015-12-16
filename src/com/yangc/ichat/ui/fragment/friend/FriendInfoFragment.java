@@ -140,7 +140,7 @@ public class FriendInfoFragment extends Fragment {
 			if (!TextUtils.isEmpty(photo)) {
 				Bundle bundle = new Bundle(1);
 				bundle.putString("photo", photo);
-				friendActivity.addFragmentToStack(new FriendInfoPhotoFragment(), bundle, true);
+				friendActivity.addFragmentToStack(Fragment.instantiate(friendActivity, FriendInfoPhotoFragment.class.getName()), bundle, true);
 			}
 		}
 	};

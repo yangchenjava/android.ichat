@@ -19,7 +19,7 @@ public class AuthActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_auth);
 
-		this.addFragmentToStack(new LogoutFragment(), false);
+		this.addFragmentToStack(Fragment.instantiate(this, LogoutFragment.class.getName()), false);
 	}
 
 	@Override
