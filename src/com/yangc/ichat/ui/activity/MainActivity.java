@@ -139,7 +139,7 @@ public class MainActivity extends FragmentActivity {
 		popupWindowView.setOnKeyListener(new View.OnKeyListener() {
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (keyCode == KeyEvent.KEYCODE_MENU && event.getRepeatCount() == 0 && event.getAction() == KeyEvent.ACTION_DOWN) {
+				if (keyCode == KeyEvent.KEYCODE_MENU && event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
 					closePopupWindow();
 				}
 				return false;
