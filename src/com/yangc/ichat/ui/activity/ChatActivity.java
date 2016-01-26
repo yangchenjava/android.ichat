@@ -609,28 +609,30 @@ public class ChatActivity extends Activity {
 				break;
 			}
 			case MotionEvent.ACTION_UP: {
-				if (voice.isRecording()) {
-					if (timing < 1) {
-						recordStatus("short");
-						new Handler().postDelayed(new Runnable() {
-							@Override
-							public void run() {
-								rlRecordStatus.setVisibility(View.GONE);
-							}
-						}, 800);
-						isInside = false;
-					} else {
-						rlRecordStatus.setVisibility(View.GONE);
+				synchronized (ChatActivity.this) {
+					if (voice.isRecording()) {
+						if (timing < 1) {
+							recordStatus("short");
+							new Handler().postDelayed(new Runnable() {
+								@Override
+								public void run() {
+									rlRecordStatus.setVisibility(View.GONE);
+								}
+							}, 800);
+							isInside = false;
+						} else {
+							rlRecordStatus.setVisibility(View.GONE);
+						}
+						voice.stopRecord();
+						if (isInside) {
+							sendRecord();
+						} else if (!TextUtils.isEmpty(fileName)) {
+							File dir = AndroidUtils.getStorageDir(ChatActivity.this, Constants.APP + "/" + Constants.CACHE_VOICE + "/" + username);
+							File file = new File(dir, fileName);
+							if (file.exists()) file.delete();
+						}
+						timing = 0;
 					}
-					voice.stopRecord();
-					if (isInside) {
-						sendRecord();
-					} else if (!TextUtils.isEmpty(fileName)) {
-						File dir = AndroidUtils.getStorageDir(ChatActivity.this, Constants.APP + "/" + Constants.CACHE_VOICE + "/" + username);
-						File file = new File(dir, fileName);
-						if (file.exists()) file.delete();
-					}
-					timing = 0;
 				}
 				v.performClick();
 				break;
@@ -672,10 +674,14 @@ public class ChatActivity extends Activity {
 					if (++activity.timing < 60) {
 						new Thread(activity.timer).start();
 					} else {
-						activity.rlRecordStatus.setVisibility(View.GONE);
-						activity.voice.stopRecord();
-						activity.sendRecord();
-						activity.timing = 0;
+						synchronized (activity) {
+							if (activity.voice.isRecording()) {
+								activity.rlRecordStatus.setVisibility(View.GONE);
+								activity.voice.stopRecord();
+								activity.sendRecord();
+								activity.timing = 0;
+							}
+						}
 					}
 					break;
 				}
