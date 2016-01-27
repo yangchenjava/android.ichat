@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.util.SparseArrayCompat;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager.LayoutParams;
@@ -210,14 +211,14 @@ public class MainActivity extends FragmentActivity {
 		FragmentTransaction fragmentTransaction = this.getSupportFragmentManager().beginTransaction();
 		if (this.getSupportFragmentManager().getFragments() != null) {
 			for (Fragment fragment : this.getSupportFragmentManager().getFragments()) {
-				if (fragment.isVisible()) {
+				if (TextUtils.equals(fragment.getTag(), "" + tabId)) {
+					fragmentTransaction.show(fragment);
+				} else {
 					fragmentTransaction.hide(fragment);
 				}
 			}
 		}
-		if (this.fragments.get(tabId).isAdded() && this.fragments.get(tabId).isHidden()) {
-			fragmentTransaction.show(this.fragments.get(tabId));
-		} else {
+		if (!this.fragments.get(tabId).isAdded()) {
 			fragmentTransaction.add(R.id.rl_main, this.fragments.get(tabId), "" + tabId);
 		}
 		fragmentTransaction.commit();
