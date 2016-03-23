@@ -27,9 +27,9 @@ public class MultipartEntity implements HttpEntity {
 
 	public MultipartEntity() {
 		final StringBuilder sb = new StringBuilder();
-		final Random rand = new Random();
+		final Random random = new Random();
 		for (int i = 0; i < 30; i++) {
-			sb.append(MULTIPART_CHARS[rand.nextInt(MULTIPART_CHARS.length)]);
+			sb.append(MULTIPART_CHARS[random.nextInt(MULTIPART_CHARS.length)]);
 		}
 		this.boundary = sb.toString();
 	}
@@ -81,11 +81,11 @@ public class MultipartEntity implements HttpEntity {
 		this.addPart(key, fileName, in, "application/octet-stream");
 	}
 
-	public void addPart(String key, String fileName, InputStream in, String type) {
+	public void addPart(String key, String fileName, InputStream in, String mimeType) {
 		this.writeFirstBoundaryIfNeeds();
 		try {
 			this.out.write(("Content-Disposition: form-data; name=\"" + key + "\"; filename=\"" + fileName + "\"\r\n").getBytes());
-			this.out.write(("Content-Type: " + type + "\r\n").getBytes());
+			this.out.write(("Content-Type: " + mimeType + "\r\n").getBytes());
 			this.out.write("Content-Transfer-Encoding: binary\r\n\r\n".getBytes());
 
 			byte[] b = new byte[4096];
