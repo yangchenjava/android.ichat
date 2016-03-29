@@ -59,7 +59,7 @@ public class IndexScroller extends View {
 			// this.paint.setTypeface(Typeface.DEFAULT_BOLD);
 			// 消除字体锯齿
 			this.paint.setAntiAlias(true);
-			this.paint.setTextSize(AndroidUtils.sp2px(this.getContext(), 12));
+			this.paint.setTextSize(AndroidUtils.sp2px(this.getContext(), 12f));
 			if (i == this.choose) {
 				this.paint.setColor(Color.parseColor("#38C03F"));
 				this.paint.setFakeBoldText(true);

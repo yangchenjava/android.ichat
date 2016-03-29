@@ -814,7 +814,7 @@ public class ChatActivity extends Activity {
 					}
 				} else {
 					Drawable drawable = ChatActivity.this.getResources().getDrawable(emoji.getResId());
-					drawable.setBounds(0, 0, AndroidUtils.dp2px(ChatActivity.this, 20), AndroidUtils.dp2px(ChatActivity.this, 20));
+					drawable.setBounds(0, 0, AndroidUtils.dp2px(ChatActivity.this, 20f), AndroidUtils.dp2px(ChatActivity.this, 20f));
 					SpannableString spannableString = new SpannableString(emoji.getContent());
 					spannableString.setSpan(new ImageSpan(drawable), 0, spannableString.length(), SpannableString.SPAN_INCLUSIVE_EXCLUSIVE);
 					editable.insert(selection, spannableString);

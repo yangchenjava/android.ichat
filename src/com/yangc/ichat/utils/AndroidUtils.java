@@ -16,7 +16,6 @@ import android.net.NetworkInfo;
 import android.os.Environment;
 import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
@@ -70,8 +69,22 @@ public class AndroidUtils {
 	 * @param dp
 	 * @return
 	 */
-	public static int dp2px(Context context, int dp) {
-		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
+	public static int dp2px(Context context, float dp) {
+		final float scale = context.getResources().getDisplayMetrics().density;
+		return (int) (dp * scale + 0.5f);
+	}
+
+	/**
+	 * @功能: px转dp
+	 * @作者: yangc
+	 * @创建日期: 2014年11月9日 上午2:19:33
+	 * @param context
+	 * @param px
+	 * @return
+	 */
+	public static int px2dp(Context context, float px) {
+		final float scale = context.getResources().getDisplayMetrics().density;
+		return (int) (px / scale + 0.5f);
 	}
 
 	/**
@@ -82,8 +95,22 @@ public class AndroidUtils {
 	 * @param sp
 	 * @return
 	 */
-	public static int sp2px(Context context, int sp) {
-		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.getResources().getDisplayMetrics());
+	public static int sp2px(Context context, float sp) {
+		final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
+		return (int) (sp * fontScale + 0.5f);
+	}
+
+	/**
+	 * @功能: px转sp
+	 * @作者: yangc
+	 * @创建日期: 2014年11月9日 上午2:19:33
+	 * @param context
+	 * @param px
+	 * @return
+	 */
+	public static int px2sp(Context context, float px) {
+		final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
+		return (int) (px / fontScale + 0.5f);
 	}
 
 	/**
@@ -233,7 +260,7 @@ public class AndroidUtils {
 		Dialog progressDialog = new Dialog(context, R.style.CustomProgressDialog);
 		progressDialog.setCancelable(cancelable);
 		progressDialog.setCanceledOnTouchOutside(canceledOnTouchOutside);
-		progressDialog.setContentView(llDialogProgress, new LinearLayout.LayoutParams(dp2px(context, 300), dp2px(context, 45)));
+		progressDialog.setContentView(llDialogProgress, new LinearLayout.LayoutParams(dp2px(context, 300f), dp2px(context, 45f)));
 		progressDialog.show();
 		return progressDialog;
 	}

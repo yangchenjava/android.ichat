@@ -71,16 +71,16 @@ public final class ViewfinderView extends View {
 		super(context, attrs);
 
 		// Initialize these once for performance rather than calling them every time in onDraw().
-		CORNER_WIDTH = AndroidUtils.dp2px(context, 4);
-		CORNER_HEIGHT = AndroidUtils.dp2px(context, 18);
+		CORNER_WIDTH = AndroidUtils.dp2px(context, 4f);
+		CORNER_HEIGHT = AndroidUtils.dp2px(context, 18f);
 
-		MIDDLE_LINE_CORNER = AndroidUtils.dp2px(context, 30);
-		MIDDLE_LINE_WIDTH = AndroidUtils.dp2px(context, 4);
-		MIDDLE_LINE_PADDING = AndroidUtils.dp2px(context, 6);
-		SPEEN_DISTANCE = AndroidUtils.dp2px(context, 3);
+		MIDDLE_LINE_CORNER = AndroidUtils.dp2px(context, 30f);
+		MIDDLE_LINE_WIDTH = AndroidUtils.dp2px(context, 4f);
+		MIDDLE_LINE_PADDING = AndroidUtils.dp2px(context, 6f);
+		SPEEN_DISTANCE = AndroidUtils.dp2px(context, 3f);
 
-		PROMPT_FONT_SIZE = AndroidUtils.sp2px(context, 16);
-		PROMPT_PADDING_TOP = AndroidUtils.dp2px(context, 30);
+		PROMPT_FONT_SIZE = AndroidUtils.sp2px(context, 16f);
+		PROMPT_PADDING_TOP = AndroidUtils.dp2px(context, 30f);
 
 		paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		Resources resources = getResources();

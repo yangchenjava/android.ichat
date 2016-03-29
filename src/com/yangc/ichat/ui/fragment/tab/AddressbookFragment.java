@@ -226,7 +226,7 @@ public class AddressbookFragment extends Fragment {
 			positionWithoutDivider.add(entry.getValue());
 		}
 		if (this.itemDecoration != null) this.rvAddressbook.removeItemDecoration(itemDecoration);
-		this.itemDecoration = new HorizontalDividerItemDecoration.Builder(this.getActivity()).colorResId(R.color.dividing_line).margin(AndroidUtils.dp2px(this.getActivity(), 10))
+		this.itemDecoration = new HorizontalDividerItemDecoration.Builder(this.getActivity()).colorResId(R.color.dividing_line).margin(AndroidUtils.dp2px(this.getActivity(), 10f))
 				.positionWithoutDivider(positionWithoutDivider).build();
 		this.rvAddressbook.addItemDecoration(this.itemDecoration);
 	}
