@@ -27,7 +27,7 @@ public class DatabaseUtils {
 
 	public static DaoMaster getDaoMaster(Context context) {
 		if (daoMaster == null) {
-			DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(context, DB_NAME, null);
+			DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(context.getApplicationContext(), DB_NAME, null);
 			daoMaster = new DaoMaster(helper.getWritableDatabase());
 		}
 		return daoMaster;
